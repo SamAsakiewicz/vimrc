@@ -1,0 +1,272 @@
+VIM
+for the insane, so they
+don't type anything twice!
+or they will be typed twice.
+
+Basic File Operations
+
+	:q! - quit without saving
+	:wq - save and quit
+	:w! - save
+:split
+:vsplit
+:vnew
+:e
+
+Advanced File Operations
+	:recover -> Recover unsaved changes for an unsaved & unnamed file
+	:recover <filename> -> recover unsaved changes for an unsaved & named file
+
+Basic Mode Change
+
+	ctrl + [ - enter Normal mode
+
+Basic Movement	( --NORMAL-- )
+
+	h - move 1 left
+	l - move 1 right	
+	j - move 1 down
+	k - move 1 up
+	gj - move 1 down on wrapped line
+	gk - move 1 up on wrapped line
+
+	e
+	b
+	w
+	0
+
+	i - enter --INSERT-- infront of cursor
+	I - enter --INSERT-- at beginning of current line
+	a - enter --INSERT-- behind cursor
+	A - enter --INSERT-- at end of current line
+	o - add line below and enter --INSERT-- there
+	O - add line above and enter --INSERT-- there
+
+	:(#) - move to line (#)s/
+	(#)g - move to line (#)
+	gg   - move to top line
+	G    - move to bottom line
+
+Advanced Movement 
+
+	c-^ - switch between source and header
+	% - moves between braces/brackets/parenthesis couples
+	c-o - go back to last position
+	c-o - go forward to last positon
+
+	m[letter] - set (book)mark
+	`[letter] - go to mark
+	[d/c/v]%[=] - on brace or similar, select ebtween brace and optionally delete or format
+
+
+Basic Editing	( --NORMAL-- )
+	# In Normal Mode
+		Y copies line
+		D deletes line
+		C deletes to end of line
+		caw - delete to end of word
+	y(#)y - copy this line + (#) of succeding lines
+	d(#)d - delete this line + (#) of succeding lines
+	d$ or D - delete to end of line
+	dw	- dejhlete to beginning of next word
+	c(#)c - delete and enter insert mode
+	p
+	x -> delete character
+
+	"[letter]dd/yy - yank to register [letter] (_ is black hole register, + is system clipboard)
+	"[UPPER LETTER] dd/yy - Yank and append to register [letter] (0 is last yanked, 1-9 is last deleted, - is last multiline delete)
+
+Advanced Editing
+	@: -> repeat last ":" command
+	. -> repeat last edit in normal mode
+
+Basic Selection
+
+	vip - select snippet of code
+	viw -> Select word
+	vit	Applies to everything in current xml/html tag
+	vi{ -> select everything in bracketApplies to everything inside nearest curly brackets
+	vi' -> select everything in single quotes
+	vi" -> select everything between double quotes
+	viB
+	vi{
+	ggVG
+	a instead of i will select the boundaries too
+	v%
+
+Basic Tools	
+
+	
+	--- MACROS ---
+
+	q(key) - start recording macro assigned to (key)
+	q      - stop recording macro
+	@(key) - execute macro assigned to (key)
+	
+	--- REPLACE ---
+
+	:%s/(search text)/(replacement text)/g
+	:'<,'>s/(search text)/(replacement text)/g --> replace in visual selection
+
+	-- COPY/PASTE --
+
+	"+y - copy to X11clipboard
+	"+p - paste from system clipboard
+
+	-- AUTO FORMAT --
+	
+	=(#)= - format # number of following lines
+	gg=G= - format all lines in file 
+	g[Uu~(movement/prev selection) --> toggle case
+
+Basic tags
+	
+	:! ctags -R .	- generate tag fils
+	ctrl+]  jump to tag
+	g] -> show tag locations
+	ctrl+t jump back
+       
+	:tfirst, :trewind, :tlast, :tnext, :tprevious, :tNext -> Iterate over tag results
+
+	ctags.exe -R "C:\SVN\DigitalMedia\Trunk"
+
+
+Basic cscope
+	:cs
+
+
+Basic Diff
+
+	do - Get changes from other window into the current window.
+	dp - Put the changes from current window into the other window.
+
+	]c - Jump to the next change.
+	[c - Jump to the previous change.
+
+Basic Folding
+
+	zo -> open fold under cursor
+	zc -> close fold under cursor
+	za -> toggle fold under cursor
+
+	zr -> unfold buffer
+	zm -> fold buffer
+
+	zR -> Completely unfold buffer
+	zM -> completely fold buffer
+
+Advanced Folding
+	
+	:set foldmethod=(indent|syntax|manual)...]
+	zf[#](j|k) -> fold lines
+	([|])z -> move to folds
+	zf/
+	z[d|D] -> deletes fold
+	can yank or delete folded section by operating on the fold line
+	
+Basic Windows
+
+	ctrl-s - split file into two windows
+	:hsp
+	:vsp
+	ctrl-w w/h/j/k/l
+	ctrl-w =
+	ctrl-w _/|
+
+Basic Tabs
+/*
+        gt            go to next tab
+        gT            go to previous tab
+        {i}gt         go to tab in position i
+       Ctrl-PgDn     go to next tab
+        Ctrl-PgUp     go to previous tab 
+        */
+
+Basic Plugins:
+	Solarized
+	Exhuberent Ctags
+	AG	
+		:ag --stats --ignore builds --ignore tags --ignore oldtags {search pattern} C:\SVN\Digitalmedia\Trunk\
+
+		copied:
+		e    to open file and close the quickfix window
+		o    to open (same as enter)
+		go   to preview file (open but maintain focus on ag.vim results)
+		t    to open in new tab
+		T    to open in new tab silently
+		h    to open in horizontal split
+		H    to open in horizontal split silently
+		v    to open in vertical split
+		gv   to open in vertical split silently
+		q    to close the quickfix window
+	ctrlp
+		:CtrlP C:\SVN\DigitalMedia\Trunk
+                Ctrl+d -> switch to searching filename
+                Ctrl + n or + p -> go back and forth in search term history
+		Ctrl + y -> create file with specified path if one doesn't exist
+	neocomplcache
+
+	startify
+		:Startify
+	tagbar
+		:Tagbar
+
+	surround
+
+	easymotion
+
+	numbertoggle
+		ctrl-n - toggle between absolute and relative numbering
+
+
+
+
+
+
+
+
+ORGANIZE ME:
+
+map <C-F12> :!ctags -R --c++-kinds=+p --fields=+iaS --extra=+q .<CR>
+
+
+"ay
+ C-w J/L 
+C-w R
+ C-w
+ C-r
+
+error lookup script?
+
+Ask all the questions!
+
+
+
+
+Ctrl-6
+ ':ls' + ':bn'/':bp' + ':b <part-of-name>'
+
+
+
+
+
+
+
+
+:vertical diffpatch main.c.diff
+:diffupdate\
+
+//	Repeat the last search	N/A
+@:	Repeat the last ex-mode command	N/A
+@@	Repeat the last Macro used	u
+
+q: -> show last commands
+gv -> reselect last visual selection
+
+	
+]}
+]]
+[]
+][
+[[ or ]] -> go to previous and next same level open brace, (ie, jump between functions, scopes, or loops:w
+J
