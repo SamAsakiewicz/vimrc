@@ -1,0 +1,5 @@
+This vimrc assumes a VIm install with neobundle somewhere.
+1. Check the run time paths for neobundle.
+2. Symlink the vimrc to .vimrc or _vimrc in a $PATH or $VIM location
+3. run :NeoBundleInstall
+
