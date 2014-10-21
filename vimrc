@@ -17,6 +17,7 @@ set nocompatible
 "set rtp+=$VIM/vimfiles/bundle/Vundle.vim/
 set runtimepath+=~/.vim/bundle/neobundle.vim/
 set runtimepath+=~/.vim/bundle/*
+set runtimepath+=$VIM/bundle/neobundle.vim/
 "let path='~/vimfiles/bundle'
 
  call neobundle#begin(expand('~/.vim/bundle/'))
@@ -24,11 +25,21 @@ set runtimepath+=~/.vim/bundle/*
  " Let NeoBundle manage NeoBundle
  NeoBundleFetch 'Shougo/neobundle.vim'
 
-" Plugins Vundle will manage for you
-NeoBundleFetch 'gmarik/Vundle.vim' " let Vundle manage Vundle, required
+ "Functional
+NeoBundleFetch 'dbakker/vim-projectroot'
 NeoBundleFetch 'rking/ag.vim'    " AG.vim - interface to ag.exe, a grep/ack replacement
-NeoBundleFetch 'altercation/vim-colors-solarized'    " Solarized - a Solid Color Scheme
 NeoBundleFetch 'kien/ctrlp.vim'    " CtrlP - Fuzzy File Search
+NeoBundleFetch 'gtags.vim'    " Vim Support for GNU Global
+NeoBundleFetch 'Shougo/unite.vim'
+
+" Color Schemes
+NeoBundleFetch 'ujihisa/unite-colorscheme'
+NeoBundleFetch 'altercation/vim-colors-solarized'    " Solarized - a Solid Color Scheme
+NeoBundleFetch '29decibel/codeschool-vim-theme'
+NeoBundleFetch 'jonathanfilip/vim-lucius'
+NeoBundleFetch 'vim-scripts/darktango.vim'
+NeoBundleFetch 'djjcast/mirodark'
+
 "Plugin 'Shougo/neocomplcache.vim'    " neocomplcache - Autocompletion system for vim 
 "NeoBundleFetch 'majutsushi/tagbar'    " TagBar - a pleasant code outline for the current buffer
 NeoBundleFetch 'Lokaltog/vim-easymotion'
@@ -38,16 +49,14 @@ NeoBundleFetch 'mhinz/vim-startify'
 "Plugin 'bling/vim-airline'
 "Plugin 'linediff
 "Plugin 'c.vim' or 'snipMate.vim'
-NeoBundleFetch 'gtags.vim'    " Vim Support for GNU Global
 NeoBundleFetch 'whatyouhide/vim-gotham'    " dark color scheme
 NeoBundleFetch 'tpope/vim-unimpaired'    " each [x & ]x mappings
-NeoBundleFetch 'godlygeek/tabular'
-NeoBundleFetch 'AndrewRadev/splitjoin.vim'
-NeoBundleFetch 'justinmk/vim-sneak'
-NeoBundleFetch 'Shougo/unite.vim'
+"NeoBundleFetch 'godlygeek/tabular'
+"NeoBundleFetch 'AndrewRadev/splitjoin.vim'
+"NeoBundleFetch 'justinmk/vim-sneak'
 "NeoBundleFetch 'Shougo/vimproc.vim'
 NeoBundleFetch 'Shougo/neomru.vim'
-NeoBundleFetch 'Shougo/unite-outline'
+"NeoBundleFetch 'Shougo/unite-outline'
 
  call neobundle#end()
 
@@ -79,6 +88,7 @@ set nohidden " When I close a tab, remove the buffer
 set autoread
 set nobackup
 set nowritebackup "set noswapfile
+set autochdir
 
 set ruler "display cursor position in the bottom right
 set laststatus=2 " Always display the status line, even if only one window is displayed
@@ -115,7 +125,7 @@ set so=10
 set background=dark
 
 "is this optimal? maybe direct project root first, than tag back relay
-set tags=g:project_root;./tags;/,tags;
+set tags=g:project_root/tags;./tags;/,tags;
 
 set ff=dos
 set ffs=dos
@@ -182,7 +192,12 @@ function! RunAg(text, dir)
     execute searchString
 endfunction
 
-
+function! SetRoot()
+    let g:project_root_sys = ProjectRootGuess() 
+    let g:project_root_fs = substitute(g:project_root_sys, '\', '/', "g")
+    let g:project_root_bs = substitute(g:project_root_sys, '/', '\', "g")
+    let g:project_root_dbs = substitute(g:project_root_fs, '/', '\\\\', "g")
+endfunction
 
 
 
@@ -244,12 +259,12 @@ nmap <leader>sv :so $MYVIMRC<CR>
 
 
 " Quick Builds
-nmap <silent> <leader>bc <esc>:call BuildCtags(g:projectDirectoryRoot)<CR>
-nmap <silent> <leader>bg <esc>:call BuildGtags(g:projectDirectoryRoot)<CR>
+nmap <silent> <leader>bc <esc>:call BuildCtags(g:project_root_sys)<CR>
+nmap <silent> <leader>bg <esc>:call BuildGtags(g:project_root_sys)<CR>
 nmap <silent> <leader>bn <esc>:NeoBundleUpdate<CR>
 
-nmap <silent> <leader>ac <esc>:call RunAgOnWordUnderCursor(g:projectDirectoryRoot)<CR>
-nmap <silent> <leader>ai <esc>:call RunAgOnInput(g:projectDirectoryRoot)<CR>
+nmap <silent> <leader>ac <esc>:call RunAgOnWordUnderCursor(g:project_root_sys)<CR>
+nmap <silent> <leader>ai <esc>:call RunAgOnInput(g:project_root_sys)<CR>
 
 " Quick Tabs
 nmap <silent> <leader>tn <esc>:tabnew<CR>
@@ -271,29 +286,45 @@ nnoremap <leader>da <esc>a//TODO:
 nnoremap <leader>dr <esc>k/\/\/TODO:<CR><esc>D
 
 " Unite
-nnoremap <leader>E :<C-u>Unite file<CR>
-nnoremap <leader>e :<C-u>Unite -start-insert file<CR>
+nnoremap <leader>E :<C-u>Unite -start-insert file<CR>
 
 call unite#filters#matcher_default#use(['matcher_fuzzy'])
-nnoremap <leader>r :<C-u>Unite -start-insert file_rec<CR>
+
+function! OpenExplorer()
+    if !empty(g:project_root_fs)
+        execute 'Unite' '-start-insert' 'file' '-path=' . g:project_root_fs
+    else
+        execute 'Unite' 'file'
+    endif
+endfunction
+nnoremap <leader>e :call OpenExplorer()<CR>
+
+function! OpenFuzzySearch()
+    if !empty(g:project_root_fs)
+        execute ':CtrlP ' . g:project_root_sys
+    else
+        execute ':CtrlP '
+    endif
+endfunction
+nnoremap <leader>r :call OpenFuzzySearch()<CR>
+":<C-u>Unite -start-insert file_rec<CR>
+
 nnoremap <leader>l :<C-u>Unite -start-insert line<CR>
 "nnoremap <leader>r :<C-u>Unite -start-insert file_rec/async:!<CR>
 
 let g:unite_source_history_yank_enable = 1
-nnoremap <leader>y :<C-u>Unite history/yank<CR>
-
-nnoremap <silent> <leader>b :<C-u>Unite buffer bookmark<CR>
-nnoremap <silent> <leader>b :<C-u>Unite buffer bookmark<CR>
+nnoremap <silent> <leader>y :<C-u>Unite history/yank<CR>
+nnoremap <silent> <leader>l :<C-u>Unite  bookmark<CR>
+nnoremap <silent> <leader>j :<C-u>Unite -quick-match buffer <CR>
+nnoremap <silent> <leader>k :<C-u>Unite -quick-match tab<CR>
 nnoremap <silent> <leader>m :<C-u>Unite -start-insert file_mru<CR>
 nnoremap <silent> <leader>h :<C-u>Unite -start-insert history -buffer-name=history<CR>
-nnoremap <silent> <leader>h :<C-u>Unite -start-insert outline  -buffer-name=Outline<CR>
+nnoremap <silent> <leader>o :<C-u>Unite -start-insert -auto-preview outline  -buffer-name=Outline<CR>
 "inoremap <buffer> <C-j> <Plug>(unite_select_next_line)
 "inoremap <buffer> <C-k> <Plug>(unite_select_previous_line)
 
-"other cool stuff, Unite mapping, action
-
 nnoremap <silent> <leader>q :q<CR>
-"nnoremap <silent> <leader>s :w<CR> " Machine specific so added later on
+"nnoremap <silent> <leader>w :w<CR> " Machine specific so added later on
 
 
 "let GTAGSLIBPATH=.:..:../..:../../..
@@ -312,6 +343,7 @@ nnoremap <silent> <leader>q :q<CR>
 let g:netrw_liststyle=0
 let g:solarized_italic=0
 colorscheme solarized
+"colorscheme gotham
 
 
 "let g:ctrlp_map = '<C-p>'
@@ -409,11 +441,12 @@ if has("gui_running")
 
     if has("gui_gtk2")
         set guifont="ProggyCleanTT 12"
-        nmap <leader>s :w ++ff=unix<CR>
+        nmap <leader>w :w ++ff=unix<CR>
 
     elseif has("gui_win32")
         set guifont=ProggyCleanTT:h11:cANSI
-        nmap <leader>s :w<CR>
+        set lines=71 columns=260
+        nmap <leader>w :w<CR>
   endif
 endif
 
@@ -425,9 +458,14 @@ endif
  "endif
 "source hostname . "vim"
 
-if exists("g:project_root")
+let g:rootmarkers = ['hello', 'hi']
+
+
+"if exists("g:project_root_sys")
    "Do soemthing
-else
-    let g:project_root = $PWD
-endif
+"else
+ "   let g:project_root_sys = ProjectRootGuess()
+"endif
+autocmd BufEnter * :call SetRoot()
+
 
