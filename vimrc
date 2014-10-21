@@ -259,8 +259,8 @@ nmap <leader>sv :so $MYVIMRC<CR>
 
 
 " Quick Builds
-nmap <silent> <leader>bc <esc>:call BuildCtags(g:project_root_sys)<CR>
-nmap <silent> <leader>bg <esc>:call BuildGtags(g:project_root_sys)<CR>
+nmap <silent> <leader>bc <esc>:call BuildCtags(g:project_root_bs)<CR>
+nmap <silent> <leader>bg <esc>:call BuildGtags(g:project_root_bs)<CR>
 nmap <silent> <leader>bn <esc>:NeoBundleUpdate<CR>
 
 nmap <silent> <leader>ac <esc>:call RunAgOnWordUnderCursor(g:project_root_sys)<CR>
@@ -268,6 +268,7 @@ nmap <silent> <leader>ai <esc>:call RunAgOnInput(g:project_root_sys)<CR>
 
 " Quick Tabs
 nmap <silent> <leader>tn <esc>:tabnew<CR>
+nmap <silent> <leader>tc <esc>:tabclose<CR>
 
 " Quick Ctags iteration
 nmap <silent> <leader>n <esc>:tn<CR>
@@ -307,14 +308,22 @@ function! OpenFuzzySearch()
     endif
 endfunction
 nnoremap <leader>r :call OpenFuzzySearch()<CR>
-":<C-u>Unite -start-insert file_rec<CR>
+nnoremap <leader>R :<C-u>Unite -start-insert file_rec<CR>
+call unite#custom#source('file_rec,file_rec/async', 'ignore_pattern', join([
+    \ '\.\(git\|svn\|i|o|ewp|swp|exe\)\/', 
+    \ 'builds\/',
+    \ 'utility\/',
+    \ '\.\(jpe?g\|gif\|png\)$',
+    \ ], 
+    \ '\|'))
+
 
 nnoremap <leader>l :<C-u>Unite -start-insert line<CR>
 "nnoremap <leader>r :<C-u>Unite -start-insert file_rec/async:!<CR>
 
 let g:unite_source_history_yank_enable = 1
 nnoremap <silent> <leader>y :<C-u>Unite history/yank<CR>
-nnoremap <silent> <leader>l :<C-u>Unite  bookmark<CR>
+"nnoremap <silent> <leader>l :<C-u>Unite  bookmark<CR>
 nnoremap <silent> <leader>j :<C-u>Unite -quick-match buffer <CR>
 nnoremap <silent> <leader>k :<C-u>Unite -quick-match tab<CR>
 nnoremap <silent> <leader>m :<C-u>Unite -start-insert file_mru<CR>
