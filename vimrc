@@ -17,6 +17,7 @@ set nocompatible
 "set rtp+=$VIM/vimfiles/bundle/Vundle.vim/
 set runtimepath+=~/.vim/bundle/neobundle.vim/
 set runtimepath+=~/.vim/bundle/*
+set runtimepath+=~/.vim/bundle/*/doc/
 set runtimepath+=$VIM/bundle/neobundle.vim/
 "let path='~/vimfiles/bundle'
 
@@ -169,7 +170,12 @@ endfunction
 
 function! BuildCtags(dir)
     execute 'cd' fnameescape(a:dir)
-    !ctags.exe -R --exclude=builds .
+
+    if has("win32")
+        !ctags.exe -R --exclude=builds .
+    elseif has ("unix")
+        !ctags -R --exclude=debian --exclude=builds --exclude=build .
+    endif
 endfunction
 
 function! BuildGtags(dir)
@@ -259,8 +265,14 @@ nmap <leader>sv :so $MYVIMRC<CR>
 
 
 " Quick Builds
-nmap <silent> <leader>bc <esc>:call BuildCtags(g:project_root_bs)<CR>
-nmap <silent> <leader>bg <esc>:call BuildGtags(g:project_root_bs)<CR>
+if has("win32")
+    nmap <silent> <leader>bc <esc>:call BuildCtags(g:project_root_bs)<CR>
+    nmap <silent> <leader>bg <esc>:call BuildGtags(g:project_root_bs)<CR>
+else
+    nmap <silent> <leader>bc <esc>:call BuildCtags(g:project_root_fs)<CR>
+    nmap <silent> <leader>bg <esc>:call BuildGtags(g:project_root_fs)<CR>
+endif
+
 nmap <silent> <leader>bn <esc>:NeoBundleUpdate<CR>
 
 nmap <silent> <leader>ac <esc>:call RunAgOnWordUnderCursor(g:project_root_sys)<CR>
@@ -269,6 +281,8 @@ nmap <silent> <leader>ai <esc>:call RunAgOnInput(g:project_root_sys)<CR>
 " Quick Tabs
 nmap <silent> <leader>tn <esc>:tabnew<CR>
 nmap <silent> <leader>tc <esc>:tabclose<CR>
+"nmap <silent> <leader>tl <esc>:tabnext<CR>
+"nmap <silent> <leader>th <esc>:tabprev<CR>
 
 " Quick Ctags iteration
 nmap <silent> <leader>n <esc>:tn<CR>
@@ -308,20 +322,44 @@ function! OpenFuzzySearch()
     endif
 endfunction
 nnoremap <leader>r :call OpenFuzzySearch()<CR>
-nnoremap <leader>R :<C-u>Unite -start-insert file_rec<CR>
+
+
+function! OpenFuzzierSearch()
+    if !empty(g:project_root_fs)
+        execute 'Unite' '-start-insert file_rec' '-path=' . g:project_root_fs
+    else
+        execute 'Unite' '-start-insert file_rec'
+    endif
+endfunction
+nnoremap <leader>R :call OpenFuzzierSearch()<CR>
 call unite#custom#source('file_rec,file_rec/async', 'ignore_pattern', join([
-    \ '\.\(git\|svn\|i|o|ewp|swp|exe\)\/', 
+    \ '\.\(git\|svn\|i|o|ewp|swp|exe|so|dll|s|lst|pbi|cout|icf|html\)$', 
     \ 'builds\/',
     \ 'utility\/',
-    \ '\.\(jpe?g\|gif\|png\)$',
     \ ], 
     \ '\|'))
 
+let g:unite_force_overwrite_statusline = 0
+if executable('ag')
+    let g:unite_source_grep_command = 'ag'
+    let g:unite_source_grep_default_opts = '-S --stats --ignore builds --ignore utility --ignore *.patch --ignore tags --ignore oldtags --ignore TMP'
+    let g:unite_source_grep_recursive_opt = ''
+endif
+
+" Grepping
+"nnoremap <leader>g :Unite -no-split grep<cr>
+"TOD nnoremap united :Unite -no-split grep:.:-s:\(TODO\|FIXME\)<cr>
 
 nnoremap <leader>l :<C-u>Unite -start-insert line<CR>
 "nnoremap <leader>r :<C-u>Unite -start-insert file_rec/async:!<CR>
 
 let g:unite_source_history_yank_enable = 1
+  call unite#custom#source(
+        \ 'buffer', 'matchers',
+        \ ['converter_tail', 'matcher_default'])
+  call unite#custom#source(
+        \ 'buffer', 'converters',
+        \ ['converter_file_directory'])
 nnoremap <silent> <leader>y :<C-u>Unite history/yank<CR>
 "nnoremap <silent> <leader>l :<C-u>Unite  bookmark<CR>
 nnoremap <silent> <leader>j :<C-u>Unite -quick-match buffer <CR>
@@ -334,7 +372,6 @@ nnoremap <silent> <leader>o :<C-u>Unite -start-insert -auto-preview outline  -bu
 
 nnoremap <silent> <leader>q :q<CR>
 "nnoremap <silent> <leader>w :w<CR> " Machine specific so added later on
-
 
 "let GTAGSLIBPATH=.:..:../..:../../..
 
