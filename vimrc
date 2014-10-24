@@ -1,7 +1,3 @@
-"
-"
-"
-"
 " __      __  _____   __  __   _____     _____ 
 " \ \    / / |_   _| |  \/  | |  __ \   / ____|
 "  \ \  / /    | |   | \  / | | |__) | | |     
@@ -9,15 +5,18 @@
 "    \  /     _| |_  | |  | | | | \ \  | |____ 
 "     \/     |_____| |_|  |_| |_|  \_\  \_____|
                                               
+" Plugins {{{
 
 " bye bye, Vi, and nice knowing ya, vanilla VIm
 set nocompatible
                                               
 "  **START OF NeoBundle**
-"set rtp+=$VIM/vimfiles/bundle/Vundle.vim/
 set runtimepath+=~/.vim/bundle/neobundle.vim/
 set runtimepath+=~/.vim/bundle/*
-set runtimepath+=~/.vim/bundle/*/doc/
+let g:docpaths = split(expand("~/.vim/bundle/*/doc/"),'\n')
+for docstr in g:docpaths
+execute "set runtimepath+=".docstr
+endfor
 set runtimepath+=$VIM/bundle/neobundle.vim/
 "let path='~/vimfiles/bundle'
 
@@ -28,7 +27,7 @@ set runtimepath+=$VIM/bundle/neobundle.vim/
 
  "Functional
 NeoBundleFetch 'dbakker/vim-projectroot'
-NeoBundleFetch 'rking/ag.vim'    " AG.vim - interface to ag.exe, a grep/ack replacement
+NeoBundleFetch 'rking/ag.vim'    " AG.vim - interface to ag.exe,  grep/ack replacement
 NeoBundleFetch 'kien/ctrlp.vim'    " CtrlP - Fuzzy File Search
 NeoBundleFetch 'gtags.vim'    " Vim Support for GNU Global
 NeoBundleFetch 'Shougo/unite.vim'
@@ -52,12 +51,12 @@ NeoBundleFetch 'mhinz/vim-startify'
 "Plugin 'c.vim' or 'snipMate.vim'
 NeoBundleFetch 'whatyouhide/vim-gotham'    " dark color scheme
 NeoBundleFetch 'tpope/vim-unimpaired'    " each [x & ]x mappings
-"NeoBundleFetch 'godlygeek/tabular'
+NeoBundleFetch 'godlygeek/tabular'
 "NeoBundleFetch 'AndrewRadev/splitjoin.vim'
 "NeoBundleFetch 'justinmk/vim-sneak'
 "NeoBundleFetch 'Shougo/vimproc.vim'
 NeoBundleFetch 'Shougo/neomru.vim'
-"NeoBundleFetch 'Shougo/unite-outline'
+NeoBundleFetch 'Shougo/unite-outline'
 
  call neobundle#end()
 
@@ -68,15 +67,7 @@ NeoBundleFetch 'Shougo/neomru.vim'
 
 "}}}
 
-"     ____          _    _                    
-"    / __ \        | |  (_)                   
-"   | |  | | _ __  | |_  _   ___   _ __   ___ 
-"   | |  | || '_ \ | __|| | / _ \ | '_ \ / __|
-"   | |__| || |_) || |_ | || (_) || | | |\__ \
-"    \____/ | .__/  \__||_| \___/ |_| |_||___/
-"           | |                               
-"           |_|                               
-
+" Set Options {{{
 set runtimepath^=~/.vim/bundle/ctrlp.vim
 source $VIMRUNTIME/vimrc_example.vim
 source $VIMRUNTIME/mswin.vim
@@ -89,7 +80,7 @@ set nohidden " When I close a tab, remove the buffer
 set autoread
 set nobackup
 set nowritebackup "set noswapfile
-set autochdir
+"set autochdir
 
 set ruler "display cursor position in the bottom right
 set laststatus=2 " Always display the status line, even if only one window is displayed
@@ -98,8 +89,8 @@ set number "Display line numbers
 set confirm " bring up a dialog asking if you want to save changes when actions which leave the buffer
 set visualbell " instead of beeping, induce seizures by screen flashing
 
-set foldmethod=syntax
 set foldlevelstart=20
+set foldmethod=marker
 
 set ignorecase "ignore make lowercase seaches case-insensitive
 set smartcase "make searches with any uppercase letters be case-sensitive
@@ -132,12 +123,12 @@ set ff=dos
 set ffs=dos
 
 set tw=800 " Stop Vim from inserting newlines when you type past 80 chars
+"}}}
 
-set foldtext=CustomFoldText()
-highlight FoldColumn  gui=bold    guifg=grey65     guibg=Grey90
-highlight Folded      gui=italic  guifg=Black      guibg=Grey90
-highlight LineNr      gui=NONE    guifg=grey60     guibg=Grey90
+" Functions {{{
 
+" Fold {{{
+"set foldtext=CustomFoldText()
 fu! CustomFoldText()
     get first non-blank line
     fs = v:foldstart
@@ -159,9 +150,9 @@ let expansionString = repeat(".", w - strwidth(foldSizeStr.line.foldLevelStr.fol
 return line . expansionString . foldSizeStr . foldPercentage . foldLevelStr
  endf
 
+"}}}
 
-"Functions
-
+" Key Functions {{{
 "not functional yet
 function! GtagsRefSearch()
     :let wordUnderCursor = expand("<cword>")
@@ -197,26 +188,22 @@ function! RunAg(text, dir)
     let searchString =  "Ag! -S --stats --ignore builds --ignore utility --ignore *.patch --ignore tags --ignore oldtags --ignore TMP " . a:text . " " . a:dir
     execute searchString
 endfunction
+"}}}
+
+" Utility Functions {{{
 
 function! SetRoot()
     let g:project_root_sys = ProjectRootGuess() 
     let g:project_root_fs = substitute(g:project_root_sys, '\', '/', "g")
     let g:project_root_bs = substitute(g:project_root_sys, '/', '\', "g")
     let g:project_root_dbs = substitute(g:project_root_fs, '/', '\\\\', "g")
+    let g:current_loc_sys = escape(expand("%:p:h"), ' ')
+    let g:current_loc_fs = substitute(g:current_loc_sys, '\', '/', "g")
 endfunction
+"}}}
+"}}}
 
-
-
-"    __  __                       _                    
-"   |  \/  |                     (_)                   
-"   | \  / |  __ _  _ __   _ __   _  _ __    __ _  ___ 
-"   | |\/| | / _` || '_ \ | '_ \ | || '_ \  / _` |/ __|
-"   | |  | || (_| || |_) || |_) || || | | || (_| |\__ \
-"   |_|  |_| \__,_|| .__/ | .__/ |_||_| |_| \__, ||___/
-"                  | |    | |                __/ |     
-"                  |_|    |_|               |___/      
-
-
+" Key Mappings {{{
 
 let mapleader = " "
 
@@ -247,16 +234,6 @@ map <C-\> :tab split<CR>:exec("tag ".expand("<cword>"))<CR>
 map <A-]> :vsp <CR>:exec("tag ".expand("<cword>"))<CR>
 "C-] will open the definition in a new split
 
-nnoremap <silent> <c-j> :wincmd j<CR>
-nnoremap <silent> <c-k> :wincmd k<CR>
-nnoremap <silent> <c-l> :wincmd l<CR>
-nnoremap <silent> <c-h> :wincmd h<CR>
-
-"nnoremap <silent> <c-K> :wincmd K<CR>                                                                                                                       
-"nnoremap <silent> <c-J> :wincmd J<CR>                                                                                                                       
-"nnoremap <silent> <c-H> :wincmd H<CR>                                                                                                                       
-"nnoremap <silent> <c-L> :wincmd L<CR>
-
 " Leader Key Mappings ----------------------------------
 "
 nmap <silent> <leader>/ :nohlsearch<CR>
@@ -264,7 +241,7 @@ nmap <silent> <leader>ev :tabnew $MYVIMRC<CR>
 nmap <leader>sv :so $MYVIMRC<CR>
 
 
-" Quick Builds
+" Quick Builds {{{
 if has("win32")
     nmap <silent> <leader>bc <esc>:call BuildCtags(g:project_root_bs)<CR>
     nmap <silent> <leader>bg <esc>:call BuildGtags(g:project_root_bs)<CR>
@@ -272,47 +249,67 @@ else
     nmap <silent> <leader>bc <esc>:call BuildCtags(g:project_root_fs)<CR>
     nmap <silent> <leader>bg <esc>:call BuildGtags(g:project_root_fs)<CR>
 endif
-
 nmap <silent> <leader>bn <esc>:NeoBundleUpdate<CR>
-
+"}}}
 nmap <silent> <leader>ac <esc>:call RunAgOnWordUnderCursor(g:project_root_sys)<CR>
 nmap <silent> <leader>ai <esc>:call RunAgOnInput(g:project_root_sys)<CR>
 
-" Quick Tabs
+" Tabs {{{
 nmap <silent> <leader>tn <esc>:tabnew<CR>
 nmap <silent> <leader>tc <esc>:tabclose<CR>
 "nmap <silent> <leader>tl <esc>:tabnext<CR>
 "nmap <silent> <leader>th <esc>:tabprev<CR>
+"}}}
 
-" Quick Ctags iteration
+" Tags iteration {{{
 nmap <silent> <leader>n <esc>:tn<CR>
 nmap <leader>p <esc>:tp<CR>
+"}}}
 
-" Quick splits
+" Quick splits {{{
 nmap <silent> <leader>vn <esc>:vnew<CR>
 nmap <silent> <leader>vs <esc>:vsplit<CR>
 nmap <silent> <leader>hn <esc>:new<CR>
 nmap <silent> <leader>hs <esc>:split<CR>
+nnoremap <silent> <c-j> :wincmd j<CR>
+nnoremap <silent> <c-k> :wincmd k<CR>
+nnoremap <silent> <c-l> :wincmd l<CR>
+nnoremap <silent> <c-h> :wincmd h<CR>
+"nnoremap <silent> <c-K> :wincmd K<CR>                                                                                                                       
+"nnoremap <silent> <c-J> :wincmd J<CR>                                                                                                                       
+"nnoremap <silent> <c-H> :wincmd H<CR>                                                                                                                       
+"nnoremap <silent> <c-L> :wincmd L<CR>
+"}}}
 
-" Personal TODO
+" Personal TODO {{{
 nnoremap <leader>df <esc>/TODO<CR>
 nnoremap <leader>dF <esc>/TODO<CR>N
 nnoremap <leader>da <esc>a//TODO:
 nnoremap <leader>dr <esc>k/\/\/TODO:<CR><esc>D
+"}}}
 
 " Unite
 nnoremap <leader>E :<C-u>Unite -start-insert file<CR>
 
 call unite#filters#matcher_default#use(['matcher_fuzzy'])
 
-function! OpenExplorer()
+function! OpenExplorerHere()
+    if !empty(g:current_loc_fs)
+        execute 'Unite' '-start-insert' 'file' '-path=' . g:current_loc_sys
+    else
+        execute 'Unite' 'file'
+    endif
+endfunction
+nnoremap <leader>e :call OpenExplorerProject()<CR>
+
+function! OpenExplorerProject()
     if !empty(g:project_root_fs)
         execute 'Unite' '-start-insert' 'file' '-path=' . g:project_root_fs
     else
         execute 'Unite' 'file'
     endif
 endfunction
-nnoremap <leader>e :call OpenExplorer()<CR>
+nnoremap <leader>E :call OpenExplorerProject()<CR>
 
 function! OpenFuzzySearch()
     if !empty(g:project_root_fs)
@@ -373,24 +370,12 @@ nnoremap <silent> <leader>o :<C-u>Unite -start-insert -auto-preview outline  -bu
 nnoremap <silent> <leader>q :q<CR>
 "nnoremap <silent> <leader>w :w<CR> " Machine specific so added later on
 
-"let GTAGSLIBPATH=.:..:../..:../../..
+"}}}
 
-" +++++++++++++++++++++++++++++++++++++++++++++++++++++
-" +   _____  _     _    _  _____ _____ _   _  _____   +
-" +  |  __ \| |   | |  | |/ ____|_   _| \ | |/ ____|  +
-" +  | |__) | |   | |  | | |  __  | | |  \| | (___    +
-" +  |  ___/| |   | |  | | | |_ | | | | . ` |\___ \   +
-" +  | |    | |___| |__| | |__| |_| |_| |\  |____) |  +
-" +  |_|    |______\____/ \_____|_____|_| \_|_____/   +
-" +                                                   +
-" +++++++++++++++++++++++++++++++++++++++++++++++++++++
-"
-
+"Plugin Options {{{
 let g:netrw_liststyle=0
 let g:solarized_italic=0
 colorscheme solarized
-"colorscheme gotham
-
 
 "let g:ctrlp_map = '<C-p>'
 "let g:ctrlp_cmd = 'CtrlPMixed'
@@ -400,7 +385,7 @@ colorscheme solarized
 "let g:ctrlp_extensions = ['mixed', 'quickfix', 'undo', 'line', 'changes', 'cmdline', 'menu']
 let g:ctrlp_max_height = 20
 let g:ctrlp_mruf_exclude = '/tmp.*\|/usr/share.*\|.*bundle.*\|.*\.git'
-let g:ctrlp_switch_buffer = 'et'
+"let g:ctrlp_switch_buffer = 'et'
 
 "otherwise ctrlp will only lookat the first 15k files:
 let g:ctrlp_max_files=0
@@ -468,15 +453,9 @@ let g:startify_custom_header = [
 \"",
 \]
                                                                     
+"}}}
 
-"     _____ __      __ _            
-"    / ____|\ \    / /(_)           
-"   | |  __  \ \  / /  _  _ __ ___  
-"   | | |_ |  \ \/ /  | || '_ ` _ \ 
-"   | |__| |   \  /   | || | | | | |
-"    \_____|    \/    |_||_| |_| |_|
-"                                   
-"                                   
+"  Machine Specific {{{                                  
 
 if has("gui_running")
 
@@ -503,15 +482,15 @@ endif
 "elseif hostname == "pc2"
  "endif
 "source hostname . "vim"
+"}}}
 
-let g:rootmarkers = ['hello', 'hi']
-
-
-"if exists("g:project_root_sys")
-   "Do soemthing
-"else
- "   let g:project_root_sys = ProjectRootGuess()
-"endif
+" AutoCmds {{{
 autocmd BufEnter * :call SetRoot()
+autocmd FileType vim,c++,txt setlocal foldmethod=marker
+autocmd FileType c,c++ setlocal foldmethod=syntax
 
+"}}}
 
+" Global Variables {{{
+let g:rootmarkers = ['hello', 'hi']
+"}}}
