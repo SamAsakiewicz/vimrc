@@ -156,7 +156,7 @@ return line . expansionString . foldSizeStr . foldPercentage . foldLevelStr
 "not functional yet
 function! GtagsRefSearch()
     :let wordUnderCursor = expand("<cword>")
-    :execute "!Gtags -r " + wordUnderCursor
+    :execute "Gtags -r " . wordUnderCursor
 endfunction
 
 function! BuildCtags(dir)
@@ -253,6 +253,30 @@ nmap <silent> <leader>bn <esc>:NeoBundleUpdate<CR>
 "}}}
 nmap <silent> <leader>ac <esc>:call RunAgOnWordUnderCursor(g:project_root_sys)<CR>
 nmap <silent> <leader>ai <esc>:call RunAgOnInput(g:project_root_sys)<CR>
+nmap <silent> <leader>gc <esc>:call GtagsRefSearch()<CR>
+nmap <silent> <leader>gn <esc>:cn<CR>
+nmap <silent> <leader>gp <esc>:cp<CR>
+nmap <silent> <leader>gl <esc>:cl<CR>
+
+
+
+" Quick Paste/Replace {{{
+nnoremap <leader>x viw"ap
+nnoremap <leader>z V"zp
+" }}}
+
+" Quick Comment {{{
+nnoremap <leader>/ <esc>I//<esc>j
+" }}}
+"
+" Quick Comment {{{
+nnoremap <leader>; <esc>A;<esc>j
+" }}}
+
+
+
+
+
 
 " Tabs {{{
 nmap <silent> <leader>tn <esc>:tabnew<CR>
@@ -325,7 +349,8 @@ function! OpenFuzzierSearch()
     if !empty(g:project_root_fs)
         execute 'Unite' '-start-insert file_rec' '-path=' . g:project_root_fs
     else
-        execute 'Unite' '-start-insert file_rec'
+        execute 'Unite' '-start-insert file_rec' '-path=' . g:project_root_fs
+        "execute 'Unite' '-start-insert file_rec'
     endif
 endfunction
 nnoremap <leader>R :call OpenFuzzierSearch()<CR>
@@ -358,7 +383,7 @@ let g:unite_source_history_yank_enable = 1
         \ 'buffer', 'converters',
         \ ['converter_file_directory'])
 nnoremap <silent> <leader>y :<C-u>Unite history/yank<CR>
-"nnoremap <silent> <leader>l :<C-u>Unite  bookmark<CR>
+"nnoremap <silent> <leader>l :<C-u>Unite bookmark<CR>
 nnoremap <silent> <leader>j :<C-u>Unite -quick-match buffer <CR>
 nnoremap <silent> <leader>k :<C-u>Unite -quick-match tab<CR>
 nnoremap <silent> <leader>m :<C-u>Unite -start-insert file_mru<CR>
