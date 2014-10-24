@@ -1,3 +1,4 @@
+pink floyd
 " __      __  _____   __  __   _____     _____ 
 " \ \    / / |_   _| |  \/  | |  __ \   / ____|
 "  \ \  / /    | |   | \  / | | |__) | | |     
@@ -208,11 +209,8 @@ endfunction
 let mapleader = " "
 
 "fuzzy escapes to normal mode
-inoremap jjj <Esc>jjj
-inoremap kkk <Esc>kkk
-inoremap hhh <Esc>hhh
-inoremap lll <Esc>lll
 " add ctrl-u/d?
+nnoremap <C-n> <C-d>
 
 "Useless keys to really Useful keys
 "set the old leader up for something useful, maybe bidirectional character jump?
@@ -251,8 +249,11 @@ else
 endif
 nmap <silent> <leader>bn <esc>:NeoBundleUpdate<CR>
 "}}}
+
+" Quick Ag {{{
 nmap <silent> <leader>ac <esc>:call RunAgOnWordUnderCursor(g:project_root_sys)<CR>
 nmap <silent> <leader>ai <esc>:call RunAgOnInput(g:project_root_sys)<CR>
+" }}}
 nmap <silent> <leader>gc <esc>:call GtagsRefSearch()<CR>
 nmap <silent> <leader>gn <esc>:cn<CR>
 nmap <silent> <leader>gp <esc>:cp<CR>
@@ -269,28 +270,23 @@ nnoremap <leader>z V"zp
 nnoremap <leader>/ <esc>I//<esc>j
 " }}}
 "
-" Quick Comment {{{
+" Quick Semicolon {{{
 nnoremap <leader>; <esc>A;<esc>j
 " }}}
 
-
-
-
-
-
-" Tabs {{{
+" Quick Tabs {{{
 nmap <silent> <leader>tn <esc>:tabnew<CR>
 nmap <silent> <leader>tc <esc>:tabclose<CR>
 "nmap <silent> <leader>tl <esc>:tabnext<CR>
 "nmap <silent> <leader>th <esc>:tabprev<CR>
 "}}}
 
-" Tags iteration {{{
+" Quick Tags iteration {{{
 nmap <silent> <leader>n <esc>:tn<CR>
 nmap <leader>p <esc>:tp<CR>
 "}}}
 
-" Quick splits {{{
+" Quick Splits {{{
 nmap <silent> <leader>vn <esc>:vnew<CR>
 nmap <silent> <leader>vs <esc>:vsplit<CR>
 nmap <silent> <leader>hn <esc>:new<CR>
@@ -312,11 +308,8 @@ nnoremap <leader>da <esc>a//TODO:
 nnoremap <leader>dr <esc>k/\/\/TODO:<CR><esc>D
 "}}}
 
-" Unite
-nnoremap <leader>E :<C-u>Unite -start-insert file<CR>
-
 call unite#filters#matcher_default#use(['matcher_fuzzy'])
-
+" Quick Explorer {{{
 function! OpenExplorerHere()
     if !empty(g:current_loc_fs)
         execute 'Unite' '-start-insert' 'file' '-path=' . g:current_loc_sys
@@ -324,7 +317,7 @@ function! OpenExplorerHere()
         execute 'Unite' 'file'
     endif
 endfunction
-nnoremap <leader>e :call OpenExplorerProject()<CR>
+nnoremap <leader>e :call OpenExplorerHere()<CR>
 
 function! OpenExplorerProject()
     if !empty(g:project_root_fs)
@@ -334,7 +327,9 @@ function! OpenExplorerProject()
     endif
 endfunction
 nnoremap <leader>E :call OpenExplorerProject()<CR>
+" }}}
 
+" Quick Fuzzy {{{
 function! OpenFuzzySearch()
     if !empty(g:project_root_fs)
         execute ':CtrlP ' . g:project_root_sys
@@ -360,6 +355,8 @@ call unite#custom#source('file_rec,file_rec/async', 'ignore_pattern', join([
     \ 'utility\/',
     \ ], 
     \ '\|'))
+" }}}
+
 
 let g:unite_force_overwrite_statusline = 0
 if executable('ag')
