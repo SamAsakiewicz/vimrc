@@ -1,4 +1,3 @@
-pink floyd
 " __      __  _____   __  __   _____     _____ 
 " \ \    / / |_   _| |  \/  | |  __ \   / ____|
 "  \ \  / /    | |   | \  / | | |__) | | |     
@@ -32,6 +31,7 @@ NeoBundleFetch 'rking/ag.vim'    " AG.vim - interface to ag.exe,  grep/ack repla
 NeoBundleFetch 'kien/ctrlp.vim'    " CtrlP - Fuzzy File Search
 NeoBundleFetch 'gtags.vim'    " Vim Support for GNU Global
 NeoBundleFetch 'Shougo/unite.vim'
+NeoBundleFetch 'hewes/unite-gtags'
 
 " Color Schemes
 NeoBundleFetch 'ujihisa/unite-colorscheme'
@@ -40,6 +40,9 @@ NeoBundleFetch '29decibel/codeschool-vim-theme'
 NeoBundleFetch 'jonathanfilip/vim-lucius'
 NeoBundleFetch 'vim-scripts/darktango.vim'
 NeoBundleFetch 'djjcast/mirodark'
+NeoBundleFetch 'sjl/badwolf'
+NeoBundleFetch 'ciaranm/inkpot'
+NeoBundleFetch 'w0ng/vim-hybrid'
 
 "Plugin 'Shougo/neocomplcache.vim'    " neocomplcache - Autocompletion system for vim 
 "NeoBundleFetch 'majutsushi/tagbar'    " TagBar - a pleasant code outline for the current buffer
@@ -186,8 +189,16 @@ function! RunAgOnInput(dir)
 endfunction
 
 function! RunAg(text, dir)
+  let g:AgIgnoreString = " --ignore-dir builds --ignore-dir utility --ignore *.patch --ignore tags --ignore oldtags --ignore *TMP --ignore *.s19 --ignore *.bin --ignore *.exe --ignore *.ewp --ignore *.hex --ignore *.htm --ignore *.html --ignore *.vcproj* --ignore *.make --ignore *.srec --ignore *.pdf --ignore-dir documentation --ignore *.bat --ignore *.tex --ignore *.css --ignore README --ignore *.shtml "
+    "let searchString =  "Ag! -S --stats " . g:AgIgnoreString . a:text . " " . a:dir
     let searchString =  "Ag! -S --stats --ignore builds --ignore utility --ignore *.patch --ignore tags --ignore oldtags --ignore TMP " . a:text . " " . a:dir
     execute searchString
+endfunction
+
+function! BuildHelpTags(doclocations)
+for docloc in a:doclocations 
+    :execute "helptag " . docloc
+endfor
 endfunction
 "}}}
 
@@ -235,19 +246,21 @@ map <A-]> :vsp <CR>:exec("tag ".expand("<cword>"))<CR>
 " Leader Key Mappings ----------------------------------
 "
 nmap <silent> <leader>/ :nohlsearch<CR>
-nmap <silent> <leader>ev :tabnew $MYVIMRC<CR>
+nmap <silent> <leader>ve :tabnew $MYVIMRC<CR>
 nmap <leader>sv :so $MYVIMRC<CR>
 
+"perhaps put all the misc unite ones under <leader>u{logical char}
 
 " Quick Builds {{{
 if has("win32")
-    nmap <silent> <leader>bc <esc>:call BuildCtags(g:project_root_bs)<CR>
-    nmap <silent> <leader>bg <esc>:call BuildGtags(g:project_root_bs)<CR>
+    nmap <leader>bc <esc>:call BuildCtags(g:project_root_bs)<CR>
+    nmap <leader>bg <esc>:call BuildGtags(g:project_root_bs)<CR>
 else
-    nmap <silent> <leader>bc <esc>:call BuildCtags(g:project_root_fs)<CR>
-    nmap <silent> <leader>bg <esc>:call BuildGtags(g:project_root_fs)<CR>
+    nmap <leader>bc <esc>:call BuildCtags(g:project_root_fs)<CR>
+    nmap <leader>bg <esc>:call BuildGtags(g:project_root_fs)<CR>
 endif
-nmap <silent> <leader>bn <esc>:NeoBundleUpdate<CR>
+nmap <leader>bn <esc>:NeoBundleUpdate<CR>
+nmap <leader>bh <esc>:call BuildHelpTags(g:docpaths)<CR>
 "}}}
 
 " Quick Ag {{{
@@ -267,7 +280,7 @@ nnoremap <leader>z V"zp
 " }}}
 
 " Quick Comment {{{
-nnoremap <leader>/ <esc>I//<esc>j
+nnoremap <leader>c <esc>I//<esc>j
 " }}}
 "
 " Quick Semicolon {{{
@@ -285,6 +298,9 @@ nmap <silent> <leader>tc <esc>:tabclose<CR>
 nmap <silent> <leader>n <esc>:tn<CR>
 nmap <leader>p <esc>:tp<CR>
 "}}}
+
+nmap q<leader> <nop>
+nmap <leader> <nop>
 
 " Quick Splits {{{
 nmap <silent> <leader>vn <esc>:vnew<CR>
@@ -312,7 +328,7 @@ call unite#filters#matcher_default#use(['matcher_fuzzy'])
 " Quick Explorer {{{
 function! OpenExplorerHere()
     if !empty(g:current_loc_fs)
-        execute 'Unite' '-start-insert' 'file' '-path=' . g:current_loc_sys
+        execute 'Unite' '-start-insert' 'file' '-path=' . g:current_loc_fs
     else
         execute 'Unite' 'file'
     endif
@@ -380,11 +396,16 @@ let g:unite_source_history_yank_enable = 1
         \ 'buffer', 'converters',
         \ ['converter_file_directory'])
 nnoremap <silent> <leader>y :<C-u>Unite history/yank<CR>
-"nnoremap <silent> <leader>l :<C-u>Unite bookmark<CR>
+nnoremap <silent> <leader>ub :<C-u>Unite -start-insert bookmark<CR>
+nnoremap <silent> <leader>uc :<C-u>Unite colorscheme<CR>
 nnoremap <silent> <leader>j :<C-u>Unite -quick-match buffer <CR>
 nnoremap <silent> <leader>k :<C-u>Unite -quick-match tab<CR>
 nnoremap <silent> <leader>m :<C-u>Unite -start-insert file_mru<CR>
 nnoremap <silent> <leader>h :<C-u>Unite -start-insert history -buffer-name=history<CR>
+
+
+
+let g:unite_source_outline_ctags_program = 'C:\\Vim\\ctags.exe'
 nnoremap <silent> <leader>o :<C-u>Unite -start-insert -auto-preview outline  -buffer-name=Outline<CR>
 "inoremap <buffer> <C-j> <Plug>(unite_select_next_line)
 "inoremap <buffer> <C-k> <Plug>(unite_select_previous_line)
