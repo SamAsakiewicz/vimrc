@@ -58,6 +58,7 @@ NeoBundleFetch 'godlygeek/tabular'
 "NeoBundleFetch 'Shougo/vimproc.vim'
 NeoBundleFetch 'Shougo/neomru.vim'
 NeoBundleFetch 'Shougo/unite-outline'
+NeoBundleFetch 'tacroe/unite-mark'
 
  call neobundle#end()
 
