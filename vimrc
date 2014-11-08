@@ -9,7 +9,7 @@
 
 " bye bye, Vi, and nice knowing ya, vanilla VIm
 set nocompatible
-                                              
+                                          
 "  **START OF NeoBundle**
 set runtimepath+=~/.vim/bundle/neobundle.vim/
 set runtimepath+=~/.vim/bundle/*
@@ -20,12 +20,12 @@ endfor
 set runtimepath+=$VIM/bundle/neobundle.vim/
 "let path='~/vimfiles/bundle'
 
- call neobundle#begin(expand('~/.vim/bundle/'))
+call neobundle#begin(expand('~/.vim/bundle/'))
 
- " Let NeoBundle manage NeoBundle
- NeoBundleFetch 'Shougo/neobundle.vim'
+" Let NeoBundle manage NeoBundle
+NeoBundleFetch 'Shougo/neobundle.vim'
 
- "Functional
+"Functional
 NeoBundleFetch 'dbakker/vim-projectroot'
 NeoBundleFetch 'rking/ag.vim'    " AG.vim - interface to ag.exe,  grep/ack replacement
 NeoBundleFetch 'kien/ctrlp.vim'    " CtrlP - Fuzzy File Search
@@ -62,11 +62,11 @@ NeoBundleFetch 'godlygeek/tabular'
 NeoBundleFetch 'Shougo/neomru.vim'
 NeoBundleFetch 'Shougo/unite-outline'
 
- call neobundle#end()
+call neobundle#end()
 
- filetype plugin indent on
+filetype plugin indent on
 
- " **END OF NEOBUNDLE**
+" **END OF NEOBUNDLE**
 
 
 "}}}
@@ -78,6 +78,7 @@ source $VIMRUNTIME/mswin.vim
 behave mswin
 
 " Automatically cd into the directory that the file is in
+" this should not be needed for gtags or ctags... but maybe
 "autocmd BufEnter * execute "chdir ".escape(expand("%:p:h"), ' ')
 
 set nohidden " When I close a tab, remove the buffer
@@ -85,20 +86,16 @@ set autoread
 set nobackup
 set nowritebackup "set noswapfile
 "set autochdir
-
 set ruler "display cursor position in the bottom right
 set laststatus=2 " Always display the status line, even if only one window is displayed
 set cmdheight=2 "less 'press <Enter> to continue'
 set number "Display line numbers
 set confirm " bring up a dialog asking if you want to save changes when actions which leave the buffer
 set visualbell " instead of beeping, induce seizures by screen flashing
-
 set foldlevelstart=20
 set foldmethod=marker
-
 set ignorecase "ignore make lowercase seaches case-insensitive
 set smartcase "make searches with any uppercase letters be case-sensitive
-
 "set smartindent    
 "set cindent
 filetype plugin indent on
@@ -127,6 +124,7 @@ set ff=dos
 set ffs=dos
 
 set tw=800 " Stop Vim from inserting newlines when you type past 80 chars
+set colorcolumn=80 "draw a line at 80 
 "}}}
 
 " Functions {{{
@@ -192,6 +190,7 @@ function! RunAg(text, dir)
   let g:AgIgnoreString = " --ignore-dir builds --ignore-dir utility --ignore *.patch --ignore tags --ignore oldtags --ignore *TMP --ignore *.s19 --ignore *.bin --ignore *.exe --ignore *.ewp --ignore *.hex --ignore *.htm --ignore *.html --ignore *.vcproj* --ignore *.make --ignore *.srec --ignore *.pdf --ignore-dir documentation --ignore *.bat --ignore *.tex --ignore *.css --ignore README --ignore *.shtml "
     "let searchString =  "Ag! -S --stats " . g:AgIgnoreString . a:text . " " . a:dir
     let searchString =  "Ag! -S --stats --ignore builds --ignore utility --ignore *.patch --ignore tags --ignore oldtags --ignore TMP " . a:text . " " . a:dir
+    let searchString =  "Ag! -S --stats  --ignore-dir builds --ignore-dir utility --ignore *.patch --ignore tags --ignore oldtags --ignore *TMP --ignore *.s19 --ignore *.bin --ignore *.exe --ignore *.ewp --ignore *.hex --ignore *.htm --ignore *.html --ignore *.vcproj* --ignore *.make --ignore *.srec --ignore *.pdf --ignore-dir documentation --ignore *.bat --ignore *.tex --ignore *.css --ignore README --ignore *.shtml " . a:text . " " . a:dir
     execute searchString
 endfunction
 
@@ -200,6 +199,22 @@ for docloc in a:doclocations
     :execute "helptag " . docloc
 endfor
 endfunction
+
+
+"given a file called build.log, parse build errors and open in a quickfix
+function! ParseBuildLog(logfile)
+    "find redirects
+    set efm=%.%#text\=\'%f(%l)\ :\ %m\]
+    "find normal error outputs
+    set efm+=%f(%l)\ :\ %m
+    "skip all other messages
+    set efm+=%-G%.%#
+    "run the build error parse over the log
+    execute 'cgetfile' fnameescape(a:logfile).'\build.log'
+    "open up the quickfix
+    :cwindow
+endfunction
+
 "}}}
 
 " Utility Functions {{{
@@ -211,6 +226,17 @@ function! SetRoot()
     let g:project_root_dbs = substitute(g:project_root_fs, '/', '\\\\', "g")
     let g:current_loc_sys = escape(expand("%:p:h"), ' ')
     let g:current_loc_fs = substitute(g:current_loc_sys, '\', '/', "g")
+    "execute "chdir ".escape(expand("%:p:h"), ' ')
+    execute "chdir ".escape(expand(g:project_root_sys), ' ')
+endfunction
+
+function! GetRoot()
+    echo g:project_root_sys
+    echo g:project_root_fs
+    echo g:project_root_bs
+    echo g:project_root_dbs
+    echo g:current_loc_sys
+    echo g:current_loc_fs
 endfunction
 "}}}
 "}}}
@@ -255,19 +281,33 @@ nmap <leader>sv :so $MYVIMRC<CR>
 if has("win32")
     nmap <leader>bc <esc>:call BuildCtags(g:project_root_bs)<CR>
     nmap <leader>bg <esc>:call BuildGtags(g:project_root_bs)<CR>
+    nmap <leader>bi <esc>:call ParseBuildLog(g:project_root_bs)<CR>
+
 else
     nmap <leader>bc <esc>:call BuildCtags(g:project_root_fs)<CR>
     nmap <leader>bg <esc>:call BuildGtags(g:project_root_fs)<CR>
 endif
-nmap <leader>bn <esc>:NeoBundleUpdate<CR>
+nmap <leader>bn <esc>:Unite -buffer-name=neobundle -no-cursor-line -log neobundle/update<CR>
 nmap <leader>bh <esc>:call BuildHelpTags(g:docpaths)<CR>
 "}}}
 
 " Quick Ag {{{
 nmap <silent> <leader>ac <esc>:call RunAgOnWordUnderCursor(g:project_root_sys)<CR>
+nmap <silent> <leader>Ac <esc>:call RunAgOnWordUnderCursor(g:current_loc_fs)<CR>
 nmap <silent> <leader>ai <esc>:call RunAgOnInput(g:project_root_sys)<CR>
+nmap <silent> <leader>Ai <esc>:call RunAgOnInput(g:current_loc_fs)<CR>
+nmap <silent> <leader>an <esc>:call RunAgOnInput(g:docs_path)<CR>
+
 " }}}
-nmap <silent> <leader>gc <esc>:call GtagsRefSearch()<CR>
+nmap <silent> <leader>gC <esc>:call GtagsRefSearch()<CR>
+"TODO COPIED< DOUBLE CHECK
+"TODO map to a unite key (maybe alt or keep the key as <leader>g)?
+nmap <leader>gc :Unite -immediately -no-quit -keep-focus -winheight=17 gtags/context<CR>
+nmap <leader>gr :Unite -immediately -no-quit -keep-focus -winheight=17 gtags/ref<CR>
+nmap <leader>gs :Unite -immediately -no-quit -keep-focus -winheight=17 gtags/completion<CR>
+nmap <leader>gi :Unite -immediately -no-quit -keep-focus -winheight=17 gtags/grep<CR>
+"TODO map to usual ctag keys?
+nmap <leader>gd :Unite -immediately -winheight=17 -buffer-name=Definition gtags/def<CR>
 nmap <silent> <leader>gn <esc>:cn<CR>
 nmap <silent> <leader>gp <esc>:cp<CR>
 nmap <silent> <leader>gl <esc>:cl<CR>
@@ -279,8 +319,12 @@ nnoremap <leader>x viw"ap
 nnoremap <leader>z V"zp
 " }}}
 
-" Quick Comment {{{
-nnoremap <leader>c <esc>I//<esc>j
+" Quick Comments/Ifdef {{{
+nnoremap <A-/> :s/^/\/\//<CR>
+nnoremap <A-?> :s/^\/\///<CR>
+xnoremap <A-/> :s/^/\/\//<CR>
+xnoremap <A-?> :s/^\/\///<CR>
+"xnoremap <C-#> :'<,`>
 " }}}
 "
 " Quick Semicolon {{{
@@ -289,7 +333,7 @@ nnoremap <leader>; <esc>A;<esc>j
 
 " Quick Tabs {{{
 nmap <silent> <leader>tn <esc>:tabnew<CR>
-nmap <silent> <leader>tc <esc>:tabclose<CR>
+nmap <silent> <leader>Q <esc>:tabclose<CR>
 "nmap <silent> <leader>tl <esc>:tabnext<CR>
 "nmap <silent> <leader>th <esc>:tabprev<CR>
 "}}}
@@ -324,7 +368,10 @@ nnoremap <leader>da <esc>a//TODO:
 nnoremap <leader>dr <esc>k/\/\/TODO:<CR><esc>D
 "}}}
 
-call unite#filters#matcher_default#use(['matcher_fuzzy'])
+
+call unite#filters#matcher_default#use(['matcher_fuzzy']) " Use fuzzy selection in Unite Insert Mode
+call unite#filters#sorter_default#use(['sorter_rank']) " Sort Fuzzy selection, by fuzziness, not alphabetical
+
 " Quick Explorer {{{
 function! OpenExplorerHere()
     if !empty(g:current_loc_fs)
@@ -398,10 +445,11 @@ let g:unite_source_history_yank_enable = 1
 nnoremap <silent> <leader>y :<C-u>Unite history/yank<CR>
 nnoremap <silent> <leader>ub :<C-u>Unite -start-insert bookmark<CR>
 nnoremap <silent> <leader>uc :<C-u>Unite colorscheme<CR>
-nnoremap <silent> <leader>j :<C-u>Unite -quick-match buffer <CR>
-nnoremap <silent> <leader>k :<C-u>Unite -quick-match tab<CR>
+nnoremap <silent> <leader>j :<C-u>Unite -start-insert buffer <CR>
+nnoremap <silent> <leader>k :<C-u>Unite tab<CR>
 nnoremap <silent> <leader>m :<C-u>Unite -start-insert file_mru<CR>
 nnoremap <silent> <leader>h :<C-u>Unite -start-insert history -buffer-name=history<CR>
+nnoremap <silent> <A-u> :<C-u>UniteClose<CR>
 
 
 
@@ -464,12 +512,12 @@ let g:neocomplcache_lock_buffer_name_pattern = '\*ku\*'
 "   |___/ \__|\__,_||_|   \__||_||_|   \_, |
 "                                      |__/ 
 
-let g:startify_list_order = [
-      \ ['   Recently Accessed:'],
-      \ 'files',
-      \ ['   Sessions:'],
-      \ 'sessions',
-      \ ]
+"let g:startify_list_order = [
+"      \ ['   Recently Accessed:'],
+"      \ 'files',
+"      \ ['   Sessions:'],
+"      \ 'sessions',
+"      \ ]
 
 " should add more ascii art, and choose header by random number, also fortune
 let g:startify_custom_header = [
