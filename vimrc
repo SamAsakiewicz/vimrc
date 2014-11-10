@@ -58,7 +58,7 @@ endfor
 set runtimepath+=$VIM/bundle/neobundle.vim/
 "let path='~/vimfiles/bundle'
 
- call neobundle#begin(expand('~/.vim/bundle/'))
+call neobundle#begin(expand('~/.vim/bundle/'))
 
 " Core Plugins {{{
 NeoBundleFetch 'Shougo/neobundle.vim' " Let NeoBundle update NeoBundle
@@ -113,11 +113,11 @@ NeoBundleFetch 'thinca/vim-unite-history' " Unite display of command and search 
 
 " Unite Plugins }}}
 
- call neobundle#end()
+call neobundle#end()
 
- filetype plugin indent on
+filetype plugin indent on
 
- " **END OF NEOBUNDLE**
+" **END OF NEOBUNDLE**
 
 
 "}}}
@@ -266,9 +266,6 @@ syntax enable " Turn on syntax coloring
 
 call matchadd('ColorColumn', '\%81v', 100)
  
-
-
-
 "}}}
 
 " Functions {{{
@@ -334,6 +331,7 @@ function! RunAg(text, dir)
   let g:AgIgnoreString = " --ignore-dir builds --ignore-dir utility --ignore *.patch --ignore tags --ignore oldtags --ignore *TMP --ignore *.s19 --ignore *.bin --ignore *.exe --ignore *.ewp --ignore *.hex --ignore *.htm --ignore *.html --ignore *.vcproj* --ignore *.make --ignore *.srec --ignore *.pdf --ignore-dir documentation --ignore *.bat --ignore *.tex --ignore *.css --ignore README --ignore *.shtml "
     "let searchString =  "Ag! -S --stats " . g:AgIgnoreString . a:text . " " . a:dir
     let searchString =  "Ag! -S --stats --ignore builds --ignore utility --ignore *.patch --ignore tags --ignore oldtags --ignore TMP " . a:text . " " . a:dir
+    let searchString =  "Ag! -S --stats  --ignore-dir builds --ignore-dir utility --ignore *.patch --ignore tags --ignore oldtags --ignore *TMP --ignore *.s19 --ignore *.bin --ignore *.exe --ignore *.ewp --ignore *.hex --ignore *.htm --ignore *.html --ignore *.vcproj* --ignore *.make --ignore *.srec --ignore *.pdf --ignore-dir documentation --ignore *.bat --ignore *.tex --ignore *.css --ignore README --ignore *.shtml " . a:text . " " . a:dir
     execute searchString
 endfunction
 
@@ -342,6 +340,22 @@ for docloc in a:doclocations
     :execute "helptag " . docloc
 endfor
 endfunction
+
+
+"given a file called build.log, parse build errors and open in a quickfix
+function! ParseBuildLog(logfile)
+    "find redirects
+    set efm=%.%#text\=\'%f(%l)\ :\ %m\]
+    "find normal error outputs
+    set efm+=%f(%l)\ :\ %m
+    "skip all other messages
+    set efm+=%-G%.%#
+    "run the build error parse over the log
+    execute 'cgetfile' fnameescape(a:logfile).'\build.log'
+    "open up the quickfix
+    :cwindow
+endfunction
+
 "}}}
 
 " Utility Functions {{{
@@ -358,6 +372,17 @@ function! SetRoot()
     let g:project_root_dbs = substitute(g:project_root_fs, '/', '\\\\', "g")
     let g:current_loc_sys = escape(expand("%:p:h"), ' ')
     let g:current_loc_fs = substitute(g:current_loc_sys, '\', '/', "g")
+    "execute "chdir ".escape(expand("%:p:h"), ' ')
+    execute "chdir ".escape(expand(g:project_root_sys), ' ')
+endfunction
+
+function! GetRoot()
+    echo g:project_root_sys
+    echo g:project_root_fs
+    echo g:project_root_bs
+    echo g:project_root_dbs
+    echo g:current_loc_sys
+    echo g:current_loc_fs
 endfunction
 "}}}
 "}}}
@@ -416,21 +441,36 @@ nmap <leader>sv :so $MYVIMRC<CR>
 if has("win32")
     nmap <leader>bc <esc>:call BuildCtags(g:project_root_bs)<CR>
     nmap <leader>bg <esc>:call BuildGtags(g:project_root_bs)<CR>
+    nmap <leader>bi <esc>:call ParseBuildLog(g:project_root_bs)<CR>
+
 else
     nmap <leader>bc <esc>:call BuildCtags(g:project_root_fs)<CR>
     nmap <leader>bg <esc>:call BuildGtags(g:project_root_fs)<CR>
 endif
-nmap <leader>bn <esc>:NeoBundleUpdate<CR>
+nmap <leader>bn <esc>:Unite -buffer-name=neobundle -no-cursor-line -log neobundle/update<CR>
 nmap <leader>bh <esc>:call BuildHelpTags(g:docpaths)<CR>
 "}}}
 
 " Ag Mappings {{{
 nmap <silent> <leader>ac <esc>:call RunAgOnWordUnderCursor(g:project_root_sys)<CR>
+nmap <silent> <leader>Ac <esc>:call RunAgOnWordUnderCursor(g:current_loc_fs)<CR>
 nmap <silent> <leader>ai <esc>:call RunAgOnInput(g:project_root_sys)<CR>
 " Ag Mappings}}}
 
 " Gtags Mappings {{{
-nmap <silent> <leader>gc <esc>:call GtagsRefSearch()<CR>
+nmap <silent> <leader>Ai <esc>:call RunAgOnInput(g:current_loc_fs)<CR>
+nmap <silent> <leader>an <esc>:call RunAgOnInput(g:docs_path)<CR>
+
+" }}}
+nmap <silent> <leader>gC <esc>:call GtagsRefSearch()<CR>
+"TODO COPIED< DOUBLE CHECK
+"TODO map to a unite key (maybe alt or keep the key as <leader>g)?
+nmap <leader>gc :Unite -immediately -no-quit -keep-focus -winheight=17 gtags/context<CR>
+nmap <leader>gr :Unite -immediately -no-quit -keep-focus -winheight=17 gtags/ref<CR>
+nmap <leader>gs :Unite -immediately -no-quit -keep-focus -winheight=17 gtags/completion<CR>
+nmap <leader>gi :Unite -immediately -no-quit -keep-focus -winheight=17 gtags/grep<CR>
+"TODO map to usual ctag keys?
+nmap <leader>gd :Unite -immediately -winheight=17 -buffer-name=Definition gtags/def<CR>
 nmap <silent> <leader>gn <esc>:cn<CR>
 nmap <silent> <leader>gp <esc>:cp<CR>
 nmap <silent> <leader>gl <esc>:cl<CR>
@@ -441,13 +481,22 @@ nnoremap <leader>x viw"ap
 nnoremap <leader>z V"zp
 " }}}
 
-" Semicolon Mappings {{{
-nnoremap <leader>; <esc>A;<esc>j
+" Quick Comments/Ifdef {{{
+nnoremap <A-/> :s/^/\/\//<CR>
+nnoremap <A-?> :s/^\/\///<CR>
+xnoremap <A-/> :s/^/\/\//<CR>
+xnoremap <A-?> :s/^\/\///<CR>
+"xnoremap <C-#> :'<,`>
+" }}}
+"
+" Quick Semicolon {{{
+" "TODO make versatile
+nnoremap <leader>; <esc>A;<esc>j 
 " }}}
 
 " Quick Tabs {{{
 nmap <silent> <leader>tn <esc>:tabnew<CR>
-nmap <silent> <leader>tc <esc>:tabclose<CR>
+nmap <silent> <leader>Q <esc>:tabclose<CR>
 "nmap <silent> <leader>tl <esc>:tabnext<CR>
 "nmap <silent> <leader>th <esc>:tabprev<CR>
 "}}}
@@ -483,7 +532,9 @@ nnoremap <leader>dr <esc>k/\/\/TODO:<CR><esc>D
 "}}}
 
 call unite#custom#source('file_rec/async','sorters','sorter_rank')
-call unite#filters#matcher_default#use(['matcher_fuzzy'])
+call unite#filters#matcher_default#use(['matcher_fuzzy']) " Use fuzzy selection in Unite Insert Mode
+call unite#filters#sorter_default#use(['sorter_rank']) " Sort Fuzzy selection, by fuzziness, not alphabetical
+
 " Quick Explorer {{{
 function! OpenExplorerHere()
     if !empty(g:current_loc_fs)
@@ -560,13 +611,12 @@ nnoremap <silent> <leader>y :<C-u>Unite -here history/yank<CR>
 "nnoremap <silent> <leader>ub :<C-u>Unite -toggle -here -start-insert -prompt="☃☃ " -buffer-name=Bookmarks bookmark<CR>
 nnoremap <silent> <leader>ub :<C-u>Unite -toggle -here -buffer-name=Bookmarks bookmark<CR>
 nnoremap <silent> <leader>uc :<C-u>Unite colorscheme<CR>
-nnoremap <silent> <leader>j :<C-u>Unite -auto-preview buffer <CR>
-nnoremap <silent> <leader>k :<C-u>Unite -quick-match tab<CR>
+nnoremap <silent> <leader>j :<C-u>Unite -start-insert buffer <CR>
+nnoremap <silent> <leader>k :<C-u>Unite tab<CR>
 nnoremap <silent> <leader>m :<C-u>Unite -start-insert file_mru<CR>
 nnoremap <silent> <leader>h :<C-u>Unite -start-insert history -buffer-name=history<CR>
 nnoremap <silent> <leader>um :<C-u>Unite mark<CR>
-
-
+nnoremap <silent> <A-u> :<C-u>UniteClose<CR>
 
 let g:unite_source_outline_ctags_program = 'C:\\Vim\\ctags.exe'
 nnoremap <silent> <leader>o :<C-u>Unite -start-insert -auto-preview outline  -buffer-name=Outline<CR>

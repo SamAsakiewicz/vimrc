@@ -218,6 +218,43 @@ Basic Plugins:
 	numbertoggle
 		ctrl-n - toggle between absolute and relative numbering
 
+Basic Build Error
+    
+    set makeprg={SHELL COMMAND}  Set your build command, such as gcc, or cat log.txt
+    set makeef=c:\dev\src\errors.txt redirect your build error to a log
+    make Will build and display output based on previous commands
+    or
+    cgetfile {filepath}  instead of a build command, we can input an error log
+
+    set efm+=%f(%l)\ :\ %m Will capture the file, linenum, and message
+    set efm+=%-G%.%# Will munch away all lines that are not matched (non-error lines)
+        works like a reverse printf, or consider the %char as regex captures
+        %f is filename
+        %m is error message
+        %l is line num
+        %. is regex .
+        %# is regex *
+
+
+    :cw<enter>   Open up the error log quickfix windows
+    :clist
+
+Advanced mappings
+    look at :help for information on individual map commands
+    
+    display current mappings with ":map", and ":map?"
+    view what they are being set by with ":verbose map" and ":verbose map?"
+        note that "map" can be replace by "nnoremap", "xmap" and etc for 
+
+    many ctrl-special_char  cannot be mapped it is a limitation of vim
+        except for a certain few such as C-], C-[, C-tab and etc.
+    ctrl-alphabetic can not be used with shift keys
+        C-a == C-A, Vim can not tell the difference
+
+    
+
+set shellpipe=2>
+set errorformat=%A%f:%l:\ %m,%C%m
 
 
 
