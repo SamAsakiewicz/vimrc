@@ -3,14 +3,52 @@
 "  \ \  / /    | |   | \  / | | |__) | | |     
 "   \ \/ /     | |   | |\/| | |  _  /  | |     
 "    \  /     _| |_  | |  | | | | \ \  | |____ 
-"     \/     |_____| |_|  |_| |_|  \_\  \_____|
-                                              
-" Plugins {{{
+"     \/     |_____| |_|  |_| |_|  \_\  \_____|                                             
+
+" The Art of VIm {{{
+
+" VIm is not perfect, but it is extensible. So make it perfect.
+" If Vim does not do something you want it to do, add it.
+" If Vim does something you do not want it to do, remove it.
+" If an operation is long and hard, make it short and make it easy.
+" If a manual operation can be done automatically, automate it.
+" If Vim is ugly, make it pretty.
+" Make sure none of the above interrupts your flow
+
+" The Art of VIm }}}
+
+" Global Variables {{{
+
+if !exists('g:is_startup') " Determine if we just started up vim
+    let g:is_startup = 1
+else
+    let g:is_startup = 0
+endif
+
+if g:is_startup
+
+    if has('win32') || has('win64')
+        let g:is_win = 1
+        let g:is_nix = 0
+    elseif has('unix')
+        let g:is_win = 0
+        let g:is_nix = 1
+    endif
+
+    let g:is_gui = has("gui_running")
+    let g:is_terminal = !has("gui_running")
+    let g:hostname = substitute(system('hostname'), '\n', '', '')
+    let g:rootmarkers = ['hello', 'hi', 'README'] " Markers used to find project directory
+endif
+
+" Global Veriables }}}
+
+" Plugin Installs{{{
 
 " bye bye, Vi, and nice knowing ya, vanilla VIm
 set nocompatible
                                               
-"  **START OF NeoBundle**
+"  START OF NEOBUNDLE
 set runtimepath+=~/.vim/bundle/neobundle.vim/
 set runtimepath+=~/.vim/bundle/*
 let g:docpaths = split(expand("~/.vim/bundle/*/doc/"),'\n')
@@ -22,19 +60,16 @@ set runtimepath+=$VIM/bundle/neobundle.vim/
 
  call neobundle#begin(expand('~/.vim/bundle/'))
 
- " Let NeoBundle manage NeoBundle
- NeoBundleFetch 'Shougo/neobundle.vim'
-
- "Functional
+" Core Plugins {{{
+NeoBundleFetch 'Shougo/neobundle.vim' " Let NeoBundle update NeoBundle
 NeoBundleFetch 'dbakker/vim-projectroot'
 NeoBundleFetch 'rking/ag.vim'    " AG.vim - interface to ag.exe,  grep/ack replacement
 NeoBundleFetch 'kien/ctrlp.vim'    " CtrlP - Fuzzy File Search
 NeoBundleFetch 'gtags.vim'    " Vim Support for GNU Global
 NeoBundleFetch 'Shougo/unite.vim'
-NeoBundleFetch 'hewes/unite-gtags'
+"}}}
 
-" Color Schemes
-NeoBundleFetch 'ujihisa/unite-colorscheme'
+" Color Scheme Plugins {{{
 NeoBundleFetch 'altercation/vim-colors-solarized'    " Solarized - a Solid Color Scheme
 NeoBundleFetch '29decibel/codeschool-vim-theme'
 NeoBundleFetch 'jonathanfilip/vim-lucius'
@@ -43,8 +78,12 @@ NeoBundleFetch 'djjcast/mirodark'
 NeoBundleFetch 'sjl/badwolf'
 NeoBundleFetch 'ciaranm/inkpot'
 NeoBundleFetch 'w0ng/vim-hybrid'
+NeoBundleFetch 'hickop/vim-hickop-colors'
+"}}}
 
-"Plugin 'Shougo/neocomplcache.vim'    " neocomplcache - Autocompletion system for vim 
+" Functional Plugins {{{
+
+" Plugin 'Shougo/neocomplcache.vim'    " neocomplcache - Autocompletion system for vim 
 "NeoBundleFetch 'majutsushi/tagbar'    " TagBar - a pleasant code outline for the current buffer
 NeoBundleFetch 'Lokaltog/vim-easymotion'
 NeoBundleFetch 'jeffkreeftmeijer/vim-numbertoggle'
@@ -58,10 +97,21 @@ NeoBundleFetch 'tpope/vim-unimpaired'    " each [x & ]x mappings
 NeoBundleFetch 'godlygeek/tabular'
 "NeoBundleFetch 'AndrewRadev/splitjoin.vim'
 "NeoBundleFetch 'justinmk/vim-sneak'
+
+" Functional Plugins }}}
+
+" Unite Plugins {{{
+
 "NeoBundleFetch 'Shougo/vimproc.vim'
 NeoBundleFetch 'Shougo/neomru.vim'
 NeoBundleFetch 'Shougo/unite-outline'
+NeoBundleFetch 'ujihisa/unite-colorscheme'
 NeoBundleFetch 'tacroe/unite-mark'
+NeoBundleFetch 'hewes/unite-gtags'
+NeoBundleFetch 'sgur/unite-qf'  " quickfix window source
+NeoBundleFetch 'thinca/vim-unite-history' " Unite display of command and search history
+
+" Unite Plugins }}}
 
  call neobundle#end()
 
@@ -72,67 +122,158 @@ NeoBundleFetch 'tacroe/unite-mark'
 
 "}}}
 
+"Plugin Options {{{
+
+" Netrw Options {{{
+let g:netrw_liststyle=0
+" Netrw Options }}}
+
+" Solarized Options {{{
+
+let g:solarized_italic=0
+colorscheme solarized
+
+" Solarized Options }}}
+
+" CtrlP Options {{{
+
+"let g:ctrlp_map = '<C-p>'
+"let g:ctrlp_cmd = 'CtrlPMixed'
+"let g:ctrlp_user_command = {
+"\}
+"ADD TEXT SEARCH, LOOK FOR CTAGS SEARCH?
+"let g:ctrlp_extensions = ['mixed', 'quickfix', 'undo', 'line', 'changes', 'cmdline', 'menu']
+let g:ctrlp_max_height = 20
+let g:ctrlp_mruf_exclude = '/tmp.*\|/usr/share.*\|.*bundle.*\|.*\.git'
+"let g:ctrlp_switch_buffer = 'et'
+
+"otherwise ctrlp will only lookat the first 15k files:
+let g:ctrlp_max_files=0
+"let g:ctrlp_by_filename = 0
+
+"let g:ctrlp_custom_ignore = '\v[\/]\.(git|hg|svn)$'
+let g:ctrlp_custom_ignore = {
+  \ 'dir':  '\v[\/]\.(git|hg|svn)$',
+  \ 'file': '\v\.(exe|so|dll|s|i|o|lst|pbi|cout|icf)$',
+  \ }
+
+" CtrlP Options }}}
+
+" NeoComplCache {{{
+"    _  _             ___                    _   ___            _         
+"   | \| | ___  ___  / __| ___  _ __   _ __ | | / __| __ _  __ | |_   ___ 
+"   | .` |/ -_)/ _ \| (__ / _ \| '  \ | '_ \| || (__ / _` |/ _|| ' \ / -_)
+"   |_|\_|\___|\___/ \___|\___/|_|_|_|| .__/|_| \___|\__,_|\__||_||_|\___|
+"                                     |_|                                 
+" Disable AutoComplPop.
+let g:acp_enableAtStartup = 0
+" Use neocomplcache.
+let g:neocomplcache_enable_at_startup = 0 " 1
+" Use smartcase.
+let g:neocomplcache_enable_smart_case = 1
+" Set minimum syntax keyword length.
+let g:neocomplcache_min_syntax_length = 3
+let g:neocomplcache_lock_buffer_name_pattern = '\*ku\*'
+
+" NeoComplCache }}}
+
+" Startify {{{
+"    ___  _               _    _   __       
+"   / __|| |_  __ _  _ _ | |_ (_) / _| _  _ 
+"   \__ \|  _|/ _` || '_||  _|| ||  _|| || |
+"   |___/ \__|\__,_||_|   \__||_||_|   \_, |
+"                                      |__/ 
+
+let g:startify_list_order = [
+      \ ['   Recently Accessed:'],
+      \ 'files',
+      \ ['   Sessions:'],
+      \ 'sessions',
+      \ ]
+
+" should add more ascii art, and choose header by random number, also fortune
+let g:startify_custom_header = [
+\"                                                                       ",
+\"                                     (@@@)     (@@@@@)                 ",
+\"                               (@@)     (@@@@@@@)        (@@@@@@@)     ",
+\"                         (@@@@@@@)   (@@@@@)       (@@@@@@@@@@@)       ",
+\"                    (@@@)     (@@@@@@@)   (@@@@@@)             (@@@)   ",
+\"               (@@@@@@)    (@@@@@@)     (@@@@@@)    (@@@)              ",
+\"           (@@@)  (@@@@)           (@@)                                ",
+\"        (@@)              (@@@)                                        ",
+\"       .-.                                                             ",
+\"       ] [    .-.      _    .-----.                                    ",
+\"     .'   ''''   '''''' ''''| .--`                                     ",
+\"    (:--:--:--:--:--:--:--:-| [___    .------------------------.   .------------------------.   .------------------------.   .------------------------.   .------------------------.   .------------------------.   .------------------------.       ",
+\"     | JR  :  :  :  :  :  : [_9_] |'='|.----------------------.|'='|.----------------------.|'='|.----------------------.|'='|.----------------------.|'='|.----------------------.|'='|.----------------------.|'='|.----------------------.|       ",
+\"    /|.___________________________|___|'--.___.--.___.--.___.-'|___|'--.___.--.___.--.___.-'|___|'--.___.--.___.--.___.-'|___|'--.___.--.___.--.___.-'|___|'--.___.--.___.--.___.-'|___|'--.___.--.___.--.___.-'|___|'--.___.--.___.--.___.-'|       ",
+\"   / ||_.--.______.--.______.--._ |---\\'--\\-.-/==\\-.-/==\\-.-/-'/---\\'--\\-.-/==\\-.-/==\\-.-/-'/---\\'--\\-.-/==\\-.-/==\\-.-/-'/---\\'--\\-.-/==\\-.-/==\\-.-/-'/---\\'--\\-.-/==\\-.-/==\\-.-/-'/---\\'--\\-.-/==\\-.-/==\\-.-/-'/---\\'--\\-.-/==\\-.-/==\\-.-/-'/--     ",
+\"  /__;^=(==)======(==)======(==)=^~^^^ ^^^^(-)^^^^(-)^^^^(-)^^^ ^^^ ^^^^(-)^^^^(-)^^^^(-)^^^ ^^^ ^^^^(-)^^^^(-)^^^^(-)^^^ ^^^ ^^^^(-)^^^^(-)^^^^(-)^^^ ^^^ ^^^^(-)^^^^(-)^^^^(-)^^^ ^^^ ^^^^(-)^^^^(-)^^^^(-)^^^ ^^^ ^^^^(-)^^^^(-)^^^^(-)^^^        ",
+\"~~~^~~~~^~~~^~~~^~~~^~~~^~~~^~~~^~~~^~~~^~~~^~~~^~~~^~~~^~~~^~~~~^~~~^~~~^~~~^~~~^~~~^~~~^~~~~^~~~^~~~^~~~^~~~^~~~^~~~^~~~~^~~~^~~~^~~~^~~~^~~~^~~~^~~~~^~~~^~~~^~~~^~~~^~~~^~~~^~~~~^~~~^~~~^~~~^~~~^~~~^~~~^~~~~^~~~^~~~^~~~^~~~^~~~^~~~^~~~^~~~   ",
+\"",
+\"",
+\"",
+\"",
+\]
+
+" Startify }}}
+                                                                    
+" Plugin Options }}}
+
 " Set Options {{{
-set runtimepath^=~/.vim/bundle/ctrlp.vim
-source $VIMRUNTIME/vimrc_example.vim
+"TODO : unncessary? set runtimepath^=~/.vim/bundle/ctrlp.vim
+" TODO slowly remove/replace this
 source $VIMRUNTIME/mswin.vim
+"TODO
 behave mswin
+set autoread                         " Automatically reload a file when you select the buffer, if something else has modified it
+set whichwrap+=<,>,[,]               " Allow curser to wrap around to the next or previous line
+set backspace=indent,eol,start       " Allow backspacing over autoindent, line breaks, and past beggining of insert action
+set cmdheight=2                      " Less 'press <Enter> to continue'
+set confirm                          " Bring up a dialog asking if you want to save changes when actions which leave the buffer
+set cursorline                       " Highlight cursor line
+set expandtab                        " Spaces instead of tabs
+set foldlevelstart=99                " Start all the way folded
+set foldmethod=marker                " By default, set the fold method to markers, it will be overwritten by autocmds
+set history=500                      " number of commands to keep in history
+set ignorecase                       " Ignore make lowercase seaches case-insensitive
+set incsearch                        " Automatically jump to any results whil typing in search
+set laststatus=2                     " Always display the status line
+set nobackup                         " Do not make a backup when overwriting a file
+set nowritebackup                    " Do not write a backup when overwriting a file
+set number                           " Display line numbers
+set omnifunc=syntaxcomplete#Complete " Turn completion on
+set ruler                            " Display cursor position in the bottom right
+set scrolloff=10                     " Dislay 10 line above and below the cursor
+set shiftwidth=4                     " A tab is 4 spaces
+set sidescrolloff=10                 " Dislay 10 line to the left and right of the cursor
+set smartcase                        " Make searches with any uppercase letters be case-sensitive
+set smarttab                         " Treat 4 spaces as if it was a tab
+set softtabstop=4                    " 4 spaces when i hit tab
+set tabstop=4                        " Interpret a tab as 4 spaces
+set tags=/tags;./tags;/,tags;        " Is this optimal? maybe direct project root first, than tag back relay
+set visualbell                       " Instead of beeping, induce seizures by screen flashing
 
-" Automatically cd into the directory that the file is in
-"autocmd BufEnter * execute "chdir ".escape(expand("%:p:h"), ' ')
+"set background=dark " will modify backgrounds, which may have different color for dark and light
+"set nohidden " When I close a tab, remove the buffer
+"set noswapfile "do not make swapfiles, this would be nice, except it is also used to warn users of opening a file up twice in different windows
+"set shellslash "TODO
 
-set nohidden " When I close a tab, remove the buffer
-set autoread
-set nobackup
-set nowritebackup "set noswapfile
-"set autochdir
-
-set ruler "display cursor position in the bottom right
-set laststatus=2 " Always display the status line, even if only one window is displayed
-set cmdheight=2 "less 'press <Enter> to continue'
-set number "Display line numbers
-set confirm " bring up a dialog asking if you want to save changes when actions which leave the buffer
-set visualbell " instead of beeping, induce seizures by screen flashing
-
-set foldlevelstart=20
-set foldmethod=marker
-
-set ignorecase "ignore make lowercase seaches case-insensitive
-set smartcase "make searches with any uppercase letters be case-sensitive
-
-"set smartindent    
-"set cindent
-filetype plugin indent on
-syntax enable
-" Allow backspacing over autoindent, line breaks and start of insert action
-set backspace=indent,eol,start
-set expandtab " Spaces instead of tabs
-set smarttab
-set tabstop=4 """ Do not change 'tabstop' from its default value of 8 with this setup.
-set shiftwidth=4
-set softtabstop=4
-
-"use gcc
-"compiler gcc
-set cul " Highlight cursor line
+compiler gcc "use gcc for building and quickfixing errors
 hi CursorLine term=none cterm=none ctermbg=3      
+filetype plugin indent on " Turn on filetype specific indenting
+syntax enable " Turn on syntax coloring
 
-set omnifunc=syntaxcomplete#Complete
-set so=10
-set background=dark
+call matchadd('ColorColumn', '\%81v', 100)
+ 
 
-"is this optimal? maybe direct project root first, than tag back relay
-set tags=g:project_root/tags;./tags;/,tags;
 
-set ff=dos
-set ffs=dos
 
-set tw=800 " Stop Vim from inserting newlines when you type past 80 chars
 "}}}
 
 " Functions {{{
 
-" Fold {{{
+" Fold Functions{{{
 "set foldtext=CustomFoldText()
 fu! CustomFoldText()
     get first non-blank line
@@ -205,6 +346,11 @@ endfunction
 
 " Utility Functions {{{
 
+if !exists(":DiffOrig")
+  command DiffOrig vert new | set bt=nofile | r ++edit # | 0d_ | diffthis
+		  \ | wincmd p | diffthis
+endif
+
 function! SetRoot()
     let g:project_root_sys = ProjectRootGuess() 
     let g:project_root_fs = substitute(g:project_root_sys, '\', '/', "g")
@@ -218,11 +364,23 @@ endfunction
 
 " Key Mappings {{{
 
-let mapleader = " "
 
 "fuzzy escapes to normal mode
 " add ctrl-u/d?
-nnoremap <C-n> <C-d>
+"nnoremap <C-n> <C-d>
+" Insert Mode Mappings {{{
+inoremap <silent> <C-L> <Right>
+inoremap <silent> <C-H> <Left>
+inoremap <silent> <C-K> <Up>
+inoremap <silent> <C-J> <Down>
+" }}}
+
+" Normal Mode Mappings {{{
+nnoremap <silent> K <C-U>
+nnoremap <silent> J <C-D>
+nnoremap j gj
+nnoremap k gk
+
 
 "Useless keys to really Useful keys
 "set the old leader up for something useful, maybe bidirectional character jump?
@@ -243,11 +401,13 @@ map <C-\> :tab split<CR>:exec("tag ".expand("<cword>"))<CR>
 "C-\ will open the definition in a new tab
 map <A-]> :vsp <CR>:exec("tag ".expand("<cword>"))<CR>
 "C-] will open the definition in a new split
+" }}}
 
-" Leader Key Mappings ----------------------------------
-"
+" Leader Key Mappings {{{
+let mapleader = " "
+
 nmap <silent> <leader>/ :nohlsearch<CR>
-nmap <silent> <leader>ve :tabnew $MYVIMRC<CR>
+nmap <silent> <leader>bv :tabnew $MYVIMRC<CR>
 nmap <leader>sv :so $MYVIMRC<CR>
 
 "perhaps put all the misc unite ones under <leader>u{logical char}
@@ -264,27 +424,24 @@ nmap <leader>bn <esc>:NeoBundleUpdate<CR>
 nmap <leader>bh <esc>:call BuildHelpTags(g:docpaths)<CR>
 "}}}
 
-" Quick Ag {{{
+" Ag Mappings {{{
 nmap <silent> <leader>ac <esc>:call RunAgOnWordUnderCursor(g:project_root_sys)<CR>
 nmap <silent> <leader>ai <esc>:call RunAgOnInput(g:project_root_sys)<CR>
-" }}}
+" Ag Mappings}}}
+
+" Gtags Mappings {{{
 nmap <silent> <leader>gc <esc>:call GtagsRefSearch()<CR>
 nmap <silent> <leader>gn <esc>:cn<CR>
 nmap <silent> <leader>gp <esc>:cp<CR>
 nmap <silent> <leader>gl <esc>:cl<CR>
+" }}}
 
-
-
-" Quick Paste/Replace {{{
+" Paste/Replace Mappings {{{
 nnoremap <leader>x viw"ap
 nnoremap <leader>z V"zp
 " }}}
 
-" Quick Comment {{{
-nnoremap <leader>c <esc>I//<esc>j
-" }}}
-"
-" Quick Semicolon {{{
+" Semicolon Mappings {{{
 nnoremap <leader>; <esc>A;<esc>j
 " }}}
 
@@ -325,6 +482,7 @@ nnoremap <leader>da <esc>a//TODO:
 nnoremap <leader>dr <esc>k/\/\/TODO:<CR><esc>D
 "}}}
 
+call unite#custom#source('file_rec/async','sorters','sorter_rank')
 call unite#filters#matcher_default#use(['matcher_fuzzy'])
 " Quick Explorer {{{
 function! OpenExplorerHere()
@@ -374,7 +532,9 @@ call unite#custom#source('file_rec,file_rec/async', 'ignore_pattern', join([
     \ '\|'))
 " }}}
 
+" Leader Key }}}
 
+" Unite Key Mappings {{{
 let g:unite_force_overwrite_statusline = 0
 if executable('ag')
     let g:unite_source_grep_command = 'ag'
@@ -396,13 +556,15 @@ let g:unite_source_history_yank_enable = 1
   call unite#custom#source(
         \ 'buffer', 'converters',
         \ ['converter_file_directory'])
-nnoremap <silent> <leader>y :<C-u>Unite history/yank<CR>
-nnoremap <silent> <leader>ub :<C-u>Unite -start-insert bookmark<CR>
+nnoremap <silent> <leader>y :<C-u>Unite -here history/yank<CR>
+"nnoremap <silent> <leader>ub :<C-u>Unite -toggle -here -start-insert -prompt="☃☃ " -buffer-name=Bookmarks bookmark<CR>
+nnoremap <silent> <leader>ub :<C-u>Unite -toggle -here -buffer-name=Bookmarks bookmark<CR>
 nnoremap <silent> <leader>uc :<C-u>Unite colorscheme<CR>
-nnoremap <silent> <leader>j :<C-u>Unite -quick-match buffer <CR>
+nnoremap <silent> <leader>j :<C-u>Unite -auto-preview buffer <CR>
 nnoremap <silent> <leader>k :<C-u>Unite -quick-match tab<CR>
 nnoremap <silent> <leader>m :<C-u>Unite -start-insert file_mru<CR>
 nnoremap <silent> <leader>h :<C-u>Unite -start-insert history -buffer-name=history<CR>
+nnoremap <silent> <leader>um :<C-u>Unite mark<CR>
 
 
 
@@ -411,130 +573,94 @@ nnoremap <silent> <leader>o :<C-u>Unite -start-insert -auto-preview outline  -bu
 "inoremap <buffer> <C-j> <Plug>(unite_select_next_line)
 "inoremap <buffer> <C-k> <Plug>(unite_select_previous_line)
 
+" Unite Key Mappings }}}
+
 nnoremap <silent> <leader>q :q<CR>
 "nnoremap <silent> <leader>w :w<CR> " Machine specific so added later on
 
 "}}}
 
-"Plugin Options {{{
-let g:netrw_liststyle=0
-let g:solarized_italic=0
-colorscheme solarized
-
-"let g:ctrlp_map = '<C-p>'
-"let g:ctrlp_cmd = 'CtrlPMixed'
-"let g:ctrlp_user_command = {
-"\}
-"ADD TEXT SEARCH, LOOK FOR CTAGS SEARCH?
-"let g:ctrlp_extensions = ['mixed', 'quickfix', 'undo', 'line', 'changes', 'cmdline', 'menu']
-let g:ctrlp_max_height = 20
-let g:ctrlp_mruf_exclude = '/tmp.*\|/usr/share.*\|.*bundle.*\|.*\.git'
-"let g:ctrlp_switch_buffer = 'et'
-
-"otherwise ctrlp will only lookat the first 15k files:
-let g:ctrlp_max_files=0
-"let g:ctrlp_by_filename = 0
-
-"let g:ctrlp_custom_ignore = '\v[\/]\.(git|hg|svn)$'
-let g:ctrlp_custom_ignore = {
-  \ 'dir':  '\v[\/]\.(git|hg|svn)$',
-  \ 'file': '\v\.(exe|so|dll|s|i|o|lst|pbi|cout|icf)$',
-  \ }
-
-"    _  _             ___                    _   ___            _         
-"   | \| | ___  ___  / __| ___  _ __   _ __ | | / __| __ _  __ | |_   ___ 
-"   | .` |/ -_)/ _ \| (__ / _ \| '  \ | '_ \| || (__ / _` |/ _|| ' \ / -_)
-"   |_|\_|\___|\___/ \___|\___/|_|_|_|| .__/|_| \___|\__,_|\__||_||_|\___|
-"                                     |_|                                 
-
-" START OF NEOCOMPLCACHE
-
-" Disable AutoComplPop.
-let g:acp_enableAtStartup = 0
-" Use neocomplcache.
-let g:neocomplcache_enable_at_startup = 0 "1
-" Use smartcase.
-let g:neocomplcache_enable_smart_case = 1
-" Set minimum syntax keyword length.
-let g:neocomplcache_min_syntax_length = 3
-let g:neocomplcache_lock_buffer_name_pattern = '\*ku\*'
-
-"    ___  _               _    _   __       
-"   / __|| |_  __ _  _ _ | |_ (_) / _| _  _ 
-"   \__ \|  _|/ _` || '_||  _|| ||  _|| || |
-"   |___/ \__|\__,_||_|   \__||_||_|   \_, |
-"                                      |__/ 
-
-let g:startify_list_order = [
-      \ ['   Recently Accessed:'],
-      \ 'files',
-      \ ['   Sessions:'],
-      \ 'sessions',
-      \ ]
-
-" should add more ascii art, and choose header by random number, also fortune
-let g:startify_custom_header = [
-\"                                                                       ",
-\"                                     (@@@)     (@@@@@)                 ",
-\"                               (@@)     (@@@@@@@)        (@@@@@@@)     ",
-\"                         (@@@@@@@)   (@@@@@)       (@@@@@@@@@@@)       ",
-\"                    (@@@)     (@@@@@@@)   (@@@@@@)             (@@@)   ",
-\"               (@@@@@@)    (@@@@@@)     (@@@@@@)    (@@@)              ",
-\"           (@@@)  (@@@@)           (@@)                                ",
-\"        (@@)              (@@@)                                        ",
-\"       .-.                                                             ",
-\"       ] [    .-.      _    .-----.                                    ",
-\"     .'   ''''   '''''' ''''| .--`                                     ",
-\"    (:--:--:--:--:--:--:--:-| [___    .------------------------.   .------------------------.   .------------------------.   .------------------------.   .------------------------.   .------------------------.   .------------------------.       ",
-\"     | JR  :  :  :  :  :  : [_9_] |'='|.----------------------.|'='|.----------------------.|'='|.----------------------.|'='|.----------------------.|'='|.----------------------.|'='|.----------------------.|'='|.----------------------.|       ",
-\"    /|.___________________________|___|'--.___.--.___.--.___.-'|___|'--.___.--.___.--.___.-'|___|'--.___.--.___.--.___.-'|___|'--.___.--.___.--.___.-'|___|'--.___.--.___.--.___.-'|___|'--.___.--.___.--.___.-'|___|'--.___.--.___.--.___.-'|       ",
-\"   / ||_.--.______.--.______.--._ |---\\'--\\-.-/==\\-.-/==\\-.-/-'/---\\'--\\-.-/==\\-.-/==\\-.-/-'/---\\'--\\-.-/==\\-.-/==\\-.-/-'/---\\'--\\-.-/==\\-.-/==\\-.-/-'/---\\'--\\-.-/==\\-.-/==\\-.-/-'/---\\'--\\-.-/==\\-.-/==\\-.-/-'/---\\'--\\-.-/==\\-.-/==\\-.-/-'/--     ",
-\"  /__;^=(==)======(==)======(==)=^~^^^ ^^^^(-)^^^^(-)^^^^(-)^^^ ^^^ ^^^^(-)^^^^(-)^^^^(-)^^^ ^^^ ^^^^(-)^^^^(-)^^^^(-)^^^ ^^^ ^^^^(-)^^^^(-)^^^^(-)^^^ ^^^ ^^^^(-)^^^^(-)^^^^(-)^^^ ^^^ ^^^^(-)^^^^(-)^^^^(-)^^^ ^^^ ^^^^(-)^^^^(-)^^^^(-)^^^        ",
-\"~~~^~~~~^~~~^~~~^~~~^~~~^~~~^~~~^~~~^~~~^~~~^~~~^~~~^~~~^~~~^~~~~^~~~^~~~^~~~^~~~^~~~^~~~^~~~~^~~~^~~~^~~~^~~~^~~~^~~~^~~~~^~~~^~~~^~~~^~~~^~~~^~~~^~~~~^~~~^~~~^~~~^~~~^~~~^~~~^~~~~^~~~^~~~^~~~^~~~^~~~^~~~^~~~~^~~~^~~~^~~~^~~~^~~~^~~~^~~~^~~~   ",
-\"",
-\"",
-\"",
-\"",
-\]
-                                                                    
-"}}}
-
 "  Machine Specific {{{                                  
 
-if has("gui_running")
+if g:is_win " Windows Configuration
 
-    " GVIM Configuration
-    set guioptions-=T  "no toolbar(icon bar)
-    set guioptions-=r  "no right-hand scroll bar
-    set guioptions-=L  "no left-hand scroll bar
+    set fileformat=dos " Will set the carriage returns to windows/style when saving/editing a file
+    set fileformats=dos,unix " WIll try unix and windows style EOL when opening a file
 
-    if has("gui_gtk2")
-        set guifont="ProggyCleanTT 12"
-        nmap <leader>w :w ++ff=unix<CR>
+elseif g:is_nix " Linux Configuration
 
-    elseif has("gui_win32")
-        set guifont=ProggyCleanTT:h11:cANSI
-        set lines=71 columns=260
-        nmap <leader>w :w<CR>
-  endif
+    set fileformat=unix " Will set the carriage returns to windows/style when saving/editing a file
+    set fileformats=dos,unix " WIll try unix and windows style EOL when opening a file
+
 endif
 
+if g:is_gui
 
-"let hostname = substitute(system('hostname'), '\n', '', '')
-"if hostname == "PC1"
-    "set lines=71 columns=260
-"elseif hostname == "pc2"
- "endif
-"source hostname . "vim"
+    set guioptions-=T  " Remove toolbar(icon bar)
+    set guioptions-=m  " Remove menu
+    set guioptions-=r  " Remove right-hand scroll bar
+    set guioptions-=L  " Remove left-hand scroll bar
+
+    if g:is_nix " Linux Configuration
+
+        set guifont="ProggyCleanTT 12"
+        set lines=999 columns=999 " Maximize window
+        "nmap <leader>w :w ++ff=unix<CR>
+        nmap <leader>w :w<CR>
+
+    elseif g:is_win " Windows Configuration
+
+        set guifont=ProggyCleanTT:h11:cANSI
+        "TODO try true fullscreen, like a vn
+        set lines=71 columns=260 " For a 1080p screen
+        nmap <leader>w :w<CR>
+
+    endif
+
+endif
 "}}}
+
+" Startup Only {{{
+
+if g:is_startup
+    echo '☃ Welcome Back: ' . g:hostname
+    :Unite bookmark
+endif
+"if hostname == "PC1"
+"set lines=71 columns=260
+"elseif hostname == "pc2"
+"endif
+"source hostname . "vim"
+
+" }}}
 
 " AutoCmds {{{
 autocmd BufEnter * :call SetRoot()
-autocmd FileType vim,c++,txt setlocal foldmethod=marker
+autocmd FileType vim setlocal foldmethod=marker
 autocmd FileType c,c++ setlocal foldmethod=syntax
+autocmd FileType text setlocal foldmethod=indent
+
+
+  " When editing a file, always jump to the last known cursor position.
+  " Don't do it when the position is invalid or when inside an event handler
+  " (happens when dropping a file on gvim).
+  " Also don't do it when the mark is in the first line, that is the default
+  " position when opening a file.
+  autocmd BufReadPost *
+    \ if line("'\"") > 1 && line("'\"") <= line("$") |
+    \   exe "normal! g`\"" |
+    \ endif
+
+"autocmd BufEnter * execute "chdir ".escape(expand("%:p:h"), ' ') " Automatically cd into the directory that the file is in
+
 
 "}}}
 
-" Global Variables {{{
-let g:rootmarkers = ['hello', 'hi']
-"}}}
+" Misc Unicode Characters {{{
+" ⎈✺ ☔❂
+" }}}
+
+" Vim Notes {{{
+" '<,'>sort  -> sort selected lines
+
+" Vim Notes }}}
