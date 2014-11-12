@@ -464,13 +464,6 @@ nmap <silent> <leader>an <esc>:call RunAgOnInput(g:docs_path)<CR>
 " }}}
 nmap <silent> <leader>gC <esc>:call GtagsRefSearch()<CR>
 "TODO COPIED< DOUBLE CHECK
-"TODO map to a unite key (maybe alt or keep the key as <leader>g)?
-nmap <leader>gc :Unite -immediately -no-quit -keep-focus -winheight=17 gtags/context<CR>
-nmap <leader>gr :Unite -immediately -no-quit -keep-focus -winheight=17 gtags/ref<CR>
-nmap <leader>gs :Unite -immediately -no-quit -keep-focus -winheight=17 gtags/completion<CR>
-nmap <leader>gi :Unite -immediately -no-quit -keep-focus -winheight=17 gtags/grep<CR>
-"TODO map to usual ctag keys?
-nmap <leader>gd :Unite -immediately -winheight=17 -buffer-name=Definition gtags/def<CR>
 nmap <silent> <leader>gn <esc>:cn<CR>
 nmap <silent> <leader>gp <esc>:cp<CR>
 nmap <silent> <leader>gl <esc>:cl<CR>
@@ -597,31 +590,39 @@ endif
 "nnoremap <leader>g :Unite -no-split grep<cr>
 "TOD nnoremap united :Unite -no-split grep:.:-s:\(TODO\|FIXME\)<cr>
 
-nnoremap <leader>l :<C-u>Unite -start-insert line<CR>
-"nnoremap <leader>r :<C-u>Unite -start-insert file_rec/async:!<CR>
 
-let g:unite_source_history_yank_enable = 1
+let g:unite_source_history_yank_enable = 1 " Keep track of yanks for 'Unite yank'
+
+" Only display the filename (filepath tail) in the buffer screen
   call unite#custom#source(
         \ 'buffer', 'matchers',
         \ ['converter_tail', 'matcher_default'])
   call unite#custom#source(
         \ 'buffer', 'converters',
         \ ['converter_file_directory'])
-nnoremap <silent> <leader>y :<C-u>Unite -here history/yank<CR>
-"nnoremap <silent> <leader>ub :<C-u>Unite -toggle -here -start-insert -prompt="☃☃ " -buffer-name=Bookmarks bookmark<CR>
-nnoremap <silent> <leader>ub :<C-u>Unite -toggle -here -buffer-name=Bookmarks bookmark<CR>
-nnoremap <silent> <leader>uc :<C-u>Unite colorscheme<CR>
-nnoremap <silent> <leader>j :<C-u>Unite -start-insert buffer <CR>
-nnoremap <silent> <leader>k :<C-u>Unite tab<CR>
-nnoremap <silent> <leader>m :<C-u>Unite -start-insert file_mru<CR>
-nnoremap <silent> <leader>h :<C-u>Unite -start-insert history -buffer-name=history<CR>
-nnoremap <silent> <leader>um :<C-u>Unite mark<CR>
+
+"TODO map to a unite key (maybe alt or keep the key as <leader>g)?
 nnoremap <silent> <A-u> :<C-u>UniteClose<CR>
+nnoremap <silent> <leader>j :<C-u>Unite buffer -start-insert <CR>
+nnoremap <silent> <leader>J :<C-u>Unite buffer_tab -start-insert <CR>
+nnoremap <silent> <leader>k :<C-u>Unite tab<CR>
+nnoremap <silent> <leader>l :<C-u>Unite line -start-insert <CR>
+nnoremap <silent> <leader>h :<C-u>Unite file_mru -start-insert -buffer-name=History<CR>
+nnoremap <silent> <leader>ub :<C-u>Unite bookmark -toggle -here -buffer-name=Bookmarks <CR>
+nnoremap <silent> <leader>uc :<C-u>Unite colorscheme -buffer-name=Colorschemes<CR>
+nnoremap <silent> <leader>m :<C-u>Unite jump -buffer-name=Marks<CR>
+nnoremap <silent> <leader>y :<C-u>Unite history/yank -buffer-name=Copies<CR>
+nnoremap <leader>gc :Unite -immediately -no-quit -keep-focus -winheight=15 gtags/context<CR>
+nnoremap <leader>gr :Unite -immediately -no-quit -keep-focus -winheight=25 gtags/ref<CR>
+nnoremap <leader>gs :Unite -immediately -no-quit -keep-focus -winheight=15 gtags/completion<CR>
+nnoremap <leader>gi :Unite -immediately -no-quit -keep-focus -winheight=15 gtags/grep<CR>
+nnoremap <leader>gd :Unite -immediately -winheight=17 -buffer-name=Definition gtags/def<CR>
 
 let g:unite_source_outline_ctags_program = 'C:\\Vim\\ctags.exe'
 nnoremap <silent> <leader>o :<C-u>Unite -start-insert -auto-preview outline  -buffer-name=Outline<CR>
-"inoremap <buffer> <C-j> <Plug>(unite_select_next_line)
-"inoremap <buffer> <C-k> <Plug>(unite_select_previous_line)
+"use c-n & c-p for now, alt, ctrl, and shift are all no good for this
+"inoremap <buffer> <A-j> <Plug>(unite_select_next_line)
+"inoremap <buffer> <A-k> <Plug>(unite_select_previous_line)
 
 " Unite Key Mappings }}}
 
@@ -673,8 +674,8 @@ endif
 " Startup Only {{{
 
 if g:is_startup
-    echo '☃ Welcome Back: ' . g:hostname
-    :Unite bookmark
+    "echo '☃ Welcome Back: ' . g:hostname
+    "execute "Unite bookmark"
 endif
 "if hostname == "PC1"
 "set lines=71 columns=260
