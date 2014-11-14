@@ -43,12 +43,12 @@ endif
 
 " Global Veriables }}}
 
-" Plugin Installs{{{
+" Plugin Installs {{{
 
 " bye bye, Vi, and nice knowing ya, vanilla VIm
 set nocompatible
                                               
-"  START OF NEOBUNDLE
+" NeoBundle Start {{{
 set runtimepath+=~/.vim/bundle/neobundle.vim/
 set runtimepath+=~/.vim/bundle/*
 let g:docpaths = split(expand("~/.vim/bundle/*/doc/"),'\n')
@@ -59,6 +59,7 @@ set runtimepath+=$VIM/bundle/neobundle.vim/
 "let path='~/vimfiles/bundle'
 
 call neobundle#begin(expand('~/.vim/bundle/'))
+" NeoBundle Start }}}
 
 " Core Plugins {{{
 NeoBundleFetch 'Shougo/neobundle.vim' " Let NeoBundle update NeoBundle
@@ -67,6 +68,8 @@ NeoBundleFetch 'rking/ag.vim'    " AG.vim - interface to ag.exe,  grep/ack repla
 NeoBundleFetch 'kien/ctrlp.vim'    " CtrlP - Fuzzy File Search
 NeoBundleFetch 'gtags.vim'    " Vim Support for GNU Global
 NeoBundleFetch 'Shougo/unite.vim'
+"NeoBundleFetch 'Shougo/neocomplcache.vim'    " neocomplcache - Autocompletion system for vim 
+"NeoBundleFetch 'jceb/vim-orgmode'
 "}}}
 
 " Color Scheme Plugins {{{
@@ -79,24 +82,38 @@ NeoBundleFetch 'sjl/badwolf'
 NeoBundleFetch 'ciaranm/inkpot'
 NeoBundleFetch 'w0ng/vim-hybrid'
 NeoBundleFetch 'hickop/vim-hickop-colors'
+NeoBundleFetch 'junegunn/seoul256.vim'
+NeoBundleFetch 'whatyouhide/vim-gotham'    " dark color scheme
 "}}}
 
 " Functional Plugins {{{
 
-" Plugin 'Shougo/neocomplcache.vim'    " neocomplcache - Autocompletion system for vim 
-"NeoBundleFetch 'majutsushi/tagbar'    " TagBar - a pleasant code outline for the current buffer
-NeoBundleFetch 'Lokaltog/vim-easymotion'
+" Visual Plugins {{{
 NeoBundleFetch 'jeffkreeftmeijer/vim-numbertoggle'
 NeoBundleFetch 'mhinz/vim-startify'
-"Plugin 'tpope/vim-surround'
-"Plugin 'bling/vim-airline'
+"NeoBundleFetch 'scrooloose/syntastic' " show build errors visual in the file
+"NeoBundleFetch 'Lokaltog/powerline' "pretty status bars
+"NeoBundleFetch 'majutsushi/tagbar'    " TagBar - a pleasant code outline for the current buffer
 "Plugin 'linediff
-"Plugin 'c.vim' or 'snipMate.vim'
-NeoBundleFetch 'whatyouhide/vim-gotham'    " dark color scheme
+"Plugin 'bling/vim-airline'
+" Visual Plugins }}}
+"
+" Movement Plugins {{{
+NeoBundleFetch 'Lokaltog/vim-easymotion'
 NeoBundleFetch 'tpope/vim-unimpaired'    " each [x & ]x mappings
-NeoBundleFetch 'godlygeek/tabular'
-"NeoBundleFetch 'AndrewRadev/splitjoin.vim'
 "NeoBundleFetch 'justinmk/vim-sneak'
+""'wellle/targets.vim'
+" Movement Plugins }}}
+"
+" Formatting {{{
+NeoBundleFetch 'garbas/vim-snipmate'
+NeoBundleFetch 'honza/vim-snippets'
+NeoBundleFetch 'junegunn/vim-easy-align'
+"NeoBundleFetch 'AndrewRadev/splitjoin.vim'
+"Plugin 'tpope/vim-surround'
+"Plugin 'c.vim' maybe?
+" Formatting }}}
+"
 
 " Functional Plugins }}}
 
@@ -113,14 +130,12 @@ NeoBundleFetch 'thinca/vim-unite-history' " Unite display of command and search 
 
 " Unite Plugins }}}
 
+" NeoBundle End {{{
 call neobundle#end()
-
 filetype plugin indent on
+" NeoBundle End }}}
 
-" **END OF NEOBUNDLE**
-
-
-"}}}
+" Plugin Installs }}}
 
 "Plugin Options {{{
 
@@ -217,7 +232,13 @@ let g:startify_custom_header = [
 \]
 
 " Startify }}}
-                                                                    
+
+" EasyMotion {{{
+nmap <leader>f <Plug>(easymotion-f)
+nmap <leader>F <Plug>(easymotion-F)
+nmap , <Plug>(easymotion-s)
+" EasyMotion }}}
+
 " Plugin Options }}}
 
 " Set Options {{{
@@ -238,6 +259,7 @@ set foldmethod=marker                " By default, set the fold method to marker
 set history=500                      " number of commands to keep in history
 set ignorecase                       " Ignore make lowercase seaches case-insensitive
 set incsearch                        " Automatically jump to any results whil typing in search
+set hlsearch                         " Highlight search matches
 set laststatus=2                     " Always display the status line
 set nobackup                         " Do not make a backup when overwriting a file
 set nowritebackup                    " Do not write a backup when overwriting a file
@@ -264,7 +286,7 @@ hi CursorLine term=none cterm=none ctermbg=3
 filetype plugin indent on " Turn on filetype specific indenting
 syntax enable " Turn on syntax coloring
 
-call matchadd('ColorColumn', '\%81v', 100)
+call matchadd('ColorColumn', '\%81v', 100)  
  
 "}}}
 
@@ -328,11 +350,16 @@ function! RunAgOnInput(dir)
 endfunction
 
 function! RunAg(text, dir)
-  let g:AgIgnoreString = " --ignore-dir builds --ignore-dir utility --ignore *.patch --ignore tags --ignore oldtags --ignore *TMP --ignore *.s19 --ignore *.bin --ignore *.exe --ignore *.ewp --ignore *.hex --ignore *.htm --ignore *.html --ignore *.vcproj* --ignore *.make --ignore *.srec --ignore *.pdf --ignore-dir documentation --ignore *.bat --ignore *.tex --ignore *.css --ignore README --ignore *.shtml "
-    "let searchString =  "Ag! -S --stats " . g:AgIgnoreString . a:text . " " . a:dir
-    let searchString =  "Ag! -S --stats --ignore builds --ignore utility --ignore *.patch --ignore tags --ignore oldtags --ignore TMP " . a:text . " " . a:dir
-    let searchString =  "Ag! -S --stats  --ignore-dir builds --ignore-dir utility --ignore *.patch --ignore tags --ignore oldtags --ignore *TMP --ignore *.s19 --ignore *.bin --ignore *.exe --ignore *.ewp --ignore *.hex --ignore *.htm --ignore *.html --ignore *.vcproj* --ignore *.make --ignore *.srec --ignore *.pdf --ignore-dir documentation --ignore *.bat --ignore *.tex --ignore *.css --ignore README --ignore *.shtml " . a:text . " " . a:dir
-    execute searchString
+    if !empty(g:current_loc_fs)
+        echo "clear"
+        echo "RunAg - Searching for: " . a:text 
+        echo "RunAg - Searching in: " . a:dir
+        let g:AgIgnoreString =" --ignore-dir builds --ignore-dir utility --ignore *.patch --ignore tags --ignore oldtags --ignore *TMP --ignore *.s19 --ignore *.bin --ignore *.exe --ignore *.ewp --ignore *.hex --ignore *.htm --ignore *.html --ignore *.vcproj* --ignore *.make --ignore *.srec --ignore *.pdf --ignore-dir documentation --ignore *.bat --ignore *.gol --ignore *.tex --ignore *.css --ignore README --ignore *.shtml " 
+        let searchString =  "Ag! -S --stats " . g:AgIgnoreString . a:text . " " . a:dir
+        execute searchString
+    else
+        echo "RunAg: no input string"
+    endif
 endfunction
 
 function! BuildHelpTags(doclocations)
@@ -398,28 +425,40 @@ inoremap <silent> <C-L> <Right>
 inoremap <silent> <C-H> <Left>
 inoremap <silent> <C-K> <Up>
 inoremap <silent> <C-J> <Down>
+inoremap <silent> kj <esc>
+inoremap <silent> jk <esc>
+inoremap <esc> <nop>
 " }}}
 
 " Normal Mode Mappings {{{
+" less effor Ctrl+U & Ctrl+D
 nnoremap <silent> K <C-U>
 nnoremap <silent> J <C-D>
 nnoremap j gj
 nnoremap k gk
 
-
-"Useless keys to really Useful keys
-"set the old leader up for something useful, maybe bidirectional character jump?
-"inoremap ,, <Esc>
-nmap , <Plug>(easymotion-f)
 nnoremap \ @q 
 
-nmap <leader>f <Plug>(easymotion-f)
-nmap <leader>F <Plug>(easymotion-F)
+" Tab Mappings {{{
+nnoremap <silent> <A-h> :tabprevious<CR>
+nnoremap <silent> <A-l> :tabnext<CR>
+nnoremap <silent> <A-H> :execute 'silent! tabmove ' . (tabpagenr()-2)<CR>
+nnoremap <silent> <A-L> :execute 'silent! tabmove ' . tabpagenr()<CR>
+" Tab Mappings }}}
 
-map <C-;> :bnext<CR>
-map <C-'> :bprev<CR>
-map <C-,> :tabn<CR>
-map <C-.> :tabp<CR>
+" These seems like a good idea, but i open too many buffers to make this
+" worthwhile and i need to look at why they are so slow on switch
+"nnoremap <silent> <A-k> :bNext<CR>
+"nnoremap <silent> <A-j> :bprev<CR>
+
+" Fold Navigation Mappings {{{ 
+nnoremap <silent> <A-k> zk
+nnoremap <silent> <A-j> zj
+nnoremap <silent> <A-a> za
+nnoremap <silent> <A-A> zA
+nnoremap <silent> <A-m> zM
+nnoremap <silent> <A-r> zR
+" Fold Navigation Mappings }}} 
 
 
 map <C-\> :tab split<CR>:exec("tag ".expand("<cword>"))<CR>
@@ -626,7 +665,8 @@ nnoremap <silent> <leader>o :<C-u>Unite -start-insert -auto-preview outline  -bu
 
 " Unite Key Mappings }}}
 
-nnoremap <silent> <leader>q :q<CR>
+"nnoremap <silent> <leader>q :q<CR>
+nnoremap <leader>q :bd<CR>
 "nnoremap <silent> <leader>w :w<CR> " Machine specific so added later on
 
 "}}}
@@ -670,20 +710,6 @@ if g:is_gui
 
 endif
 "}}}
-
-" Startup Only {{{
-
-if g:is_startup
-    "echo '☃ Welcome Back: ' . g:hostname
-    "execute "Unite bookmark"
-endif
-"if hostname == "PC1"
-"set lines=71 columns=260
-"elseif hostname == "pc2"
-"endif
-"source hostname . "vim"
-
-" }}}
 
 " AutoCmds {{{
 autocmd BufEnter * :call SetRoot()
