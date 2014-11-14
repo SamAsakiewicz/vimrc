@@ -91,6 +91,7 @@ NeoBundleFetch 'whatyouhide/vim-gotham'    " dark color scheme
 " Visual Plugins {{{
 NeoBundleFetch 'jeffkreeftmeijer/vim-numbertoggle'
 NeoBundleFetch 'mhinz/vim-startify'
+NeoBundleFetch 'octol/vim-cpp-enhanced-highlight'
 "NeoBundleFetch 'scrooloose/syntastic' " show build errors visual in the file
 "NeoBundleFetch 'Lokaltog/powerline' "pretty status bars
 "NeoBundleFetch 'majutsushi/tagbar'    " TagBar - a pleasant code outline for the current buffer
@@ -113,7 +114,6 @@ NeoBundleFetch 'junegunn/vim-easy-align'
 "Plugin 'tpope/vim-surround'
 "Plugin 'c.vim' maybe?
 " Formatting }}}
-"
 
 " Functional Plugins }}}
 
@@ -169,8 +169,9 @@ let g:ctrlp_max_files=0
 "let g:ctrlp_custom_ignore = '\v[\/]\.(git|hg|svn)$'
 let g:ctrlp_custom_ignore = {
   \ 'dir':  '\v[\/]\.(git|hg|svn)$',
-  \ 'file': '\v\.(exe|so|dll|s|i|o|lst|pbi|cout|icf)$',
+  \ 'file': '\v\.(exe|so|dll|s|i|o|lst|hex|s19|pbi|cout|icf|srec|bin|html|htm|out|)$',
   \ }
+
 
 " CtrlP Options }}}
 
@@ -437,6 +438,9 @@ nnoremap <silent> J <C-D>
 nnoremap j gj
 nnoremap k gk
 
+nnoremap - ddp
+nnoremap _ ddkP
+
 nnoremap \ @q 
 
 " Tab Mappings {{{
@@ -695,7 +699,7 @@ if g:is_gui
     if g:is_nix " Linux Configuration
 
         set guifont="ProggyCleanTT 12"
-        set lines=999 columns=999 " Maximize window
+        set lines=61 columns=244 " Maximize window
         "nmap <leader>w :w ++ff=unix<CR>
         nmap <leader>w :w<CR>
 
@@ -714,8 +718,13 @@ endif
 " AutoCmds {{{
 autocmd BufEnter * :call SetRoot()
 autocmd FileType vim setlocal foldmethod=marker
-autocmd FileType c,c++ setlocal foldmethod=syntax
+autocmd FileType c,cpp setlocal foldmethod=syntax
 autocmd FileType text setlocal foldmethod=indent
+autocmd CursorHoldI,FocusLost * stopinsert
+autocmd VimEnter * :echo '☃ Welcome Back: ' . g:hostname
+" print out a key note on startup?
+!"
+
 
 
   " When editing a file, always jump to the last known cursor position.
