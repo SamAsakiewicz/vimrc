@@ -117,6 +117,7 @@ Basic Tools
 	
 	=(#)= - format # number of following lines
 	gg=G= - format all lines in file 
+    =i{   - format in block
 	g[Uu~(movement/prev selection) --> toggle case
 
 Basic tags
