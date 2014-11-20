@@ -84,6 +84,7 @@ NeoBundleFetch 'w0ng/vim-hybrid'
 NeoBundleFetch 'hickop/vim-hickop-colors'
 NeoBundleFetch 'junegunn/seoul256.vim'
 NeoBundleFetch 'whatyouhide/vim-gotham'    " dark color scheme
+NeoBundleFetch 'goirijo/vim-jgg-colorscheme'
 "}}}
 
 " Functional Plugins {{{
@@ -107,8 +108,8 @@ NeoBundleFetch 'tpope/vim-unimpaired'    " each [x & ]x mappings
 " Movement Plugins }}}
 "
 " Formatting {{{
-NeoBundleFetch 'garbas/vim-snipmate'
-NeoBundleFetch 'honza/vim-snippets'
+"NeoBundleFetch 'garbas/vim-snipmate'
+"NeoBundleFetch 'honza/vim-snippets'
 NeoBundleFetch 'junegunn/vim-easy-align'
 "NeoBundleFetch 'AndrewRadev/splitjoin.vim'
 "Plugin 'tpope/vim-surround'
@@ -235,6 +236,8 @@ let g:startify_custom_header = [
 " Startify }}}
 
 " EasyMotion {{{
+" Turn off default mappings
+let g:EasyMotion_do_mapping = 0
 nmap <leader>f <Plug>(easymotion-f)
 nmap <leader>F <Plug>(easymotion-F)
 nmap , <Plug>(easymotion-s)
@@ -263,6 +266,7 @@ set incsearch                        " Automatically jump to any results whil ty
 set hlsearch                         " Highlight search matches
 set laststatus=2                     " Always display the status line
 set nobackup                         " Do not make a backup when overwriting a file
+set hidden                           " Let the buffer remain in memory when not visible
 set nowritebackup                    " Do not write a backup when overwriting a file
 set number                           " Display line numbers
 set omnifunc=syntaxcomplete#Complete " Turn completion on
@@ -723,7 +727,6 @@ autocmd FileType text setlocal foldmethod=indent
 autocmd CursorHoldI,FocusLost * stopinsert
 autocmd VimEnter * :echo '☃ Welcome Back: ' . g:hostname
 " print out a key note on startup?
-!"
 
 
 
