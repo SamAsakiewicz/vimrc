@@ -70,6 +70,7 @@ NeoBundleFetch 'gtags.vim'    " Vim Support for GNU Global
 NeoBundleFetch 'Shougo/unite.vim'
 "NeoBundleFetch 'Shougo/neocomplcache.vim'    " neocomplcache - Autocompletion system for vim 
 "NeoBundleFetch 'jceb/vim-orgmode'
+NeoBundleFetch 'bufkill.vim'
 "}}}
 
 " Color Scheme Plugins {{{
@@ -84,7 +85,7 @@ NeoBundleFetch 'w0ng/vim-hybrid'
 NeoBundleFetch 'hickop/vim-hickop-colors'
 NeoBundleFetch 'junegunn/seoul256.vim'
 NeoBundleFetch 'whatyouhide/vim-gotham'    " dark color scheme
-NeoBundleFetch 'goirijo/vim-jgg-colorscheme'
+"NeoBundleFetch 'goirijo/vim-jgg-colorscheme' "ctags supported plugin
 "}}}
 
 " Functional Plugins {{{
@@ -92,7 +93,9 @@ NeoBundleFetch 'goirijo/vim-jgg-colorscheme'
 " Visual Plugins {{{
 NeoBundleFetch 'jeffkreeftmeijer/vim-numbertoggle'
 NeoBundleFetch 'mhinz/vim-startify'
-NeoBundleFetch 'octol/vim-cpp-enhanced-highlight'
+"NeoBundleFetch 'octol/vim-cpp-enhanced-highlight'
+NeoBundleFetch 'sjl/gundo.vim'
+NeoBundleFetch 'vim-scripts/DirDiff.vim'
 "NeoBundleFetch 'scrooloose/syntastic' " show build errors visual in the file
 "NeoBundleFetch 'Lokaltog/powerline' "pretty status bars
 "NeoBundleFetch 'majutsushi/tagbar'    " TagBar - a pleasant code outline for the current buffer
@@ -111,8 +114,9 @@ NeoBundleFetch 'tpope/vim-unimpaired'    " each [x & ]x mappings
 "NeoBundleFetch 'garbas/vim-snipmate'
 "NeoBundleFetch 'honza/vim-snippets'
 NeoBundleFetch 'junegunn/vim-easy-align'
+NeoBundleFetch 'tpope/vim-endwise'
 "NeoBundleFetch 'AndrewRadev/splitjoin.vim'
-"Plugin 'tpope/vim-surround'
+NeoBundleFetch 'tpope/vim-surround'
 "Plugin 'c.vim' maybe?
 " Formatting }}}
 
@@ -158,6 +162,7 @@ colorscheme solarized
 "let g:ctrlp_user_command = {
 "\}
 "ADD TEXT SEARCH, LOOK FOR CTAGS SEARCH?
+"add ctags / search
 "let g:ctrlp_extensions = ['mixed', 'quickfix', 'undo', 'line', 'changes', 'cmdline', 'menu']
 let g:ctrlp_max_height = 20
 let g:ctrlp_mruf_exclude = '/tmp.*\|/usr/share.*\|.*bundle.*\|.*\.git'
@@ -280,6 +285,16 @@ set softtabstop=4                    " 4 spaces when i hit tab
 set tabstop=4                        " Interpret a tab as 4 spaces
 set tags=/tags;./tags;/,tags;        " Is this optimal? maybe direct project root first, than tag back relay
 set visualbell                       " Instead of beeping, induce seizures by screen flashing
+set undofile                         " Persistent undo, across sessions
+set directory=~/.vim/swap            " keep swap files in a special directory
+"TODO LATER, loses history:  set undodir=~/.vim/undo           " Directory to keep persisten undo info
+set linebreak                        " Visually wrap characters at the word boundary (the wrap that happens when you size a window to small)
+set gdefault                         " switch %s/{pattern}/{pattern} with %s/{pattern/{pattern}/g, since i never want to replace just the first match on each line. hopefully this won't mess with plugins
+set undolevels=50000                 " Save a lot of file changes for undo
+set undoreload=100000                " Save a lot of file reloads for undo
+set splitright                       " make vsplits happen to the right instead of left
+set splitbelow                       " make split happen below instead of above
+"set virtualedit=block                     " tab
 
 "set background=dark " will modify backgrounds, which may have different color for dark and light
 "set nohidden " When I close a tab, remove the buffer
@@ -298,27 +313,6 @@ call matchadd('ColorColumn', '\%81v', 100)
 " Functions {{{
 
 " Fold Functions{{{
-"set foldtext=CustomFoldText()
-fu! CustomFoldText()
-    get first non-blank line
-    fs = v:foldstart
-    getline(fs) =~ '^\s*$' | let fs = nextnonblank(fs + 1)
-
-    fs > v:foldend
-    line = getline(v:foldstart)
-
-    line = substitute(getline(fs), '\t', repeat(' ', &tabstop), 'g')
-endif
-
-let w = winwidth(0) - &foldcolumn - (&number ? 8 : 0)
-let foldSize = 1 + v:foldend - v:foldstart
-let foldSizeStr = " " . foldSize . " lines "
-let foldLevelStr = repeat("+--", v:foldlevel)
-let lineCount = line("$")
-let foldPercentage = printf("[%.1f", (foldSize*1.0)/lineCount*100) . "%] "
-let expansionString = repeat(".", w - strwidth(foldSizeStr.line.foldLevelStr.foldPercentage))
-return line . expansionString . foldSizeStr . foldPercentage . foldLevelStr
- endf
 
 "}}}
 
@@ -335,13 +329,31 @@ function! BuildCtags(dir)
     if has("win32")
         !ctags.exe -R --exclude=builds .
     elseif has ("unix")
-        !ctags -R --exclude=debian --exclude=builds --exclude=build .
+        !ctags -R --exclude=debian --exclude=builds --exclude=build --extra .
     endif
 endfunction
 
 function! BuildGtags(dir)
     execute 'cd' fnameescape(a:dir)
     :!gtags
+endfunction
+
+function! BuildAllTags(dir)
+if g:is_win
+    call BuildCtags(g:project_root_bs)<CR>
+    call BuildGtags(g:project_root_bs)<CR>
+else
+    call BuildCtags(g:project_root_fs)<CR>
+    call BuildGtags(g:project_root_fs)<CR>
+endif
+endfunction
+
+
+function! UpdateVim()
+    so $MYVIMRC
+    nmap Unite -buffer-name=neobundle -no-cursor-line -log neobundle/update<CR>
+    so $MYVIMRC
+    nmap call BuildHelpTags(g:docpaths)<CR>
 endfunction
 
 function! RunAgOnWordUnderCursor(dir)
@@ -416,11 +428,13 @@ function! GetRoot()
     echo g:current_loc_sys
     echo g:current_loc_fs
 endfunction
+
 "}}}
 "}}}
 
 " Key Mappings {{{
-
+" Note: you can view currently mapped keys with :map, :nmap:, inoremap, and etc
+" Note: vim lists all it's default keys and command in ":help index"
 
 "fuzzy escapes to normal mode
 " add ctrl-u/d?
@@ -430,26 +444,28 @@ inoremap <silent> <C-L> <Right>
 inoremap <silent> <C-H> <Left>
 inoremap <silent> <C-K> <Up>
 inoremap <silent> <C-J> <Down>
-inoremap <silent> kj <esc>
+"inoremap <silent> kj <esc> " Don't map this since words ending with k, you can't jk  
 inoremap <silent> jk <esc>
 inoremap <esc> <nop>
 " }}}
 
 " Normal Mode Mappings {{{
-" less effor Ctrl+U & Ctrl+D
+" inconvenient keys
+nnoremap <F1> <nop>
+nnoremap Q <nop>
+nnoremap K <nop>
+
+" less effort Ctrl+U & Ctrl+D
 nnoremap <silent> K <C-U>
 nnoremap <silent> J <C-D>
 nnoremap j gj
 nnoremap k gk
 
-nnoremap - ddp
-nnoremap _ ddkP
-
 nnoremap \ @q 
 
 " Tab Mappings {{{
-nnoremap <silent> <A-h> :tabprevious<CR>
-nnoremap <silent> <A-l> :tabnext<CR>
+" use gt & gT "nnoremap <silent> <A-h> :tabprevious<CR>
+"nnoremap <silent> <A-l> :tabnext<CR>
 nnoremap <silent> <A-H> :execute 'silent! tabmove ' . (tabpagenr()-2)<CR>
 nnoremap <silent> <A-L> :execute 'silent! tabmove ' . tabpagenr()<CR>
 " Tab Mappings }}}
@@ -479,7 +495,7 @@ map <A-]> :vsp <CR>:exec("tag ".expand("<cword>"))<CR>
 let mapleader = " "
 
 nmap <silent> <leader>/ :nohlsearch<CR>
-nmap <silent> <leader>bv :tabnew $MYVIMRC<CR>
+nmap <silent> <leader>tv :tabnew $MYVIMRC<CR>
 nmap <leader>sv :so $MYVIMRC<CR>
 
 "perhaps put all the misc unite ones under <leader>u{logical char}
@@ -488,14 +504,17 @@ nmap <leader>sv :so $MYVIMRC<CR>
 if has("win32")
     nmap <leader>bc <esc>:call BuildCtags(g:project_root_bs)<CR>
     nmap <leader>bg <esc>:call BuildGtags(g:project_root_bs)<CR>
+    nmap <leader>bt <esc>:call BuildAllTags(g:project_root_bs)<CR>
     nmap <leader>bi <esc>:call ParseBuildLog(g:project_root_bs)<CR>
 
 else
     nmap <leader>bc <esc>:call BuildCtags(g:project_root_fs)<CR>
     nmap <leader>bg <esc>:call BuildGtags(g:project_root_fs)<CR>
+    nmap <leader>bt <esc>:call BuildAllTags(g:project_root_fs)<CR>
 endif
-nmap <leader>bn <esc>:Unite -buffer-name=neobundle -no-cursor-line -log neobundle/update<CR>
-nmap <leader>bh <esc>:call BuildHelpTags(g:docpaths)<CR>
+
+    nnoremap <leader>bn :call UpdateVim()<CR>
+
 "}}}
 
 " Ag Mappings {{{
@@ -534,19 +553,14 @@ xnoremap <A-?> :s/^\/\///<CR>
 nnoremap <leader>; <esc>A;<esc>j 
 " }}}
 
-" Quick Tabs {{{
-nmap <silent> <leader>tn <esc>:tabnew<CR>
-nmap <silent> <leader>Q <esc>:tabclose<CR>
-"nmap <silent> <leader>tl <esc>:tabnext<CR>
-"nmap <silent> <leader>th <esc>:tabprev<CR>
+" Tab Mappings {{{
+nnoremap <silent> <leader>tn <esc>:tabnew<CR>
+nnoremap <silent> <leader>tc <esc>:tabclose<CR>
+nnoremap <silent> <leader>td <esc>:windo bd<CR>
+nnoremap <silent> <leader>th :execute 'silent! tabmove ' . (tabpagenr()-2)<CR>
+nnoremap <silent> <leader>tl :execute 'silent! tabmove ' . tabpagenr()<CR>
 "}}}
 
-" Quick Tags iteration {{{
-nmap <silent> <leader>n <esc>:tn<CR>
-nmap <leader>p <esc>:tp<CR>
-"}}}
-
-nmap q<leader> <nop>
 nmap <leader> <nop>
 
 " Quick Splits {{{
@@ -567,8 +581,8 @@ nnoremap <silent> <c-h> :wincmd h<CR>
 " Personal TODO {{{
 nnoremap <leader>df <esc>/TODO<CR>
 nnoremap <leader>dF <esc>/TODO<CR>N
-nnoremap <leader>da <esc>a//TODO:
-nnoremap <leader>dr <esc>k/\/\/TODO:<CR><esc>D
+nnoremap <leader>da <esc>a//TODO(sam):
+nnoremap <leader>dr <esc>k/\/\/TODO(sam):<CR><esc>D
 "}}}
 
 call unite#custom#source('file_rec/async','sorters','sorter_rank')
@@ -660,10 +674,10 @@ nnoremap <silent> <leader>uc :<C-u>Unite colorscheme -buffer-name=Colorschemes<C
 nnoremap <silent> <leader>m :<C-u>Unite jump -buffer-name=Marks<CR>
 nnoremap <silent> <leader>y :<C-u>Unite history/yank -buffer-name=Copies<CR>
 nnoremap <leader>gc :Unite -immediately -no-quit -keep-focus -winheight=15 gtags/context<CR>
-nnoremap <leader>gr :Unite -immediately -no-quit -keep-focus -winheight=25 gtags/ref<CR>
+nnoremap <A-r> :Unite -immediately -no-quit -keep-focus -winheight=25 gtags/ref<CR>
 nnoremap <leader>gs :Unite -immediately -no-quit -keep-focus -winheight=15 gtags/completion<CR>
 nnoremap <leader>gi :Unite -immediately -no-quit -keep-focus -winheight=15 gtags/grep<CR>
-nnoremap <leader>gd :Unite -immediately -winheight=17 -buffer-name=Definition gtags/def<CR>
+nnoremap <A-d> :Unite -immediately -winheight=17 -buffer-name=Definition gtags/def<CR>
 
 let g:unite_source_outline_ctags_program = 'C:\\Vim\\ctags.exe'
 nnoremap <silent> <leader>o :<C-u>Unite -start-insert -auto-preview outline  -buffer-name=Outline<CR>
@@ -672,12 +686,6 @@ nnoremap <silent> <leader>o :<C-u>Unite -start-insert -auto-preview outline  -bu
 "inoremap <buffer> <A-k> <Plug>(unite_select_previous_line)
 
 " Unite Key Mappings }}}
-
-"nnoremap <silent> <leader>q :q<CR>
-nnoremap <leader>q :bd<CR>
-"nnoremap <silent> <leader>w :w<CR> " Machine specific so added later on
-
-"}}}
 
 "  Machine Specific {{{                                  
 
@@ -748,8 +756,3 @@ autocmd VimEnter * :echo '☃ Welcome Back: ' . g:hostname
 " Misc Unicode Characters {{{
 " ⎈✺ ☔❂
 " }}}
-
-" Vim Notes {{{
-" '<,'>sort  -> sort selected lines
-
-" Vim Notes }}}
