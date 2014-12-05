@@ -19,6 +19,7 @@
 
 " Global Variables {{{
 
+"autocmds this
 if !exists('g:is_startup') " Determine if we just started up vim
     let g:is_startup = 1
 else
@@ -665,22 +666,24 @@ let g:unite_source_history_yank_enable = 1 " Keep track of yanks for 'Unite yank
 "TODO map to a unite key (maybe alt or keep the key as <leader>g)?
 nnoremap <silent> <A-u> :<C-u>UniteClose<CR>
 nnoremap <silent> <leader>j :<C-u>Unite buffer -start-insert <CR>
-nnoremap <silent> <leader>J :<C-u>Unite buffer_tab -start-insert <CR>
-nnoremap <silent> <leader>k :<C-u>Unite tab<CR>
-nnoremap <silent> <leader>l :<C-u>Unite line -start-insert <CR>
+nnoremap <silent> <leader>J :<C-u>Unite buffer_tab -start-insert<CR>
+nnoremap <silent> <leader>l :<C-u>Unite line -start-insert -buffer-name=LineSearch -prompt=%>\  -prompt-visible<CR>
+nnoremap <silent> <leader>L :<C-u>Unite line -start-insert -buffer-name=LineSearch -keep-focus -toggle -no-quit <CR>
 nnoremap <silent> <leader>h :<C-u>Unite file_mru -start-insert -buffer-name=History<CR>
 nnoremap <silent> <leader>ub :<C-u>Unite bookmark -toggle -here -buffer-name=Bookmarks <CR>
 nnoremap <silent> <leader>uc :<C-u>Unite colorscheme -buffer-name=Colorschemes<CR>
+nnoremap <silent> <leader>uk :<C-u>Unite tab<CR>
 nnoremap <silent> <leader>m :<C-u>Unite jump -buffer-name=Marks<CR>
+nnoremap <silent> <leader>M :<C-u>Unite jump -buffer-name=Marks -keep-focus -toggle -no-quit <CR>
 nnoremap <silent> <leader>y :<C-u>Unite history/yank -buffer-name=Copies<CR>
+nnoremap <silent> <leader>Y :<C-u>Unite history/yank -buffer-name=Copies -keep-focus -toggle -no-quit<CR>
 nnoremap <leader>gc :Unite -immediately -no-quit -keep-focus -winheight=15 gtags/context<CR>
 nnoremap <A-r> :Unite -immediately -no-quit -keep-focus -winheight=25 gtags/ref<CR>
 nnoremap <leader>gs :Unite -immediately -no-quit -keep-focus -winheight=15 gtags/completion<CR>
 nnoremap <leader>gi :Unite -immediately -no-quit -keep-focus -winheight=15 gtags/grep<CR>
 nnoremap <A-d> :Unite -immediately -winheight=17 -buffer-name=Definition gtags/def<CR>
 
-let g:unite_source_outline_ctags_program = 'C:\\Vim\\ctags.exe'
-nnoremap <silent> <leader>o :<C-u>Unite -start-insert -auto-preview outline  -buffer-name=Outline<CR>
+nnoremap <leader>o :<C-u>Unite -start-insert -auto-preview outline -buffer-name=Outline<CR>
 "use c-n & c-p for now, alt, ctrl, and shift are all no good for this
 "inoremap <buffer> <A-j> <Plug>(unite_select_next_line)
 "inoremap <buffer> <A-k> <Plug>(unite_select_previous_line)
@@ -732,10 +735,10 @@ autocmd BufEnter * :call SetRoot()
 autocmd FileType vim setlocal foldmethod=marker
 autocmd FileType c,cpp setlocal foldmethod=syntax
 autocmd FileType text setlocal foldmethod=indent
-autocmd CursorHoldI,FocusLost * stopinsert
+"autocmd CursorHoldI,FocusLost * stopinsert
+autocmd FocusLost * stopinsert
 autocmd VimEnter * :echo '☃ Welcome Back: ' . g:hostname
 " print out a key note on startup?
-
 
 
   " When editing a file, always jump to the last known cursor position.
