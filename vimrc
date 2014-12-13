@@ -94,6 +94,7 @@ NeoBundleFetch 'goirijo/vim-jgg-colorscheme'
 NeoBundleFetch 'jeffkreeftmeijer/vim-numbertoggle'
 NeoBundleFetch 'mhinz/vim-startify'
 NeoBundleFetch 'octol/vim-cpp-enhanced-highlight'
+NeoBundleFetch 'Shougo/vinarise.vim'
 "NeoBundleFetch 'scrooloose/syntastic' " show build errors visual in the file
 "NeoBundleFetch 'Lokaltog/powerline' "pretty status bars
 "NeoBundleFetch 'majutsushi/tagbar'    " TagBar - a pleasant code outline for the current buffer
@@ -723,27 +724,30 @@ endif
 "}}}
 
 " AutoCmds {{{
-autocmd BufEnter * :call SetRoot()
-autocmd FileType vim setlocal foldmethod=marker
-autocmd FileType c,cpp setlocal foldmethod=syntax
-autocmd FileType text setlocal foldmethod=indent
-"autocmd CursorHoldI,FocusLost * stopinsert
-autocmd FocusLost * stopinsert
-autocmd VimEnter * :echo '☃ Welcome Back: ' . g:hostname
-" print out a key note on startup?
+augroup vimrc
+    au!   
+    autocmd BufEnter * :call SetRoot()
+    autocmd FileType vim setlocal foldmethod=marker
+    autocmd FileType c,cpp setlocal foldmethod=syntax
+    autocmd FileType text setlocal foldmethod=indent
+    "autocmd CursorHoldI,FocusLost * stopinsert
+    autocmd FocusLost * stopinsert
+    autocmd VimEnter * :echo '☃ Welcome Back: ' . g:hostname
+    " print out a key note on startup?
 
 
-  " When editing a file, always jump to the last known cursor position.
-  " Don't do it when the position is invalid or when inside an event handler
-  " (happens when dropping a file on gvim).
-  " Also don't do it when the mark is in the first line, that is the default
-  " position when opening a file.
-  autocmd BufReadPost *
-    \ if line("'\"") > 1 && line("'\"") <= line("$") |
-    \   exe "normal! g`\"" |
-    \ endif
+    " When editing a file, always jump to the last known cursor position.
+    " Don't do it when the position is invalid or when inside an event handler
+    " (happens when dropping a file on gvim).
+    " Also don't do it when the mark is in the first line, that is the default
+    " position when opening a file.
+    autocmd BufReadPost *
+                \ if line("'\"") > 1 && line("'\"") <= line("$") |
+                \   exe "normal! g`\"" |
+                \ endif
 
-"autocmd BufEnter * execute "chdir ".escape(expand("%:p:h"), ' ') " Automatically cd into the directory that the file is in
+    "autocmd BufEnter * execute "chdir ".escape(expand("%:p:h"), ' ') " Automatically cd into the directory that the file is in
+augroup END
 
 
 "}}}
