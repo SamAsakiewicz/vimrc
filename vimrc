@@ -19,7 +19,6 @@
 
 " Global Variables {{{
 
-"autocmds this
 if !exists('g:is_startup') " Determine if we just started up vim
     let g:is_startup = 1
 else
@@ -133,6 +132,7 @@ NeoBundleFetch 'tacroe/unite-mark'
 NeoBundleFetch 'hewes/unite-gtags'
 NeoBundleFetch 'sgur/unite-qf'  " quickfix window source
 NeoBundleFetch 'thinca/vim-unite-history' " Unite display of command and search history
+NeoBundleFetch 'kien/rainbow_parentheses.vim"
 
 " Unite Plugins }}}
 
@@ -293,8 +293,10 @@ set linebreak                        " Visually wrap characters at the word boun
 set gdefault                         " switch %s/{pattern}/{pattern} with %s/{pattern/{pattern}/g, since i never want to replace just the first match on each line. hopefully this won't mess with plugins
 set undolevels=50000                 " Save a lot of file changes for undo
 set undoreload=100000                " Save a lot of file reloads for undo
-set splitright                       " make vsplits happen to the right instead of left
+"set splitright                       " make vsplits happen to the right instead of left
 set splitbelow                       " make split happen below instead of above
+set wildmode=longest,list            " shell style completion
+set tw=0                             " don't chop lines at 78 characters
 "set virtualedit=block                     " tab
 
 "set background=dark " will modify backgrounds, which may have different color for dark and light
@@ -328,9 +330,9 @@ function! BuildCtags(dir)
     execute 'cd' fnameescape(a:dir)
 
     if has("win32")
-        !ctags.exe -R --exclude=builds .
+        !ctags.exe -R --exclude=builds --fields=+Ssaki --extra=+qf .
     elseif has ("unix")
-        !ctags -R --exclude=debian --exclude=builds --exclude=build --extra .
+        !ctags -R --exclude=debian --exclude=builds --exclude=build --flags=+saki --extra=+qf .
     endif
 endfunction
 
@@ -481,8 +483,8 @@ nnoremap <silent> <A-k> zk
 nnoremap <silent> <A-j> zj
 nnoremap <silent> <A-a> za
 nnoremap <silent> <A-A> zA
-nnoremap <silent> <A-m> zM
-nnoremap <silent> <A-r> zR
+nnoremap <silent> <A-c> zM
+nnoremap <silent> <A-e> zR
 " Fold Navigation Mappings }}} 
 
 
@@ -495,9 +497,11 @@ map <A-]> :vsp <CR>:exec("tag ".expand("<cword>"))<CR>
 " Leader Key Mappings {{{
 let mapleader = " "
 
-nmap <silent> <leader>/ :nohlsearch<CR>
-nmap <silent> <leader>tv :tabnew $MYVIMRC<CR>
-nmap <leader>sv :so $MYVIMRC<CR>
+nnoremap <space><space> a<space><esc> 
+nnoremap <s-space><s-space> i<space><esc> 
+nnoremap <silent> <leader>/ :nohlsearch<CR>
+nnoremap <silent> <leader>tv :tabnew $MYVIMRC<CR>
+nnoremap <leader>sv :so $MYVIMRC<CR>
 
 "perhaps put all the misc unite ones under <leader>u{logical char}
 
@@ -522,13 +526,13 @@ endif
 nmap <silent> <leader>ac <esc>:call RunAgOnWordUnderCursor(g:project_root_sys)<CR>
 nmap <silent> <leader>Ac <esc>:call RunAgOnWordUnderCursor(g:current_loc_fs)<CR>
 nmap <silent> <leader>ai <esc>:call RunAgOnInput(g:project_root_sys)<CR>
-" Ag Mappings}}}
 
-" Gtags Mappings {{{
 nmap <silent> <leader>Ai <esc>:call RunAgOnInput(g:current_loc_fs)<CR>
 nmap <silent> <leader>an <esc>:call RunAgOnInput(g:docs_path)<CR>
+" Ag Mappings }}}
+nmap <leader>at :EasyAlign /
 
-" }}}
+
 nmap <silent> <leader>gC <esc>:call GtagsRefSearch()<CR>
 "TODO COPIED< DOUBLE CHECK
 nmap <silent> <leader>gn <esc>:cn<CR>
@@ -591,18 +595,10 @@ call unite#filters#matcher_default#use(['matcher_fuzzy']) " Use fuzzy selection 
 call unite#filters#sorter_default#use(['sorter_rank']) " Sort Fuzzy selection, by fuzziness, not alphabetical
 
 " Quick Explorer {{{
-function! OpenExplorerHere()
-    if !empty(g:current_loc_fs)
-        execute 'Unite' '-start-insert' 'file' '-path=' . g:current_loc_fs
-    else
-        execute 'Unite' 'file'
-    endif
-endfunction
-nnoremap <leader>e :call OpenExplorerHere()<CR>
 
 function! OpenExplorerProject()
     if !empty(g:project_root_fs)
-        execute 'Unite' '-start-insert' 'file' '-path=' . g:project_root_fs
+        execute 'Unite' 'file' '-path=' . g:project_root_fs
     else
         execute 'Unite' 'file'
     endif
@@ -664,31 +660,39 @@ let g:unite_source_history_yank_enable = 1 " Keep track of yanks for 'Unite yank
         \ ['converter_file_directory'])
 
 "TODO map to a unite key (maybe alt or keep the key as <leader>g)?
-nnoremap <silent> <A-u> :<C-u>UniteClose<CR>
-nnoremap <silent> <leader>j :<C-u>Unite buffer -start-insert <CR>
-nnoremap <silent> <leader>J :<C-u>Unite buffer_tab -start-insert<CR>
-nnoremap <silent> <leader>l :<C-u>Unite line -start-insert -buffer-name=LineSearch -prompt=%>\  -prompt-visible<CR>
-nnoremap <silent> <leader>L :<C-u>Unite line -start-insert -buffer-name=LineSearch -keep-focus -toggle -no-quit <CR>
-nnoremap <silent> <leader>h :<C-u>Unite file_mru -start-insert -buffer-name=History<CR>
-nnoremap <silent> <leader>ub :<C-u>Unite bookmark -toggle -here -buffer-name=Bookmarks <CR>
-nnoremap <silent> <leader>uc :<C-u>Unite colorscheme -buffer-name=Colorschemes<CR>
-nnoremap <silent> <leader>uk :<C-u>Unite tab<CR>
-nnoremap <silent> <leader>m :<C-u>Unite jump -buffer-name=Marks<CR>
-nnoremap <silent> <leader>M :<C-u>Unite jump -buffer-name=Marks -keep-focus -toggle -no-quit <CR>
-nnoremap <silent> <leader>y :<C-u>Unite history/yank -buffer-name=Copies<CR>
-nnoremap <silent> <leader>Y :<C-u>Unite history/yank -buffer-name=Copies -keep-focus -toggle -no-quit<CR>
-nnoremap <leader>gc :Unite -immediately -no-quit -keep-focus -winheight=15 gtags/context<CR>
-nnoremap <A-r> :Unite -immediately -no-quit -keep-focus -winheight=25 gtags/ref<CR>
-nnoremap <leader>gs :Unite -immediately -no-quit -keep-focus -winheight=15 gtags/completion<CR>
-nnoremap <leader>gi :Unite -immediately -no-quit -keep-focus -winheight=15 gtags/grep<CR>
-nnoremap <A-d> :Unite -immediately -winheight=17 -buffer-name=Definition gtags/def<CR>
+nnoremap <silent> <leader>e  :<C-u>UniteWithBufferDir  file                         -buffer-name=Explore\ Folder <CR>
+nnoremap <silent> <leader>ua  :<C-u>UniteBookmarkAdd                                 -buffer-name=Add\ Bookmark   <CR>
+nnoremap <silent> <leader>j  :<C-u>Unite buffer                                                                  <CR>
+nnoremap <silent> <leader>J  :<C-u>Unite buffer_tab                                                              <CR>
+nnoremap <silent> <leader>k  :<C-u>Unite tab                                                                     <CR>
+nnoremap <silent> <leader>l  :<C-u>Unite line             -complete                 -buffer-name=Line\ Search    <CR>
+nnoremap <silent> <leader>h  :<C-u>Unite file_mru         -complete                 -buffer-name=History         <CR>
+nnoremap <silent> <leader>ub :<C-u>Unite bookmark         -here                     -buffer-name=Bookmarks       <CR>
+nnoremap <silent> <leader>uc :<C-u>UniteClose<CR>
+nnoremap <silent> <leader>us :<C-u>UniteShow<CR>
 
-nnoremap <leader>o :<C-u>Unite -start-insert -auto-preview outline -buffer-name=Outline<CR>
+nnoremap <silent> <leader>m  :<C-u>Unite jump                                       -buffer-name=Marks           <CR>
+nnoremap <silent> <leader>y  :<C-u>Unite history/yank                               -buffer-name=Copies          <CR>
+nnoremap <silent> <leader>gc :<C-u>Unite gtags/context    -immediately -auto-resize -buffer-name=Tag\ Context    <CR>
+nnoremap <silent> <leader>gr :<C-u>Unite gtags/ref        -immediately -auto-resize -buffer-name=Tag\ Reference  <CR>
+nnoremap <silent> <leader>gs :<C-u>Unite gtags/completion -immediately -auto-resize -buffer-name=Tag\ Completion <CR>
+nnoremap <silent> <leader>gi :<C-u>Unite gtags/grep       -immediately -auto-resize -buffer-name=Tag\ Grep       <CR>
+nnoremap <silent> <leader>gd :<C-u>Unite gtags/def        -immediately -auto-resize -buffer-name=Tag\ Definition <CR>
+nnoremap <silent> <leader>o  :<C-u>Unite -auto-preview outline                      -buffer-name=Outline         <CR>
 "use c-n & c-p for now, alt, ctrl, and shift are all no good for this
 "inoremap <buffer> <A-j> <Plug>(unite_select_next_line)
 "inoremap <buffer> <A-k> <Plug>(unite_select_previous_line)
-
+" Custom mappings for the unite buffer
+autocmd FileType unite call s:unite_keys()
+function! s:unite_keys()
+  inoremap <buffer> <C-z> <Plug>(unite_toggle_mark_current_candidate)
+  nnoremap <buffer> m <Plug>(unite_toggle_mark_current_candidate)
+endfunction
 " Unite Key Mappings }}}
+noremap <Up> <nop>
+noremap <Down> <nop>
+noremap <Left> <nop>
+noremap <Right> <nop>
 
 "  Machine Specific {{{                                  
 
@@ -735,10 +739,10 @@ autocmd BufEnter * :call SetRoot()
 autocmd FileType vim setlocal foldmethod=marker
 autocmd FileType c,cpp setlocal foldmethod=syntax
 autocmd FileType text setlocal foldmethod=indent
-"autocmd CursorHoldI,FocusLost * stopinsert
 autocmd FocusLost * stopinsert
-autocmd VimEnter * :echo '☃ Welcome Back: ' . g:hostname
+autocmd VimEnter * :echo '☃<use { & }. Welcome Back: ' . g:hostname
 " print out a key note on startup?
+
 
 
   " When editing a file, always jump to the last known cursor position.
