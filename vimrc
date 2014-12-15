@@ -93,9 +93,9 @@ NeoBundleFetch 'whatyouhide/vim-gotham'    " dark color scheme
 " Visual Plugins {{{
 NeoBundleFetch 'jeffkreeftmeijer/vim-numbertoggle'
 NeoBundleFetch 'mhinz/vim-startify'
-"NeoBundleFetch 'octol/vim-cpp-enhanced-highlight'
 NeoBundleFetch 'sjl/gundo.vim'
 NeoBundleFetch 'vim-scripts/DirDiff.vim'
+NeoBundleFetch 'Shougo/vinarise.vim'
 "NeoBundleFetch 'scrooloose/syntastic' " show build errors visual in the file
 "NeoBundleFetch 'Lokaltog/powerline' "pretty status bars
 "NeoBundleFetch 'majutsushi/tagbar'    " TagBar - a pleasant code outline for the current buffer
@@ -132,7 +132,7 @@ NeoBundleFetch 'tacroe/unite-mark'
 NeoBundleFetch 'hewes/unite-gtags'
 NeoBundleFetch 'sgur/unite-qf'  " quickfix window source
 NeoBundleFetch 'thinca/vim-unite-history' " Unite display of command and search history
-NeoBundleFetch 'kien/rainbow_parentheses.vim"
+NeoBundleFetch 'kien/rainbow_parentheses.vim'
 
 " Unite Plugins }}}
 
@@ -353,10 +353,8 @@ endfunction
 
 
 function! UpdateVim()
-    so $MYVIMRC
-    nmap Unite -buffer-name=neobundle -no-cursor-line -log neobundle/update<CR>
-    so $MYVIMRC
-    nmap call BuildHelpTags(g:docpaths)<CR>
+    :Unite -buffer-name=neobundle -no-cursor-line -log neobundle/update
+    ":call BuildHelpTags(g:docpaths)<CR>
 endfunction
 
 function! RunAgOnWordUnderCursor(dir)
@@ -501,7 +499,6 @@ nnoremap <space><space> a<space><esc>
 nnoremap <s-space><s-space> i<space><esc> 
 nnoremap <silent> <leader>/ :nohlsearch<CR>
 nnoremap <silent> <leader>tv :tabnew $MYVIMRC<CR>
-nnoremap <leader>sv :so $MYVIMRC<CR>
 
 "perhaps put all the misc unite ones under <leader>u{logical char}
 
@@ -530,6 +527,7 @@ nmap <silent> <leader>ai <esc>:call RunAgOnInput(g:project_root_sys)<CR>
 nmap <silent> <leader>Ai <esc>:call RunAgOnInput(g:current_loc_fs)<CR>
 nmap <silent> <leader>an <esc>:call RunAgOnInput(g:docs_path)<CR>
 " Ag Mappings }}}
+vmap <leader>at :EasyAlign /
 nmap <leader>at :EasyAlign /
 
 
@@ -735,30 +733,36 @@ endif
 "}}}
 
 " AutoCmds {{{
-autocmd BufEnter * :call SetRoot()
-autocmd FileType vim setlocal foldmethod=marker
-autocmd FileType c,cpp setlocal foldmethod=syntax
-autocmd FileType text setlocal foldmethod=indent
-autocmd FocusLost * stopinsert
-autocmd VimEnter * :echo '☃<use { & }. Welcome Back: ' . g:hostname
-" print out a key note on startup?
 
 
+augroup vimrc
+    au!   
+    autocmd BufEnter * :call SetRoot()
+    autocmd FileType vim setlocal foldmethod=marker
+    autocmd FileType c,cpp setlocal foldmethod=syntax
+    autocmd FileType text setlocal foldmethod=indent
+    autocmd FocusLost * stopinsert
+    autocmd bufwritepost $MYVIMRC source % " Re-Source vimrc wach time it is edited
+    autocmd VimEnter * :echo '☃ Welcome Back: ' . g:hostname
+    autocmd VimEnter * :call BuildHelpTags(g:docpaths)
+    " print out a key note on startup?
 
-  " When editing a file, always jump to the last known cursor position.
-  " Don't do it when the position is invalid or when inside an event handler
-  " (happens when dropping a file on gvim).
-  " Also don't do it when the mark is in the first line, that is the default
-  " position when opening a file.
-  autocmd BufReadPost *
-    \ if line("'\"") > 1 && line("'\"") <= line("$") |
-    \   exe "normal! g`\"" |
-    \ endif
+    " When editing a file, always jump to the last known cursor position.
+    " Don't do it when the position is invalid or when inside an event handler
+    " (happens when dropping a file on gvim).
+    " Also don't do it when the mark is in the first line, that is the default
+    " position when opening a file.
+    autocmd BufReadPost *
+                \ if line("'\"") > 1 && line("'\"") <= line("$") |
+                \   exe "normal! g`\"" |
+                \ endif
 
-"autocmd BufEnter * execute "chdir ".escape(expand("%:p:h"), ' ') " Automatically cd into the directory that the file is in
+    "autocmd BufEnter * execute "chdir ".escape(expand("%:p:h"), ' ') " Automatically cd into the directory that the file is in
+augroup END
 
 
 "}}}
+
 
 " Misc Unicode Characters {{{
 " ⎈✺ ☔❂
