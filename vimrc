@@ -1,9 +1,9 @@
-" __      __  _____   __  __   _____     _____ 
+" __      __  _____   __  __   _____     _____
 " \ \    / / |_   _| |  \/  | |  __ \   / ____|
-"  \ \  / /    | |   | \  / | | |__) | | |     
-"   \ \/ /     | |   | |\/| | |  _  /  | |     
-"    \  /     _| |_  | |  | | | | \ \  | |____ 
-"     \/     |_____| |_|  |_| |_|  \_\  \_____|                                             
+"  \ \  / /    | |   | \  / | | |__) | | |
+"   \ \/ /     | |   | |\/| | |  _  /  | |
+"    \  /     _| |_  | |  | | | | \ \  | |____
+"     \/     |_____| |_|  |_| |_|  \_\  \_____|
 
 " The Art of VIm {{{
 
@@ -47,7 +47,7 @@ endif
 
 " bye bye, Vi, and nice knowing ya, vanilla VIm
 set nocompatible
-                                              
+
 " NeoBundle Start {{{
 set runtimepath+=~/.vim/bundle/neobundle.vim/
 set runtimepath+=~/.vim/bundle/*
@@ -68,9 +68,11 @@ NeoBundleFetch 'rking/ag.vim'    " AG.vim - interface to ag.exe,  grep/ack repla
 NeoBundleFetch 'kien/ctrlp.vim'    " CtrlP - Fuzzy File Search
 NeoBundleFetch 'gtags.vim'    " Vim Support for GNU Global
 NeoBundleFetch 'Shougo/unite.vim'
-"NeoBundleFetch 'Shougo/neocomplcache.vim'    " neocomplcache - Autocompletion system for vim 
+"NeoBundleFetch 'Shougo/neocomplcache.vim'    " neocomplcache - Autocompletion system for vim
 "NeoBundleFetch 'jceb/vim-orgmode'
 NeoBundleFetch 'bufkill.vim'
+NeoBundleFetch 'mtth/scratch.vim'  " gs to toggle a scratch buffer
+NeoBundleFetch 'Raimondi/delimitMate'  " automatically end braces
 "}}}
 
 " Color Scheme Plugins {{{
@@ -96,6 +98,7 @@ NeoBundleFetch 'mhinz/vim-startify'
 NeoBundleFetch 'sjl/gundo.vim'
 NeoBundleFetch 'vim-scripts/DirDiff.vim'
 NeoBundleFetch 'Shougo/vinarise.vim'
+NeoBundleFetch 'osyo-manga/vim-brightest'
 "NeoBundleFetch 'scrooloose/syntastic' " show build errors visual in the file
 "NeoBundleFetch 'Lokaltog/powerline' "pretty status bars
 "NeoBundleFetch 'majutsushi/tagbar'    " TagBar - a pleasant code outline for the current buffer
@@ -183,11 +186,11 @@ let g:ctrlp_custom_ignore = {
 " CtrlP Options }}}
 
 " NeoComplCache {{{
-"    _  _             ___                    _   ___            _         
-"   | \| | ___  ___  / __| ___  _ __   _ __ | | / __| __ _  __ | |_   ___ 
+"    _  _             ___                    _   ___            _
+"   | \| | ___  ___  / __| ___  _ __   _ __ | | / __| __ _  __ | |_   ___
 "   | .` |/ -_)/ _ \| (__ / _ \| '  \ | '_ \| || (__ / _` |/ _|| ' \ / -_)
 "   |_|\_|\___|\___/ \___|\___/|_|_|_|| .__/|_| \___|\__,_|\__||_||_|\___|
-"                                     |_|                                 
+"                                     |_|
 " Disable AutoComplPop.
 let g:acp_enableAtStartup = 0
 " Use neocomplcache.
@@ -201,11 +204,11 @@ let g:neocomplcache_lock_buffer_name_pattern = '\*ku\*'
 " NeoComplCache }}}
 
 " Startify {{{
-"    ___  _               _    _   __       
-"   / __|| |_  __ _  _ _ | |_ (_) / _| _  _ 
+"    ___  _               _    _   __
+"   / __|| |_  __ _  _ _ | |_ (_) / _| _  _
 "   \__ \|  _|/ _` || '_||  _|| ||  _|| || |
 "   |___/ \__|\__,_||_|   \__||_||_|   \_, |
-"                                      |__/ 
+"                                      |__/
 
 let g:startify_list_order = [
       \ ['   Recently Accessed:'],
@@ -293,7 +296,7 @@ set linebreak                        " Visually wrap characters at the word boun
 set gdefault                         " switch %s/{pattern}/{pattern} with %s/{pattern/{pattern}/g, since i never want to replace just the first match on each line. hopefully this won't mess with plugins
 set undolevels=50000                 " Save a lot of file changes for undo
 set undoreload=100000                " Save a lot of file reloads for undo
-"set splitright                       " make vsplits happen to the right instead of left
+set splitright                       " make vsplits happen to the right instead of left
 set splitbelow                       " make split happen below instead of above
 set wildmode=longest,list            " shell style completion
 set tw=0                             " don't chop lines at 78 characters
@@ -305,12 +308,12 @@ set tw=0                             " don't chop lines at 78 characters
 "set shellslash "TODO
 
 compiler gcc "use gcc for building and quickfixing errors
-hi CursorLine term=none cterm=none ctermbg=3      
+hi CursorLine term=none cterm=none ctermbg=3
 filetype plugin indent on " Turn on filetype specific indenting
 syntax enable " Turn on syntax coloring
 
-call matchadd('ColorColumn', '\%81v', 100)  
- 
+call matchadd('ColorColumn', '\%81v', 100)
+
 "}}}
 
 " Functions {{{
@@ -368,11 +371,11 @@ function! RunAgOnInput(dir)
 endfunction
 
 function! RunAg(text, dir)
-    if !empty(g:current_loc_fs)
-        echo "clear"
-        echo "RunAg - Searching for: " . a:text 
+    if !empty(a:text)
+        echo ""
+        echo "RunAg - Searching for: " . a:text
         echo "RunAg - Searching in: " . a:dir
-        let g:AgIgnoreString =" --ignore-dir builds --ignore-dir utility --ignore *.patch --ignore tags --ignore oldtags --ignore *TMP --ignore *.s19 --ignore *.bin --ignore *.exe --ignore *.ewp --ignore *.hex --ignore *.htm --ignore *.html --ignore *.vcproj* --ignore *.make --ignore *.srec --ignore *.pdf --ignore-dir documentation --ignore *.bat --ignore *.gol --ignore *.tex --ignore *.css --ignore README --ignore *.shtml " 
+        let g:AgIgnoreString =" --ignore-dir builds --ignore-dir utility --ignore *.patch --ignore tags --ignore oldtags --ignore *TMP --ignore *.s19 --ignore *.bin --ignore *.exe --ignore *.ewp --ignore *.hex --ignore *.htm --ignore *.html --ignore *.vcproj* --ignore *.make --ignore *.srec --ignore *.pdf --ignore-dir documentation --ignore *.bat --ignore *.gol --ignore *.tex --ignore *.css --ignore README --ignore *.shtml "
         let searchString =  "Ag! -S --stats " . g:AgIgnoreString . a:text . " " . a:dir
         execute searchString
     else
@@ -381,7 +384,7 @@ function! RunAg(text, dir)
 endfunction
 
 function! BuildHelpTags(doclocations)
-for docloc in a:doclocations 
+for docloc in a:doclocations
     :execute "helptag " . docloc
 endfor
 endfunction
@@ -399,6 +402,7 @@ function! ParseBuildLog(logfile)
     execute 'cgetfile' fnameescape(a:logfile).'\build.log'
     "open up the quickfix
     :cwindow
+    :normal <c-w>j
 endfunction
 
 "}}}
@@ -411,7 +415,7 @@ if !exists(":DiffOrig")
 endif
 
 function! SetRoot()
-    let g:project_root_sys = ProjectRootGuess() 
+    let g:project_root_sys = ProjectRootGuess()
     let g:project_root_fs = substitute(g:project_root_sys, '\', '/', "g")
     let g:project_root_bs = substitute(g:project_root_sys, '/', '\', "g")
     let g:project_root_dbs = substitute(g:project_root_fs, '/', '\\\\', "g")
@@ -445,7 +449,7 @@ inoremap <silent> <C-L> <Right>
 inoremap <silent> <C-H> <Left>
 inoremap <silent> <C-K> <Up>
 inoremap <silent> <C-J> <Down>
-"inoremap <silent> kj <esc> " Don't map this since words ending with k, you can't jk  
+"inoremap <silent> kj <esc> " Don't map this since words ending with k, you can't jk
 inoremap <silent> jk <esc>
 inoremap <esc> <nop>
 " }}}
@@ -462,7 +466,7 @@ nnoremap <silent> J <C-D>
 nnoremap j gj
 nnoremap k gk
 
-nnoremap \ @q 
+nnoremap \ @q
 
 " Tab Mappings {{{
 " use gt & gT "nnoremap <silent> <A-h> :tabprevious<CR>
@@ -476,14 +480,14 @@ nnoremap <silent> <A-L> :execute 'silent! tabmove ' . tabpagenr()<CR>
 "nnoremap <silent> <A-k> :bNext<CR>
 "nnoremap <silent> <A-j> :bprev<CR>
 
-" Fold Navigation Mappings {{{ 
+" Fold Navigation Mappings {{{
 nnoremap <silent> <A-k> zk
 nnoremap <silent> <A-j> zj
 nnoremap <silent> <A-a> za
 nnoremap <silent> <A-A> zA
 nnoremap <silent> <A-c> zM
 nnoremap <silent> <A-e> zR
-" Fold Navigation Mappings }}} 
+" Fold Navigation Mappings }}}
 
 
 map <C-\> :tab split<CR>:exec("tag ".expand("<cword>"))<CR>
@@ -495,8 +499,8 @@ map <A-]> :vsp <CR>:exec("tag ".expand("<cword>"))<CR>
 " Leader Key Mappings {{{
 let mapleader = " "
 
-nnoremap <space><space> a<space><esc> 
-nnoremap <s-space><s-space> i<space><esc> 
+nnoremap <space><space> a<space><esc>
+nnoremap <s-space><s-space> i<space><esc>
 nnoremap <silent> <leader>/ :nohlsearch<CR>
 nnoremap <silent> <leader>tv :tabnew $MYVIMRC<CR>
 
@@ -527,8 +531,13 @@ nmap <silent> <leader>ai <esc>:call RunAgOnInput(g:project_root_sys)<CR>
 nmap <silent> <leader>Ai <esc>:call RunAgOnInput(g:current_loc_fs)<CR>
 nmap <silent> <leader>an <esc>:call RunAgOnInput(g:docs_path)<CR>
 " Ag Mappings }}}
-vmap <leader>at :EasyAlign /
-nmap <leader>at :EasyAlign /
+
+" Text Formatting {{{
+nnoremap <leader>tr :s/\s*$//<CR>
+nnoremap <leader>tR :%s/\s*$//<CR><C-o>
+vnoremap <leader>at :EasyAlign /
+nnoremap <leader>at :EasyAlign /
+" }}}
 
 
 nmap <silent> <leader>gC <esc>:call GtagsRefSearch()<CR>
@@ -552,8 +561,8 @@ xnoremap <A-?> :s/^\/\///<CR>
 " }}}
 "
 " Quick Semicolon {{{
-" "TODO make versatile
-nnoremap <leader>; <esc>A;<esc>j 
+nnoremap <leader>; :s/\(\s\)*$/;/g<CR>
+vnoremap <leader>; :s/\(\s\)*$/;/g<CR>
 " }}}
 
 " Tab Mappings {{{
@@ -575,9 +584,9 @@ nnoremap <silent> <c-j> :wincmd j<CR>
 nnoremap <silent> <c-k> :wincmd k<CR>
 nnoremap <silent> <c-l> :wincmd l<CR>
 nnoremap <silent> <c-h> :wincmd h<CR>
-"nnoremap <silent> <c-K> :wincmd K<CR>                                                                                                                       
-"nnoremap <silent> <c-J> :wincmd J<CR>                                                                                                                       
-"nnoremap <silent> <c-H> :wincmd H<CR>                                                                                                                       
+"nnoremap <silent> <c-K> :wincmd K<CR>
+"nnoremap <silent> <c-J> :wincmd J<CR>
+"nnoremap <silent> <c-H> :wincmd H<CR>
 "nnoremap <silent> <c-L> :wincmd L<CR>
 "}}}
 
@@ -625,10 +634,10 @@ function! OpenFuzzierSearch()
 endfunction
 nnoremap <leader>R :call OpenFuzzierSearch()<CR>
 call unite#custom#source('file_rec,file_rec/async', 'ignore_pattern', join([
-    \ '\.\(git\|svn\|i|o|ewp|swp|exe|so|dll|s|lst|pbi|cout|icf|html\)$', 
+    \ '\.\(git\|svn\|i|o|ewp|swp|exe|so|dll|s|lst|pbi|cout|icf|html\)$',
     \ 'builds\/',
     \ 'utility\/',
-    \ ], 
+    \ ],
     \ '\|'))
 " }}}
 
@@ -659,7 +668,7 @@ let g:unite_source_history_yank_enable = 1 " Keep track of yanks for 'Unite yank
 
 "TODO map to a unite key (maybe alt or keep the key as <leader>g)?
 nnoremap <silent> <leader>e  :<C-u>UniteWithBufferDir  file                         -buffer-name=Explore\ Folder <CR>
-nnoremap <silent> <leader>ua  :<C-u>UniteBookmarkAdd                                 -buffer-name=Add\ Bookmark   <CR>
+nnoremap <silent> <leader>ua :<C-u>UniteBookmarkAdd                                 -buffer-name=Add\ Bookmark   <CR>
 nnoremap <silent> <leader>j  :<C-u>Unite buffer                                                                  <CR>
 nnoremap <silent> <leader>J  :<C-u>Unite buffer_tab                                                              <CR>
 nnoremap <silent> <leader>k  :<C-u>Unite tab                                                                     <CR>
@@ -692,7 +701,7 @@ noremap <Down> <nop>
 noremap <Left> <nop>
 noremap <Right> <nop>
 
-"  Machine Specific {{{                                  
+"  Machine Specific {{{
 
 if g:is_win " Windows Configuration
 
@@ -736,7 +745,7 @@ endif
 
 
 augroup vimrc
-    au!   
+    au!
     autocmd BufEnter * :call SetRoot()
     autocmd FileType vim setlocal foldmethod=marker
     autocmd FileType c,cpp setlocal foldmethod=syntax
