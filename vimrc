@@ -7,6 +7,7 @@
 
 " The Art of VIm {{{
 
+" Have Fun!
 " VIm is not perfect, but it is extensible. So make it perfect.
 " If Vim does not do something you want it to do, add it.
 " If Vim does something you do not want it to do, remove it.
@@ -73,6 +74,7 @@ NeoBundleFetch 'Shougo/unite.vim'
 NeoBundleFetch 'bufkill.vim'
 NeoBundleFetch 'mtth/scratch.vim'  " gs to toggle a scratch buffer
 NeoBundleFetch 'Raimondi/delimitMate'  " automatically end braces
+NeoBundleFetch 'Shougo/vimfiler.vim'
 "}}}
 
 " Color Scheme Plugins {{{
@@ -99,6 +101,7 @@ NeoBundleFetch 'sjl/gundo.vim'
 NeoBundleFetch 'vim-scripts/DirDiff.vim'
 NeoBundleFetch 'Shougo/vinarise.vim'
 NeoBundleFetch 'osyo-manga/vim-brightest'
+NeoBundleFetch 'nathanaelkane/vim-indent-guides'
 "NeoBundleFetch 'scrooloose/syntastic' " show build errors visual in the file
 "NeoBundleFetch 'Lokaltog/powerline' "pretty status bars
 "NeoBundleFetch 'majutsushi/tagbar'    " TagBar - a pleasant code outline for the current buffer
@@ -272,6 +275,9 @@ set foldmethod=marker                " By default, set the fold method to marker
 set history=500                      " number of commands to keep in history
 set ignorecase                       " Ignore make lowercase seaches case-insensitive
 set incsearch                        " Automatically jump to any results whil typing in search
+set lazyredraw                  " Don't showmacro actions, just update at the end for speed
+"set showmatch
+"set matchtime=5
 set hlsearch                         " Highlight search matches
 set laststatus=2                     " Always display the status line
 set nobackup                         " Do not make a backup when overwriting a file
@@ -298,7 +304,7 @@ set undolevels=50000                 " Save a lot of file changes for undo
 set undoreload=100000                " Save a lot of file reloads for undo
 set splitright                       " make vsplits happen to the right instead of left
 set splitbelow                       " make split happen below instead of above
-set wildmode=longest,list            " shell style completion
+set wildmode=list:longest            " shell style completion
 set tw=0                             " don't chop lines at 78 characters
 "set virtualedit=block                     " tab
 
@@ -405,6 +411,11 @@ function! ParseBuildLog(logfile)
     :normal <c-w>j
 endfunction
 
+
+function! SwitchFile(dir)
+    let wordUnderCursor = expand("<cword>")
+    let splits = split(wordUnderCursor, '\.')
+endfunction
 "}}}
 
 " Utility Functions {{{
@@ -746,7 +757,7 @@ endif
 
 augroup vimrc
     au!
-    autocmd BufEnter * :call SetRoot()
+    autocmd BufEnter *.c,*.cpp,*.h,*.hpp,*.txt,*.vim :call SetRoot()
     autocmd FileType vim setlocal foldmethod=marker
     autocmd FileType c,cpp setlocal foldmethod=syntax
     autocmd FileType text setlocal foldmethod=indent
@@ -767,6 +778,18 @@ augroup vimrc
                 \ endif
 
     "autocmd BufEnter * execute "chdir ".escape(expand("%:p:h"), ' ') " Automatically cd into the directory that the file is in
+augroup END
+
+""//TODO
+augroup Binary
+au!
+autocmd BufReadPre   *.bin let &bin=1
+autocmd BufReadPost  *.bin if &bin | %!xxd
+autocmd BufReadPost  *.bin set ft=xxd | endif
+autocmd BufWritePre  *.bin if &bin | %!xxd -r
+autocmd BufWritePre  *.bin endif
+autocmd BufWritePost *.bin if &bin | %!xxd
+autocmd BufWritePost *.bin set nomod | endif
 augroup END
 
 
