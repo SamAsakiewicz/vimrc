@@ -73,6 +73,7 @@ NeoBundleFetch 'Shougo/unite.vim'
 NeoBundleFetch 'bufkill.vim'
 NeoBundleFetch 'mtth/scratch.vim'  " gs to toggle a scratch buffer
 NeoBundleFetch 'Raimondi/delimitMate'  " automatically end braces
+NeoBundleFetch 'TaskList.vim' " puts todos in code, in a viewable list
 "}}}
 
 " Color Scheme Plugins {{{
@@ -99,6 +100,7 @@ NeoBundleFetch 'sjl/gundo.vim'
 NeoBundleFetch 'vim-scripts/DirDiff.vim'
 NeoBundleFetch 'Shougo/vinarise.vim'
 NeoBundleFetch 'osyo-manga/vim-brightest'
+NeoBundleFetch 'nathanaelkane/vim-indent-guides'
 "NeoBundleFetch 'scrooloose/syntastic' " show build errors visual in the file
 "NeoBundleFetch 'Lokaltog/powerline' "pretty status bars
 "NeoBundleFetch 'majutsushi/tagbar'    " TagBar - a pleasant code outline for the current buffer
