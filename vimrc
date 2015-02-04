@@ -7,6 +7,7 @@
 
 " The Art of VIm {{{
 
+" Have Fun!
 " VIm is not perfect, but it is extensible. So make it perfect.
 " If Vim does not do something you want it to do, add it.
 " If Vim does something you do not want it to do, remove it.
@@ -72,8 +73,8 @@ NeoBundleFetch 'Shougo/unite.vim'
 "NeoBundleFetch 'jceb/vim-orgmode'
 NeoBundleFetch 'bufkill.vim'
 NeoBundleFetch 'mtth/scratch.vim'  " gs to toggle a scratch buffer
-NeoBundleFetch 'Raimondi/delimitMate'  " automatically end braces
-NeoBundleFetch 'TaskList.vim' " puts todos in code, in a viewable list
+NeoBundleFetch 'Shougo/vimfiler.vim'
+"NeoBundleFetch 'TaskList.vim' " puts todos in code, in a viewable list
 "}}}
 
 " Color Scheme Plugins {{{
@@ -88,7 +89,6 @@ NeoBundleFetch 'w0ng/vim-hybrid'
 NeoBundleFetch 'hickop/vim-hickop-colors'
 NeoBundleFetch 'junegunn/seoul256.vim'
 NeoBundleFetch 'whatyouhide/vim-gotham'    " dark color scheme
-"NeoBundleFetch 'goirijo/vim-jgg-colorscheme' "ctags supported plugin
 "}}}
 
 " Functional Plugins {{{
@@ -116,12 +116,11 @@ NeoBundleFetch 'tpope/vim-unimpaired'    " each [x & ]x mappings
 " Movement Plugins }}}
 "
 " Formatting {{{
-"NeoBundleFetch 'garbas/vim-snipmate'
-"NeoBundleFetch 'honza/vim-snippets'
 NeoBundleFetch 'junegunn/vim-easy-align'
 NeoBundleFetch 'tpope/vim-endwise'
 "NeoBundleFetch 'AndrewRadev/splitjoin.vim'
 NeoBundleFetch 'tpope/vim-surround'
+NeoBundle 'msanders/snipmate.vim'
 "Plugin 'c.vim' maybe?
 " Formatting }}}
 
@@ -212,6 +211,7 @@ let g:neocomplcache_lock_buffer_name_pattern = '\*ku\*'
 "   |___/ \__|\__,_||_|   \__||_||_|   \_, |
 "                                      |__/
 
+let g:startify_files_number = 25
 let g:startify_list_order = [
       \ ['   Recently Accessed:'],
       \ 'files',
@@ -251,9 +251,10 @@ let g:startify_custom_header = [
 let g:EasyMotion_do_mapping = 0
 nmap <leader>f <Plug>(easymotion-f)
 nmap <leader>F <Plug>(easymotion-F)
-nmap , <Plug>(easymotion-s)
+nmap , <Plug>(easymotion-sn)
 " EasyMotion }}}
 
+let g:brightest_enable=0
 " Plugin Options }}}
 
 " Set Options {{{
@@ -274,6 +275,9 @@ set foldmethod=marker                " By default, set the fold method to marker
 set history=500                      " number of commands to keep in history
 set ignorecase                       " Ignore make lowercase seaches case-insensitive
 set incsearch                        " Automatically jump to any results whil typing in search
+set lazyredraw                  " Don't showmacro actions, just update at the end for speed
+"set showmatch
+"set matchtime=5
 set hlsearch                         " Highlight search matches
 set laststatus=2                     " Always display the status line
 set nobackup                         " Do not make a backup when overwriting a file
@@ -300,7 +304,7 @@ set undolevels=50000                 " Save a lot of file changes for undo
 set undoreload=100000                " Save a lot of file reloads for undo
 set splitright                       " make vsplits happen to the right instead of left
 set splitbelow                       " make split happen below instead of above
-set wildmode=longest,list            " shell style completion
+set wildmode=list:longest            " shell style completion
 set tw=0                             " don't chop lines at 78 characters
 "set virtualedit=block                     " tab
 
@@ -407,6 +411,11 @@ function! ParseBuildLog(logfile)
     :normal <c-w>j
 endfunction
 
+
+function! SwitchFile(dir)
+    let wordUnderCursor = expand("<cword>")
+    let splits = split(wordUnderCursor, '\.')
+endfunction
 "}}}
 
 " Utility Functions {{{
@@ -468,7 +477,10 @@ nnoremap <silent> J <C-D>
 nnoremap j gj
 nnoremap k gk
 
-nnoremap \ @q
+" todo: use \ "nnoremap \ @q
+nnoremap ZC <ESC>:bd<CR>
+nnoremap ZX <ESC>:BD<CR>
+nnoremap ZW <ESC>:tabclose<CR>
 
 " Tab Mappings {{{
 " use gt & gT "nnoremap <silent> <A-h> :tabprevious<CR>
@@ -748,7 +760,7 @@ endif
 
 augroup vimrc
     au!
-    autocmd BufEnter * :call SetRoot()
+    autocmd BufEnter *.c,*.cpp,*.h,*.hpp,*.txt,*.vim :call SetRoot()
     autocmd FileType vim setlocal foldmethod=marker
     autocmd FileType c,cpp setlocal foldmethod=syntax
     autocmd FileType text setlocal foldmethod=indent
@@ -769,6 +781,18 @@ augroup vimrc
                 \ endif
 
     "autocmd BufEnter * execute "chdir ".escape(expand("%:p:h"), ' ') " Automatically cd into the directory that the file is in
+augroup END
+
+""//TODO
+augroup Binary
+au!
+autocmd BufReadPre   *.bin let &bin=1
+autocmd BufReadPost  *.bin if &bin | %!xxd
+autocmd BufReadPost  *.bin set ft=xxd | endif
+autocmd BufWritePre  *.bin if &bin | %!xxd -r
+autocmd BufWritePre  *.bin endif
+autocmd BufWritePost *.bin if &bin | %!xxd
+autocmd BufWritePost *.bin set nomod | endif
 augroup END
 
 
