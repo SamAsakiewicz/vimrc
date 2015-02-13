@@ -129,7 +129,7 @@ Basic tags
        
 	:tfirst, :trewind, :tlast, :tnext, :tprevious, :tNext -> Iterate over tag results
 
-	ctags.exe -R "C:\SVN\DigitalMedia\Trunk"
+	ctags.exe -R "dirpath"
 
 
 Basic cscope
@@ -187,7 +187,7 @@ Basic Plugins:
 	Solarized
 	Exhuberent Ctags
 	AG	
-		:ag --stats --ignore builds --ignore tags --ignore oldtags {search pattern} C:\SVN\Digitalmedia\Trunk\
+		:ag --stats --ignore builds --ignore tags --ignore oldtags {search pattern} {search dir}
 
 		copied:
 		e    to open file and close the quickfix window
@@ -201,7 +201,7 @@ Basic Plugins:
 		gv   to open in vertical split silently
 		q    to close the quickfix window
 	ctrlp
-		:CtrlP C:\SVN\DigitalMedia\Trunk
+		:CtrlP {dir}
                 Ctrl+d -> switch to searching filename
                 Ctrl + n or + p -> go back and forth in search term history
 		Ctrl + y -> create file with specified path if one doesn't exist

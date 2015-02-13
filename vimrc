@@ -225,16 +225,16 @@ let g:startify_custom_header = [
 \"                                                                       ",
 \"                                     (@@@)     (@@@@@)                 ",
 \"                               (@@)     (@@@@@@@)        (@@@@@@@)     ",
-\"                         (@@@@@@@)   (@@@@@)       (@@@@@@@@@@@)       ",
-\"                    (@@@)     (@@@@@@@)   (@@@@@@)             (@@@)   ",
-\"               (@@@@@@)    (@@@@@@)     (@@@@@@)    (@@@)              ",
-\"           (@@@)  (@@@@)           (@@)                                ",
+\"                         (@@@@@@@)   (@@@@@)       (@@@@@@@@@@@@)       ",
+\"                    (@@@)     (@@@@@@@)   (@@@@@@)             (@@@@@@@)   ",
+\"               (@@@@@@)    (@@@@@@)     (@@@@@@)    (@@@@@)              ",
+\"           (@@@)  (@@@@)           (@@@@@@@)                                ",
 \"        (@@)              (@@@)                                        ",
 \"       .-.                                                             ",
 \"       ] [    .-.      _    .-----.                                    ",
 \"     .'   ''''   '''''' ''''| .--`                                     ",
 \"    (:--:--:--:--:--:--:--:-| [___    .------------------------.   .------------------------.   .------------------------.   .------------------------.   .------------------------.   .------------------------.   .------------------------.       ",
-\"     | JR  :  :  :  :  :  : [_9_] |'='|.----------------------.|'='|.----------------------.|'='|.----------------------.|'='|.----------------------.|'='|.----------------------.|'='|.----------------------.|'='|.----------------------.|       ",
+\"     | VIM :  :  :  :  :  : [_9_] |'='|.----------------------.|'='|.----------------------.|'='|.----------------------.|'='|.----------------------.|'='|.----------------------.|'='|.----------------------.|'='|.----------------------.|       ",
 \"    /|.___________________________|___|'--.___.--.___.--.___.-'|___|'--.___.--.___.--.___.-'|___|'--.___.--.___.--.___.-'|___|'--.___.--.___.--.___.-'|___|'--.___.--.___.--.___.-'|___|'--.___.--.___.--.___.-'|___|'--.___.--.___.--.___.-'|       ",
 \"   / ||_.--.______.--.______.--._ |---\\'--\\-.-/==\\-.-/==\\-.-/-'/---\\'--\\-.-/==\\-.-/==\\-.-/-'/---\\'--\\-.-/==\\-.-/==\\-.-/-'/---\\'--\\-.-/==\\-.-/==\\-.-/-'/---\\'--\\-.-/==\\-.-/==\\-.-/-'/---\\'--\\-.-/==\\-.-/==\\-.-/-'/---\\'--\\-.-/==\\-.-/==\\-.-/-'/--     ",
 \"  /__;^=(==)======(==)======(==)=^~^^^ ^^^^(-)^^^^(-)^^^^(-)^^^ ^^^ ^^^^(-)^^^^(-)^^^^(-)^^^ ^^^ ^^^^(-)^^^^(-)^^^^(-)^^^ ^^^ ^^^^(-)^^^^(-)^^^^(-)^^^ ^^^ ^^^^(-)^^^^(-)^^^^(-)^^^ ^^^ ^^^^(-)^^^^(-)^^^^(-)^^^ ^^^ ^^^^(-)^^^^(-)^^^^(-)^^^        ",
@@ -280,9 +280,9 @@ set lazyredraw                  " Don't showmacro actions, just update at the en
 "set matchtime=5
 set hlsearch                         " Highlight search matches
 set laststatus=2                     " Always display the status line
-set nobackup                         " Do not make a backup when overwriting a file
+"set nobackup                         " Do not make a backup when overwriting a file
 set hidden                           " Let the buffer remain in memory when not visible
-set nowritebackup                    " Do not write a backup when overwriting a file
+"set nowritebackup                    " Do not write a backup when overwriting a file
 set number                           " Display line numbers
 set omnifunc=syntaxcomplete#Complete " Turn completion on
 set ruler                            " Display cursor position in the bottom right
@@ -297,7 +297,8 @@ set tags=/tags;./tags;/,tags;        " Is this optimal? maybe direct project roo
 set visualbell                       " Instead of beeping, induce seizures by screen flashing
 set undofile                         " Persistent undo, across sessions
 set directory=~/.vim/swap            " keep swap files in a special directory
-"TODO LATER, loses history:  set undodir=~/.vim/undo           " Directory to keep persisten undo info
+set backupdir=~/.vim/backup            " keep swap files in a special directory
+set undodir=~/.vim/undo           " Directory to keep persisten undo info
 set linebreak                        " Visually wrap characters at the word boundary (the wrap that happens when you size a window to small)
 set gdefault                         " switch %s/{pattern}/{pattern} with %s/{pattern/{pattern}/g, since i never want to replace just the first match on each line. hopefully this won't mess with plugins
 set undolevels=50000                 " Save a lot of file changes for undo
@@ -306,6 +307,7 @@ set splitright                       " make vsplits happen to the right instead 
 set splitbelow                       " make split happen below instead of above
 set wildmode=list:longest            " shell style completion
 set tw=0                             " don't chop lines at 78 characters
+set nomore                          "don't pause and display 'More'
 "set virtualedit=block                     " tab
 
 "set background=dark " will modify backgrounds, which may have different color for dark and light
@@ -339,15 +341,15 @@ function! BuildCtags(dir)
     execute 'cd' fnameescape(a:dir)
 
     if has("win32")
-        !ctags.exe -R --exclude=builds --fields=+Ssaki --extra=+qf .
+        silent !ctags.exe -R --exclude=builds --fields=+Ssaki --extra=+qf .
     elseif has ("unix")
-        !ctags -R --exclude=debian --exclude=builds --exclude=build --flags=+saki --extra=+qf .
+        silent !ctags -R --exclude=debian --exclude=builds --exclude=build --flags=+saki --extra=+qf .
     endif
 endfunction
 
 function! BuildGtags(dir)
     execute 'cd' fnameescape(a:dir)
-    :!gtags
+    :silent !gtags
 endfunction
 
 function! BuildAllTags(dir)
@@ -462,22 +464,20 @@ inoremap <silent> <C-K> <Up>
 inoremap <silent> <C-J> <Down>
 "inoremap <silent> kj <esc> " Don't map this since words ending with k, you can't jk
 inoremap <silent> jk <esc>
-inoremap <esc> <nop>
+"inoremap <esc> <nop>
 " }}}
 
 " Normal Mode Mappings {{{
 " inconvenient keys
 nnoremap <F1> <nop>
-nnoremap Q <nop>
-nnoremap K <nop>
+"nnoremap Q <nop>
+nnoremap Q @@
 
 " less effort Ctrl+U & Ctrl+D
 nnoremap <silent> K <C-U>
 nnoremap <silent> J <C-D>
 nnoremap j gj
 nnoremap k gk
-
-nnoremap \ @q
 
 " Tab Mappings {{{
 " use gt & gT "nnoremap <silent> <A-h> :tabprevious<CR>
@@ -523,6 +523,7 @@ if has("win32")
     nmap <leader>bg <esc>:call BuildGtags(g:project_root_bs)<CR>
     nmap <leader>bt <esc>:call BuildAllTags(g:project_root_bs)<CR>
     nmap <leader>bi <esc>:call ParseBuildLog(g:project_root_bs)<CR>
+    nmap <leader>bI <esc>:e build.log<CR>
 
 else
     nmap <leader>bc <esc>:call BuildCtags(g:project_root_fs)<CR>
@@ -580,8 +581,8 @@ vnoremap <leader>; :s/\(\s\)*$/;/g<CR>
 nnoremap <silent> <leader>tn <esc>:tabnew<CR>
 nnoremap <silent> <leader>tc <esc>:tabclose<CR>
 nnoremap <silent> <leader>td <esc>:windo bd<CR>
-nnoremap <silent> <leader>th :execute 'silent! tabmove ' . (tabpagenr()-2)<CR>
-nnoremap <silent> <leader>tl :execute 'silent! tabmove ' . tabpagenr()<CR>
+"nnoremap <silent> <leader>th :execute 'silent! tabmove ' . (tabpagenr()-2)<CR>
+"nnoremap <silent> <leader>tl :execute 'silent! tabmove ' . tabpagenr()<CR>
 "}}}
 
 nmap <leader> <nop>
@@ -604,8 +605,18 @@ nnoremap <silent> <c-h> :wincmd h<CR>
 " Personal TODO {{{
 nnoremap <leader>df <esc>/TODO<CR>
 nnoremap <leader>dF <esc>/TODO<CR>N
-nnoremap <leader>da <esc>a//TODO(sam):
+nnoremap <leader>da <esc>A//TODO(sam):
 nnoremap <leader>dr <esc>k/\/\/TODO(sam):<CR><esc>D
+"}}}
+
+" Text Insert {{{
+nnoremap <leader>if a<c-r>=expand("%:t")<cr><esc>
+inoremap <leader>if <c-r>=expand("%:t")<cr>
+vnoremap <leader>if da<c-r>=expand("%:t")<cr><esc>
+
+nnoremap <leader>id a<C-R>=strftime("%m/%d/%y")<CR><ESC>
+inoremap <leader>id <C-R>=strftime("%m/%d/%y")<CR>
+vnoremap <leader>id da<C-R>=strftime("%m/%d/%y")<CR><ESC>
 "}}}
 
 call unite#custom#source('file_rec/async','sorters','sorter_rank')
@@ -718,6 +729,11 @@ if g:is_win " Windows Configuration
 
     set fileformat=dos " Will set the carriage returns to windows/style when saving/editing a file
     set fileformats=dos,unix " WIll try unix and windows style EOL when opening a file
+    nnoremap <leader>tl :silent !C:\Progra~1\TortoiseSVN\bin\\TortoiseProc.exe /command:log /path:"%" /closeonend:4 /notempfile<CR>
+    nnoremap <leader>td :silent !C:\Progra~1\TortoiseSVN\bin\\TortoiseProc.exe /command:diff /path:"%" /closeonend /notempfile<CR>
+    nnoremap <leader>tm :execute "silent !C:\\Progra~1\\TortoiseSVN\\bin\\TortoiseProc.exe /command:repostatus /path:\"" . g:project_root_sys . "\" /closeforlocal"<CR>
+    nnoremap <leader>tu :execute "silent !C:\\Progra~1\\TortoiseSVN\\bin\\TortoiseProc.exe /command:update /path:\"" . g:project_root_sys . "\" /closeforlocal"<CR>
+
 
 elseif g:is_nix " Linux Configuration
 
@@ -741,8 +757,13 @@ if g:is_gui
         nmap <leader>w :w<CR>
 
     elseif g:is_win " Windows Configuration
-
+        function! SetFont()
+            execute "set guifont=ProggyCleanTT:h".g:guifontsize.":cANSI"
+        endfunction
         set guifont=ProggyCleanTT:h11:cANSI
+        let g:guifontsize = 11
+        map <F12> <ESC>:let g:guifontsize=g:guifontsize+1<CR>:call SetFont()<CR>
+        map <F11> <ESC>:let g:guifontsize=g:guifontsize-1<CR>:call SetFont()<CR>
         "TODO try true fullscreen, like a vn
         set lines=71 columns=260 " For a 1080p screen
         nmap <leader>w :w<CR>
