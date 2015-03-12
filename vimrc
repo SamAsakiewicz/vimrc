@@ -19,6 +19,7 @@
 
 " Global Variables {{{
 
+"TODO:autocmds this
 if !exists('g:is_startup') " Determine if we just started up vim
     let g:is_startup = 1
 else
@@ -73,6 +74,9 @@ NeoBundleFetch 'Shougo/unite.vim'
 NeoBundleFetch 'bufkill.vim'
 NeoBundleFetch 'mtth/scratch.vim'  " gs to toggle a scratch buffer
 NeoBundleFetch 'Raimondi/delimitMate'  " automatically end braces
+NeoBundleFetch 'vimoutliner/vimoutliner'
+NeoBundleFetch 'jaxbot/semantic-highlight.vim'
+
 "}}}
 
 " Color Scheme Plugins {{{
@@ -107,7 +111,7 @@ NeoBundleFetch 'osyo-manga/vim-brightest'
 " Visual Plugins }}}
 "
 " Movement Plugins {{{
-NeoBundleFetch 'Lokaltog/vim-easymotion'
+"NeoBundleFetch 'Lokaltog/vim-easymotion'
 NeoBundleFetch 'tpope/vim-unimpaired'    " each [x & ]x mappings
 "NeoBundleFetch 'justinmk/vim-sneak'
 ""'wellle/targets.vim'
@@ -120,7 +124,6 @@ NeoBundleFetch 'junegunn/vim-easy-align'
 NeoBundleFetch 'tpope/vim-endwise'
 "NeoBundleFetch 'AndrewRadev/splitjoin.vim'
 NeoBundleFetch 'tpope/vim-surround'
-"Plugin 'c.vim' maybe?
 " Formatting }}}
 
 " Functional Plugins }}}
@@ -166,7 +169,7 @@ colorscheme solarized
 "let g:ctrlp_user_command = {
 "\}
 "ADD TEXT SEARCH, LOOK FOR CTAGS SEARCH?
-"add ctags / search
+"TODO:add ctags / search
 "let g:ctrlp_extensions = ['mixed', 'quickfix', 'undo', 'line', 'changes', 'cmdline', 'menu']
 let g:ctrlp_max_height = 20
 let g:ctrlp_mruf_exclude = '/tmp.*\|/usr/share.*\|.*bundle.*\|.*\.git'
@@ -247,19 +250,52 @@ let g:startify_custom_header = [
 " EasyMotion {{{
 " Turn off default mappings
 let g:EasyMotion_do_mapping = 0
-nmap <leader>f <Plug>(easymotion-f)
-nmap <leader>F <Plug>(easymotion-F)
-nmap , <Plug>(easymotion-s)
+"nmap <leader>f <Plug>(easymotion-f)
+"nmap <leader>F <Plug>(easymotion-F)
+"nmap , <Plug>(easymotion-s)
 " EasyMotion }}}
+
+" Outliner {{{
+augroup Outliner
+    au!
+        autocmd BufWritePre  *.otl silent! :%s/\v^(	*|(    )*)    /\1	/|norm!``|:nohlsearch
+        autocmd BufWritePre  *.otl silent! :%s/\v^(	*|(    )*)    /\1	/|norm!``|:nohlsearch
+        autocmd BufWritePre  *.otl silent! :%s/\v^(	*|(    )*)    /\1	/|norm!``|:nohlsearch
+        autocmd BufWritePre  *.otl silent! :%s/\v^(	*|(    )*)    /\1	/|norm!``|:nohlsearch
+        autocmd BufWritePre  *.otl silent! :%s/\v^(	*|(    )*)    /\1	/|norm!``|:nohlsearch
+        autocmd BufWritePre  *.otl silent! :%s/\v^(	*|(    )*)    /\1	/|norm!``|:nohlsearch
+        autocmd BufWritePre  *.otl silent! :%s/\v^(	*|(    )*)    /\1	/|norm!``|:nohlsearch
+        autocmd FileType *.otl set expandtab
+        autocmd FileType *.otl set virtualedit=all
+
+augroup END
+" Outliner }}}
 
 " Plugin Options }}}
 
 " Set Options {{{
 "TODO : unncessary? set runtimepath^=~/.vim/bundle/ctrlp.vim
 " TODO slowly remove/replace this
-source $VIMRUNTIME/mswin.vim
 "TODO
 behave mswin
+" Use CTRL-S for saving, also in Insert mode
+noremap <C-S>		:update<CR>
+vnoremap <C-S>		<C-C>:update<CR>
+inoremap <C-S>		<C-O>:update<CR>
+"
+"TODO:
+" CTRL-Y is Redo (although not repeat); not in cmdline though
+noremap <C-Y> <C-R>
+inoremap <C-Y> <C-O><C-R>
+"TODO
+" Alt-Space is System menu
+if has("gui")
+  noremap <M-Space> :simalt ~<CR>
+  inoremap <M-Space> <C-O>:simalt ~<CR>
+  cnoremap <M-Space> <C-C>:simalt ~<CR>
+endif
+
+"
 set autoread                         " Automatically reload a file when you select the buffer, if something else has modified it
 set whichwrap+=<,>,[,]               " Allow curser to wrap around to the next or previous line
 set backspace=indent,eol,start       " Allow backspacing over autoindent, line breaks, and past beggining of insert action
@@ -291,7 +327,7 @@ set tags=/tags;./tags;/,tags;        " Is this optimal? maybe direct project roo
 set visualbell                       " Instead of beeping, induce seizures by screen flashing
 set undofile                         " Persistent undo, across sessions
 set directory=~/.vim/swap            " keep swap files in a special directory
-"TODO LATER, loses history:  set undodir=~/.vim/undo           " Directory to keep persisten undo info
+set undodir=~/.vim/undo           " Directory to keep persisten undo info
 set linebreak                        " Visually wrap characters at the word boundary (the wrap that happens when you size a window to small)
 set gdefault                         " switch %s/{pattern}/{pattern} with %s/{pattern/{pattern}/g, since i never want to replace just the first match on each line. hopefully this won't mess with plugins
 set undolevels=50000                 " Save a lot of file changes for undo
@@ -319,6 +355,72 @@ call matchadd('ColorColumn', '\%81v', 100)
 " Functions {{{
 
 " Fold Functions{{{
+
+function! GetLineIndentLevel(lnum)
+    " set it to its indent level (TODO: handle arbitrary 2space & 8space indents)
+    let detectedIndent = &shiftwidth 
+    return indent(a:lnum) / detectedIndent
+endfunction
+
+function! IsFunctionDeclaration(lnum)
+        if getline(currentline) =~? '\v\s*\w+\s*\w+\s*\('
+        endif
+endfunction
+
+function! IsInBlock(lnum)
+        if getline(currentline) =~? '\v\s*\w+\s*\w+\s*\('
+        endif
+endfunction
+
+function! IsFunctionDefinition(lnum)
+endfunction
+
+function! GetNextNonBlankLineNum(lnum)
+    let lastline = line('$')
+    let currentline = a:lnum + 1
+    while currentline <= lastline
+        if getline(currentline) =~? '\v\S'
+            return currentline
+        endif
+        let currentline = currentline + 1
+    endwhile
+    return a:lnum
+endfunction
+" A very zealous custom c/c++ style syntax folding function. When this function
+" is done, all you should see are file scope functions, #defs, and variables
+" -1 foldlevel is the chain foldleve, will tak ehte value of waht is above or below, the smallest
+function! HeavyCppFolding(lnum)
+    if getline(a:lnum) =~? '\v^\s$'
+        return '-1' 
+    endif
+
+    " If none of the above, set it to its indent level
+    return GetLineIndentLevel(a:lnum)
+endfunction
+
+"TODO REMOVE {{{
+"set foldtext=CustomFoldText()
+fu! CustomFoldText()
+    get first non-blank line
+    fs = v:foldstart
+    getline(fs) =~ '^\s*$' | let fs = nextnonblank(fs + 1)
+
+    fs > v:foldend
+    line = getline(v:foldstart)
+
+    line = substitute(getline(fs), '\t', repeat(' ', &tabstop), 'g')
+endif
+
+let w = winwidth(0) - &foldcolumn - (&number ? 8 : 0)
+let foldSize = 1 + v:foldend - v:foldstart
+let foldSizeStr = " " . foldSize . " lines "
+let foldLevelStr = repeat("+--", v:foldlevel)
+let lineCount = line("$")
+let foldPercentage = printf("[%.1f", (foldSize*1.0)/lineCount*100) . "%] "
+let expansionString = repeat(".", w - strwidth(foldSizeStr.line.foldLevelStr.foldPercentage))
+return line . expansionString . foldSizeStr . foldPercentage . foldLevelStr
+ endf
+ "}}}
 
 "}}}
 
@@ -375,7 +477,8 @@ function! RunAg(text, dir)
         echo ""
         echo "RunAg - Searching for: " . a:text
         echo "RunAg - Searching in: " . a:dir
-        let g:AgIgnoreString =" --ignore-dir builds --ignore-dir utility --ignore *.patch --ignore tags --ignore oldtags --ignore *TMP --ignore *.s19 --ignore *.bin --ignore *.exe --ignore *.ewp --ignore *.hex --ignore *.htm --ignore *.html --ignore *.vcproj* --ignore *.make --ignore *.srec --ignore *.pdf --ignore-dir documentation --ignore *.bat --ignore *.gol --ignore *.tex --ignore *.css --ignore README --ignore *.shtml "
+"TODO change based on filetype for python and etc
+        let g:AgIgnoreString =" --file-search-regex \.[(c$)(cpp$)(h$)(hpp$)(C$)(CPP$)(H$)] "
         let searchString =  "Ag! -S --stats " . g:AgIgnoreString . a:text . " " . a:dir
         execute searchString
     else
@@ -467,6 +570,7 @@ nnoremap j gj
 nnoremap k gk
 
 nnoremap \ @q
+nnoremap / /\v
 
 " Tab Mappings {{{
 " use gt & gT "nnoremap <silent> <A-h> :tabprevious<CR>
@@ -694,6 +798,8 @@ autocmd FileType unite call s:unite_keys()
 function! s:unite_keys()
   inoremap <buffer> <C-z> <Plug>(unite_toggle_mark_current_candidate)
   nnoremap <buffer> m <Plug>(unite_toggle_mark_current_candidate)
+  nnoremap <buffer> J <c-d>
+  nnoremap <buffer> K <c-u>
 endfunction
 " Unite Key Mappings }}}
 noremap <Up> <nop>
@@ -748,7 +854,8 @@ augroup vimrc
     au!
     autocmd BufEnter * :call SetRoot()
     autocmd FileType vim setlocal foldmethod=marker
-    autocmd FileType c,cpp setlocal foldmethod=syntax
+"    autocmd FileType c,cpp setlocal foldexpr=HeavyCppFolding(v:lnum)
+"    autocmd FileType c,cpp setlocal foldmethod=expr
     autocmd FileType text setlocal foldmethod=indent
     autocmd FocusLost * stopinsert
     autocmd bufwritepost $MYVIMRC source % " Re-Source vimrc wach time it is edited
@@ -776,3 +883,7 @@ augroup END
 " Misc Unicode Characters {{{
 " ⎈✺ ☔❂
 " }}}
+    autocmd FileType c,cpp setlocal set foldmethod=syntax
+    autocmd FileType c,cpp setlocal set foldminlines=0
+"    autocmd FileType c,cpp setlocal foldmethod=expr
+
