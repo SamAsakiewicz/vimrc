@@ -73,8 +73,8 @@ NeoBundleFetch 'Shougo/unite.vim'
 "NeoBundleFetch 'jceb/vim-orgmode'
 NeoBundleFetch 'bufkill.vim'
 NeoBundleFetch 'mtth/scratch.vim'  " gs to toggle a scratch buffer
-NeoBundleFetch 'Raimondi/delimitMate'  " automatically end braces
 NeoBundleFetch 'Shougo/vimfiler.vim'
+"NeoBundleFetch 'TaskList.vim' " puts todos in code, in a viewable list
 "}}}
 
 " Color Scheme Plugins {{{
@@ -89,7 +89,6 @@ NeoBundleFetch 'w0ng/vim-hybrid'
 NeoBundleFetch 'hickop/vim-hickop-colors'
 NeoBundleFetch 'junegunn/seoul256.vim'
 NeoBundleFetch 'whatyouhide/vim-gotham'    " dark color scheme
-"NeoBundleFetch 'goirijo/vim-jgg-colorscheme' "ctags supported plugin
 "}}}
 
 " Functional Plugins {{{
@@ -101,7 +100,9 @@ NeoBundleFetch 'sjl/gundo.vim'
 NeoBundleFetch 'vim-scripts/DirDiff.vim'
 NeoBundleFetch 'Shougo/vinarise.vim'
 NeoBundleFetch 'osyo-manga/vim-brightest'
-NeoBundleFetch 'nathanaelkane/vim-indent-guides'
+"NeoBundleFetch 'vim-scripts/SemanticHL' "jaxbot/semantic-highlight.vim
+"NeoBundleFetch 'nathanaelkane/vim-indent-guides'
+ 
 "NeoBundleFetch 'scrooloose/syntastic' " show build errors visual in the file
 "NeoBundleFetch 'Lokaltog/powerline' "pretty status bars
 "NeoBundleFetch 'majutsushi/tagbar'    " TagBar - a pleasant code outline for the current buffer
@@ -117,12 +118,11 @@ NeoBundleFetch 'tpope/vim-unimpaired'    " each [x & ]x mappings
 " Movement Plugins }}}
 "
 " Formatting {{{
-"NeoBundleFetch 'garbas/vim-snipmate'
-"NeoBundleFetch 'honza/vim-snippets'
 NeoBundleFetch 'junegunn/vim-easy-align'
 NeoBundleFetch 'tpope/vim-endwise'
 "NeoBundleFetch 'AndrewRadev/splitjoin.vim'
 NeoBundleFetch 'tpope/vim-surround'
+NeoBundle 'msanders/snipmate.vim'
 "Plugin 'c.vim' maybe?
 " Formatting }}}
 
@@ -213,6 +213,7 @@ let g:neocomplcache_lock_buffer_name_pattern = '\*ku\*'
 "   |___/ \__|\__,_||_|   \__||_||_|   \_, |
 "                                      |__/
 
+let g:startify_files_number = 25
 let g:startify_list_order = [
       \ ['   Recently Accessed:'],
       \ 'files',
@@ -222,14 +223,14 @@ let g:startify_list_order = [
 
 " should add more ascii art, and choose header by random number, also fortune
 let g:startify_custom_header = [
-\"                                                                       ",
-\"                                     (@@@)     (@@@@@)                 ",
-\"                               (@@)     (@@@@@@@)        (@@@@@@@)     ",
+\"                                                     (@@@@)    (@@@@@@@@)          ",
+\"                                     (@@@)     (@@@@@@@@)   (@@@@@)              ",
+\"                               (@@)     (@@@@@@@)    (@@@@@)    (@@@@@@@)     ",
 \"                         (@@@@@@@)   (@@@@@)       (@@@@@@@@@@@@)       ",
-\"                    (@@@)     (@@@@@@@)   (@@@@@@)             (@@@@@@@)   ",
-\"               (@@@@@@)    (@@@@@@)     (@@@@@@)    (@@@@@)              ",
-\"           (@@@)  (@@@@)           (@@@@@@@)                                ",
-\"        (@@)              (@@@)                                        ",
+\"                    (@@@)     (@@@@@@@)   (@@@@@@)         (@@@@@@@@@)   ",
+\"               (@@@@@@)    (@@@@@@)     (@@@@@@)    (@@@@@@@@)              ",
+\"           (@@@)  (@@@@)           (@@@@@)                      (@@@@)          ",
+\"        (@@)              )                                        ",
 \"       .-.                                                             ",
 \"       ] [    .-.      _    .-----.                                    ",
 \"     .'   ''''   '''''' ''''| .--`                                     ",
@@ -252,9 +253,10 @@ let g:startify_custom_header = [
 let g:EasyMotion_do_mapping = 0
 nmap <leader>f <Plug>(easymotion-f)
 nmap <leader>F <Plug>(easymotion-F)
-nmap , <Plug>(easymotion-s)
+nmap , <Plug>(easymotion-sn)
 " EasyMotion }}}
 
+let g:brightest_enable=0
 " Plugin Options }}}
 
 " Set Options {{{
@@ -303,6 +305,7 @@ set linebreak                        " Visually wrap characters at the word boun
 set gdefault                         " switch %s/{pattern}/{pattern} with %s/{pattern/{pattern}/g, since i never want to replace just the first match on each line. hopefully this won't mess with plugins
 set undolevels=50000                 " Save a lot of file changes for undo
 set undoreload=100000                " Save a lot of file reloads for undo
+set wrapscan
 set splitright                       " make vsplits happen to the right instead of left
 set splitbelow                       " make split happen below instead of above
 set wildmode=list:longest            " shell style completion
@@ -479,6 +482,10 @@ nnoremap <silent> J <C-D>
 nnoremap j gj
 nnoremap k gk
 
+nnoremap ZC <ESC>:bd<CR>
+nnoremap ZX <ESC>:BD<CR>
+nnoremap ZW <ESC>:tabclose<CR>
+
 " Tab Mappings {{{
 " use gt & gT "nnoremap <silent> <A-h> :tabprevious<CR>
 "nnoremap <silent> <A-l> :tabnext<CR>
@@ -586,6 +593,7 @@ nnoremap <silent> <leader>td <esc>:windo bd<CR>
 "}}}
 
 nmap <leader> <nop>
+nmap <leader>s :Scratch<CR>
 
 " Quick Splits {{{
 nmap <silent> <leader>vn <esc>:vnew<CR>
@@ -611,11 +619,11 @@ nnoremap <leader>dr <esc>k/\/\/TODO(sam):<CR><esc>D
 
 " Text Insert {{{
 nnoremap <leader>if a<c-r>=expand("%:t")<cr><esc>
-inoremap <leader>if <c-r>=expand("%:t")<cr>
+"inoremap <leader>if <c-r>=expand("%:t")<cr>
 vnoremap <leader>if da<c-r>=expand("%:t")<cr><esc>
 
 nnoremap <leader>id a<C-R>=strftime("%m/%d/%y")<CR><ESC>
-inoremap <leader>id <C-R>=strftime("%m/%d/%y")<CR>
+""inoremap <leader>id <C-R>=strftime("%m/%d/%y")<CR>
 vnoremap <leader>id da<C-R>=strftime("%m/%d/%y")<CR><ESC>
 "}}}
 
@@ -716,6 +724,8 @@ autocmd FileType unite call s:unite_keys()
 function! s:unite_keys()
   inoremap <buffer> <C-z> <Plug>(unite_toggle_mark_current_candidate)
   nnoremap <buffer> m <Plug>(unite_toggle_mark_current_candidate)
+  nnoremap <buffer> K <C-U>
+  nnoremap <buffer> J <C-D>
 endfunction
 " Unite Key Mappings }}}
 noremap <Up> <nop>
