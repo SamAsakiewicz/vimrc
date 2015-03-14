@@ -73,10 +73,11 @@ NeoBundleFetch 'Shougo/unite.vim'
 "NeoBundleFetch 'Shougo/neocomplcache.vim'    " neocomplcache - Autocompletion system for vim
 "NeoBundleFetch 'jceb/vim-orgmode'
 NeoBundleFetch 'bufkill.vim'
-NeoBundleFetch 'mtth/scratch.vim'  " gs to toggle a scratch buffer
+"NeoBundleFetch 'mtth/scratch.vim'  " gs to toggle a scratch buffer
 NeoBundleFetch 'Raimondi/delimitMate'  " automatically end braces
 NeoBundleFetch 'vimoutliner/vimoutliner'
 NeoBundleFetch 'jaxbot/semantic-highlight.vim'
+"NeoBundleFetch 'vim-scripts/SemanticHL' "jaxbot/semantic-highlight.vim
 NeoBundleFetch 'Shougo/vimfiler.vim'
 "NeoBundleFetch 'TaskList.vim' " puts todos in code, in a viewable list
 "}}}
@@ -104,7 +105,6 @@ NeoBundleFetch 'sjl/gundo.vim'
 NeoBundleFetch 'vim-scripts/DirDiff.vim'
 NeoBundleFetch 'Shougo/vinarise.vim'
 NeoBundleFetch 'osyo-manga/vim-brightest'
-"NeoBundleFetch 'vim-scripts/SemanticHL' "jaxbot/semantic-highlight.vim
 "NeoBundleFetch 'nathanaelkane/vim-indent-guides'
  
 "NeoBundleFetch 'scrooloose/syntastic' " show build errors visual in the file
@@ -152,7 +152,7 @@ filetype plugin indent on
 
 " Plugin Installs }}}
 
-"Plugin Options {{{
+" Plugin Options {{{
 
 " Netrw Options {{{
 let g:netrw_liststyle=0
@@ -276,8 +276,16 @@ augroup END
 " Outliner }}}
 
 " Brightest {{{
+
 let g:brightest_enable=0
+
 " Brightest }}}
+
+" Scratch {{{
+
+"nmap <leader>s :Scratch<CR>
+
+" Scratch }}}
 "
 " Plugin Options }}}
 
@@ -368,7 +376,7 @@ call matchadd('ColorColumn', '\%81v', 100)
 
 " Functions {{{
 
-" Fold Functions{{{
+" Fold {{{
 
 function! GetLineIndentLevel(lnum)
     " set it to its indent level (TODO: handle arbitrary 2space & 8space indents)
@@ -412,31 +420,30 @@ function! HeavyCppFolding(lnum)
     return GetLineIndentLevel(a:lnum)
 endfunction
 
-"TODO REMOVE {{{
-"set foldtext=CustomFoldText()
-fu! CustomFoldText()
-    get first non-blank line
-    fs = v:foldstart
-    getline(fs) =~ '^\s*$' | let fs = nextnonblank(fs + 1)
+function! FoldModeToggle()
+    if !exists('g:fold_mode_state') 
+        let f:fold_mode_state = 0
+    endif
 
-    fs > v:foldend
-    line = getline(v:foldstart)
+    if g:fold_mode_state == 0
+        let g:fold_mode_state = 1
+        set foldcolumn=1
+        set foldlevel=1
+        set foldminlines=1
+        "set foldopen=all
+        set foldclose=all
+    else
+        let g:fold_mode_state = 0
+        set foldcolumn=0
+        normal! zR
+        set foldminlines=0
+        "set foldopen=all
+        set foldclose=
+    endif
 
-    line = substitute(getline(fs), '\t', repeat(' ', &tabstop), 'g')
-endif
+endfunction
 
-let w = winwidth(0) - &foldcolumn - (&number ? 8 : 0)
-let foldSize = 1 + v:foldend - v:foldstart
-let foldSizeStr = " " . foldSize . " lines "
-let foldLevelStr = repeat("+--", v:foldlevel)
-let lineCount = line("$")
-let foldPercentage = printf("[%.1f", (foldSize*1.0)/lineCount*100) . "%] "
-let expansionString = repeat(".", w - strwidth(foldSizeStr.line.foldLevelStr.foldPercentage))
-return line . expansionString . foldSizeStr . foldPercentage . foldLevelStr
- endf
- "}}}
-
-"}}}
+" Fold }}}
 
 " Key Functions {{{
 "not functional yet
@@ -462,6 +469,8 @@ endfunction
 
 function! BuildAllTags(dir)
 if g:is_win
+    "TODO make or find a path abstraction interface/function so i can make
+    "this 2 lines, not 6
     call BuildCtags(g:project_root_bs)<CR>
     call BuildGtags(g:project_root_bs)<CR>
 else
@@ -469,7 +478,7 @@ else
     call BuildGtags(g:project_root_fs)<CR>
 endif
 endfunction
-
+  
 
 function! UpdateVim()
     :Unite -buffer-name=neobundle -no-cursor-line -log neobundle/update
@@ -562,6 +571,7 @@ endfunction
 " Key Mappings {{{
 " Note: you can view currently mapped keys with :map, :nmap:, inoremap, and etc
 " Note: vim lists all it's default keys and command in ":help index"
+
 let mapleader = " "
 
 " Insert Mode Mappings {{{
@@ -597,6 +607,7 @@ nnoremap / /\v
 nnoremap ZC <ESC>:bd<CR>
 nnoremap ZX <ESC>:BD<CR>
 nnoremap ZW <ESC>:tabclose<CR>
+nnoremap <leader>gf :call FoldModeToggle()<CR>
 
 " Tab Mappings {{{
 " use gt & gT "nnoremap <silent> <A-h> :tabprevious<CR>
@@ -699,7 +710,6 @@ nnoremap <silent> <leader>td <esc>:windo bd<CR>
 "}}}
 
 nmap <leader> <nop>
-nmap <leader>s :Scratch<CR>
 
 " Quick Splits {{{
 nmap <silent> <leader>vn <esc>:vnew<CR>
