@@ -7,6 +7,7 @@
 
 " The Art of VIm {{{
 
+" Have Fun!
 " VIm is not perfect, but it is extensible. So make it perfect.
 " If Vim does not do something you want it to do, add it.
 " If Vim does something you do not want it to do, remove it.
@@ -76,7 +77,8 @@ NeoBundleFetch 'mtth/scratch.vim'  " gs to toggle a scratch buffer
 NeoBundleFetch 'Raimondi/delimitMate'  " automatically end braces
 NeoBundleFetch 'vimoutliner/vimoutliner'
 NeoBundleFetch 'jaxbot/semantic-highlight.vim'
-
+NeoBundleFetch 'Shougo/vimfiler.vim'
+"NeoBundleFetch 'TaskList.vim' " puts todos in code, in a viewable list
 "}}}
 
 " Color Scheme Plugins {{{
@@ -91,7 +93,6 @@ NeoBundleFetch 'w0ng/vim-hybrid'
 NeoBundleFetch 'hickop/vim-hickop-colors'
 NeoBundleFetch 'junegunn/seoul256.vim'
 NeoBundleFetch 'whatyouhide/vim-gotham'    " dark color scheme
-"NeoBundleFetch 'goirijo/vim-jgg-colorscheme' "ctags supported plugin
 "}}}
 
 " Functional Plugins {{{
@@ -103,6 +104,9 @@ NeoBundleFetch 'sjl/gundo.vim'
 NeoBundleFetch 'vim-scripts/DirDiff.vim'
 NeoBundleFetch 'Shougo/vinarise.vim'
 NeoBundleFetch 'osyo-manga/vim-brightest'
+"NeoBundleFetch 'vim-scripts/SemanticHL' "jaxbot/semantic-highlight.vim
+"NeoBundleFetch 'nathanaelkane/vim-indent-guides'
+ 
 "NeoBundleFetch 'scrooloose/syntastic' " show build errors visual in the file
 "NeoBundleFetch 'Lokaltog/powerline' "pretty status bars
 "NeoBundleFetch 'majutsushi/tagbar'    " TagBar - a pleasant code outline for the current buffer
@@ -118,12 +122,11 @@ NeoBundleFetch 'tpope/vim-unimpaired'    " each [x & ]x mappings
 " Movement Plugins }}}
 "
 " Formatting {{{
-"NeoBundleFetch 'garbas/vim-snipmate'
-"NeoBundleFetch 'honza/vim-snippets'
 NeoBundleFetch 'junegunn/vim-easy-align'
 NeoBundleFetch 'tpope/vim-endwise'
 "NeoBundleFetch 'AndrewRadev/splitjoin.vim'
 NeoBundleFetch 'tpope/vim-surround'
+"NeoBundle 'msanders/snipmate.vim'
 " Formatting }}}
 
 " Functional Plugins }}}
@@ -213,6 +216,7 @@ let g:neocomplcache_lock_buffer_name_pattern = '\*ku\*'
 "   |___/ \__|\__,_||_|   \__||_||_|   \_, |
 "                                      |__/
 
+let g:startify_files_number = 25
 let g:startify_list_order = [
       \ ['   Recently Accessed:'],
       \ 'files',
@@ -222,19 +226,19 @@ let g:startify_list_order = [
 
 " should add more ascii art, and choose header by random number, also fortune
 let g:startify_custom_header = [
-\"                                                                       ",
-\"                                     (@@@)     (@@@@@)                 ",
-\"                               (@@)     (@@@@@@@)        (@@@@@@@)     ",
-\"                         (@@@@@@@)   (@@@@@)       (@@@@@@@@@@@)       ",
-\"                    (@@@)     (@@@@@@@)   (@@@@@@)             (@@@)   ",
-\"               (@@@@@@)    (@@@@@@)     (@@@@@@)    (@@@)              ",
-\"           (@@@)  (@@@@)           (@@)                                ",
-\"        (@@)              (@@@)                                        ",
+\"                                                     (@@@@)    (@@@@@@@@)          ",
+\"                                     (@@@)     (@@@@@@@@)   (@@@@@)              ",
+\"                               (@@)     (@@@@@@@)    (@@@@@)    (@@@@@@@)     ",
+\"                         (@@@@@@@)   (@@@@@)       (@@@@@@@@@@@@)       ",
+\"                    (@@@)     (@@@@@@@)   (@@@@@@)         (@@@@@@@@@)   ",
+\"               (@@@@@@)    (@@@@@@)     (@@@@@@)    (@@@@@@@@)              ",
+\"           (@@@)  (@@@@)           (@@@@@)                      (@@@@)          ",
+\"        (@@)              )                                        ",
 \"       .-.                                                             ",
 \"       ] [    .-.      _    .-----.                                    ",
 \"     .'   ''''   '''''' ''''| .--`                                     ",
 \"    (:--:--:--:--:--:--:--:-| [___    .------------------------.   .------------------------.   .------------------------.   .------------------------.   .------------------------.   .------------------------.   .------------------------.       ",
-\"     | JR  :  :  :  :  :  : [_9_] |'='|.----------------------.|'='|.----------------------.|'='|.----------------------.|'='|.----------------------.|'='|.----------------------.|'='|.----------------------.|'='|.----------------------.|       ",
+\"     | VIM :  :  :  :  :  : [_9_] |'='|.----------------------.|'='|.----------------------.|'='|.----------------------.|'='|.----------------------.|'='|.----------------------.|'='|.----------------------.|'='|.----------------------.|       ",
 \"    /|.___________________________|___|'--.___.--.___.--.___.-'|___|'--.___.--.___.--.___.-'|___|'--.___.--.___.--.___.-'|___|'--.___.--.___.--.___.-'|___|'--.___.--.___.--.___.-'|___|'--.___.--.___.--.___.-'|___|'--.___.--.___.--.___.-'|       ",
 \"   / ||_.--.______.--.______.--._ |---\\'--\\-.-/==\\-.-/==\\-.-/-'/---\\'--\\-.-/==\\-.-/==\\-.-/-'/---\\'--\\-.-/==\\-.-/==\\-.-/-'/---\\'--\\-.-/==\\-.-/==\\-.-/-'/---\\'--\\-.-/==\\-.-/==\\-.-/-'/---\\'--\\-.-/==\\-.-/==\\-.-/-'/---\\'--\\-.-/==\\-.-/==\\-.-/-'/--     ",
 \"  /__;^=(==)======(==)======(==)=^~^^^ ^^^^(-)^^^^(-)^^^^(-)^^^ ^^^ ^^^^(-)^^^^(-)^^^^(-)^^^ ^^^ ^^^^(-)^^^^(-)^^^^(-)^^^ ^^^ ^^^^(-)^^^^(-)^^^^(-)^^^ ^^^ ^^^^(-)^^^^(-)^^^^(-)^^^ ^^^ ^^^^(-)^^^^(-)^^^^(-)^^^ ^^^ ^^^^(-)^^^^(-)^^^^(-)^^^        ",
@@ -271,6 +275,10 @@ augroup Outliner
 augroup END
 " Outliner }}}
 
+" Brightest {{{
+let g:brightest_enable=0
+" Brightest }}}
+"
 " Plugin Options }}}
 
 " Set Options {{{
@@ -308,11 +316,14 @@ set foldmethod=marker                " By default, set the fold method to marker
 set history=500                      " number of commands to keep in history
 set ignorecase                       " Ignore make lowercase seaches case-insensitive
 set incsearch                        " Automatically jump to any results whil typing in search
+set lazyredraw                  " Don't showmacro actions, just update at the end for speed
+"set showmatch
+"set matchtime=5
 set hlsearch                         " Highlight search matches
 set laststatus=2                     " Always display the status line
-set nobackup                         " Do not make a backup when overwriting a file
+"set nobackup                         " Do not make a backup when overwriting a file
 set hidden                           " Let the buffer remain in memory when not visible
-set nowritebackup                    " Do not write a backup when overwriting a file
+"set nowritebackup                    " Do not write a backup when overwriting a file
 set number                           " Display line numbers
 set omnifunc=syntaxcomplete#Complete " Turn completion on
 set ruler                            " Display cursor position in the bottom right
@@ -327,15 +338,18 @@ set tags=/tags;./tags;/,tags;        " Is this optimal? maybe direct project roo
 set visualbell                       " Instead of beeping, induce seizures by screen flashing
 set undofile                         " Persistent undo, across sessions
 set directory=~/.vim/swap            " keep swap files in a special directory
+set backupdir=~/.vim/backup            " keep swap files in a special directory
 set undodir=~/.vim/undo           " Directory to keep persisten undo info
 set linebreak                        " Visually wrap characters at the word boundary (the wrap that happens when you size a window to small)
 set gdefault                         " switch %s/{pattern}/{pattern} with %s/{pattern/{pattern}/g, since i never want to replace just the first match on each line. hopefully this won't mess with plugins
 set undolevels=50000                 " Save a lot of file changes for undo
 set undoreload=100000                " Save a lot of file reloads for undo
+set wrapscan
 set splitright                       " make vsplits happen to the right instead of left
 set splitbelow                       " make split happen below instead of above
-set wildmode=longest,list            " shell style completion
+set wildmode=list:longest            " shell style completion
 set tw=0                             " don't chop lines at 78 characters
+set nomore                          "don't pause and display 'More'
 "set virtualedit=block                     " tab
 
 "set background=dark " will modify backgrounds, which may have different color for dark and light
@@ -435,15 +449,15 @@ function! BuildCtags(dir)
     execute 'cd' fnameescape(a:dir)
 
     if has("win32")
-        !ctags.exe -R --exclude=builds --fields=+Ssaki --extra=+qf .
+        silent !ctags.exe -R --exclude=builds --fields=+Ssaki --extra=+qf .
     elseif has ("unix")
-        !ctags -R --exclude=debian --exclude=builds --exclude=build --flags=+saki --extra=+qf .
+        silent !ctags -R --exclude=debian --exclude=builds --exclude=build --flags=+saki --extra=+qf .
     endif
 endfunction
 
 function! BuildGtags(dir)
     execute 'cd' fnameescape(a:dir)
-    :!gtags
+    :silent !gtags
 endfunction
 
 function! BuildAllTags(dir)
@@ -508,6 +522,11 @@ function! ParseBuildLog(logfile)
     :normal <c-w>j
 endfunction
 
+
+function! SwitchFile(dir)
+    let wordUnderCursor = expand("<cword>")
+    let splits = split(wordUnderCursor, '\.')
+endfunction
 "}}}
 
 " Utility Functions {{{
@@ -543,10 +562,8 @@ endfunction
 " Key Mappings {{{
 " Note: you can view currently mapped keys with :map, :nmap:, inoremap, and etc
 " Note: vim lists all it's default keys and command in ":help index"
+let mapleader = " "
 
-"fuzzy escapes to normal mode
-" add ctrl-u/d?
-"nnoremap <C-n> <C-d>
 " Insert Mode Mappings {{{
 inoremap <silent> <C-L> <Right>
 inoremap <silent> <C-H> <Left>
@@ -554,14 +571,21 @@ inoremap <silent> <C-K> <Up>
 inoremap <silent> <C-J> <Down>
 "inoremap <silent> kj <esc> " Don't map this since words ending with k, you can't jk
 inoremap <silent> jk <esc>
-inoremap <esc> <nop>
+"inoremap <esc> <nop>
 " }}}
 
 " Normal Mode Mappings {{{
+
+
+noremap <Up> <nop>
+noremap <Down> <nop>
+noremap <Left> <nop>
+noremap <Right> <nop>
+
 " inconvenient keys
 nnoremap <F1> <nop>
-nnoremap Q <nop>
-nnoremap K <nop>
+"nnoremap Q <nop>
+nnoremap Q @@
 
 " less effort Ctrl+U & Ctrl+D
 nnoremap <silent> K <C-U>
@@ -569,8 +593,10 @@ nnoremap <silent> J <C-D>
 nnoremap j gj
 nnoremap k gk
 
-nnoremap \ @q
 nnoremap / /\v
+nnoremap ZC <ESC>:bd<CR>
+nnoremap ZX <ESC>:BD<CR>
+nnoremap ZW <ESC>:tabclose<CR>
 
 " Tab Mappings {{{
 " use gt & gT "nnoremap <silent> <A-h> :tabprevious<CR>
@@ -578,11 +604,6 @@ nnoremap / /\v
 nnoremap <silent> <A-H> :execute 'silent! tabmove ' . (tabpagenr()-2)<CR>
 nnoremap <silent> <A-L> :execute 'silent! tabmove ' . tabpagenr()<CR>
 " Tab Mappings }}}
-
-" These seems like a good idea, but i open too many buffers to make this
-" worthwhile and i need to look at why they are so slow on switch
-"nnoremap <silent> <A-k> :bNext<CR>
-"nnoremap <silent> <A-j> :bprev<CR>
 
 " Fold Navigation Mappings {{{
 nnoremap <silent> <A-k> zk
@@ -601,7 +622,6 @@ map <A-]> :vsp <CR>:exec("tag ".expand("<cword>"))<CR>
 " }}}
 
 " Leader Key Mappings {{{
-let mapleader = " "
 
 nnoremap <space><space> a<space><esc>
 nnoremap <s-space><s-space> i<space><esc>
@@ -616,6 +636,7 @@ if has("win32")
     nmap <leader>bg <esc>:call BuildGtags(g:project_root_bs)<CR>
     nmap <leader>bt <esc>:call BuildAllTags(g:project_root_bs)<CR>
     nmap <leader>bi <esc>:call ParseBuildLog(g:project_root_bs)<CR>
+    nmap <leader>bI <esc>:e build.log<CR>
 
 else
     nmap <leader>bc <esc>:call BuildCtags(g:project_root_fs)<CR>
@@ -673,11 +694,12 @@ vnoremap <leader>; :s/\(\s\)*$/;/g<CR>
 nnoremap <silent> <leader>tn <esc>:tabnew<CR>
 nnoremap <silent> <leader>tc <esc>:tabclose<CR>
 nnoremap <silent> <leader>td <esc>:windo bd<CR>
-nnoremap <silent> <leader>th :execute 'silent! tabmove ' . (tabpagenr()-2)<CR>
-nnoremap <silent> <leader>tl :execute 'silent! tabmove ' . tabpagenr()<CR>
+"nnoremap <silent> <leader>th :execute 'silent! tabmove ' . (tabpagenr()-2)<CR>
+"nnoremap <silent> <leader>tl :execute 'silent! tabmove ' . tabpagenr()<CR>
 "}}}
 
 nmap <leader> <nop>
+nmap <leader>s :Scratch<CR>
 
 " Quick Splits {{{
 nmap <silent> <leader>vn <esc>:vnew<CR>
@@ -697,8 +719,18 @@ nnoremap <silent> <c-h> :wincmd h<CR>
 " Personal TODO {{{
 nnoremap <leader>df <esc>/TODO<CR>
 nnoremap <leader>dF <esc>/TODO<CR>N
-nnoremap <leader>da <esc>a//TODO(sam):
+nnoremap <leader>da <esc>A//TODO(sam):
 nnoremap <leader>dr <esc>k/\/\/TODO(sam):<CR><esc>D
+"}}}
+
+" Text Insert {{{
+nnoremap <leader>if a<c-r>=expand("%:t")<cr><esc>
+"inoremap <leader>if <c-r>=expand("%:t")<cr>
+vnoremap <leader>if da<c-r>=expand("%:t")<cr><esc>
+
+nnoremap <leader>id a<C-R>=strftime("%m/%d/%y")<CR><ESC>
+""inoremap <leader>id <C-R>=strftime("%m/%d/%y")<CR>
+vnoremap <leader>id da<C-R>=strftime("%m/%d/%y")<CR><ESC>
 "}}}
 
 call unite#custom#source('file_rec/async','sorters','sorter_rank')
@@ -785,10 +817,10 @@ nnoremap <silent> <leader>us :<C-u>UniteShow<CR>
 nnoremap <silent> <leader>m  :<C-u>Unite jump                                       -buffer-name=Marks           <CR>
 nnoremap <silent> <leader>y  :<C-u>Unite history/yank                               -buffer-name=Copies          <CR>
 nnoremap <silent> <leader>gc :<C-u>Unite gtags/context    -immediately -auto-resize -buffer-name=Tag\ Context    <CR>
-nnoremap <silent> <leader>gr :<C-u>Unite gtags/ref        -immediately -auto-resize -buffer-name=Tag\ Reference  <CR>
+nnoremap <silent> \          :<C-u>Unite gtags/ref        -immediately -auto-resize -buffer-name=Tag\ Reference  <CR>
 nnoremap <silent> <leader>gs :<C-u>Unite gtags/completion -immediately -auto-resize -buffer-name=Tag\ Completion <CR>
 nnoremap <silent> <leader>gi :<C-u>Unite gtags/grep       -immediately -auto-resize -buffer-name=Tag\ Grep       <CR>
-nnoremap <silent> <leader>gd :<C-u>Unite gtags/def        -immediately -auto-resize -buffer-name=Tag\ Definition <CR>
+nnoremap <silent> ,          :<C-u>Unite gtags/def        -immediately -auto-resize -buffer-name=Tag\ Definition <CR>
 nnoremap <silent> <leader>o  :<C-u>Unite -auto-preview outline                      -buffer-name=Outline         <CR>
 "use c-n & c-p for now, alt, ctrl, and shift are all no good for this
 "inoremap <buffer> <A-j> <Plug>(unite_select_next_line)
@@ -798,14 +830,10 @@ autocmd FileType unite call s:unite_keys()
 function! s:unite_keys()
   inoremap <buffer> <C-z> <Plug>(unite_toggle_mark_current_candidate)
   nnoremap <buffer> m <Plug>(unite_toggle_mark_current_candidate)
-  nnoremap <buffer> J <c-d>
-  nnoremap <buffer> K <c-u>
+  nnoremap <buffer> K <C-U>
+  nnoremap <buffer> J <C-D>
 endfunction
 " Unite Key Mappings }}}
-noremap <Up> <nop>
-noremap <Down> <nop>
-noremap <Left> <nop>
-noremap <Right> <nop>
 
 "  Machine Specific {{{
 
@@ -813,6 +841,11 @@ if g:is_win " Windows Configuration
 
     set fileformat=dos " Will set the carriage returns to windows/style when saving/editing a file
     set fileformats=dos,unix " WIll try unix and windows style EOL when opening a file
+    nnoremap <leader>tl :silent !C:\Progra~1\TortoiseSVN\bin\\TortoiseProc.exe /command:log /path:"%" /closeonend:4 /notempfile<CR>
+    nnoremap <leader>td :silent !C:\Progra~1\TortoiseSVN\bin\\TortoiseProc.exe /command:diff /path:"%" /closeonend /notempfile<CR>
+    nnoremap <leader>tm :execute "silent !C:\\Progra~1\\TortoiseSVN\\bin\\TortoiseProc.exe /command:repostatus /path:\"" . g:project_root_sys . "\" /closeforlocal"<CR>
+    nnoremap <leader>tu :execute "silent !C:\\Progra~1\\TortoiseSVN\\bin\\TortoiseProc.exe /command:update /path:\"" . g:project_root_sys . "\" /closeforlocal"<CR>
+
 
 elseif g:is_nix " Linux Configuration
 
@@ -836,8 +869,13 @@ if g:is_gui
         nmap <leader>w :w<CR>
 
     elseif g:is_win " Windows Configuration
-
+        function! SetFont()
+            execute "set guifont=ProggyCleanTT:h".g:guifontsize.":cANSI"
+        endfunction
         set guifont=ProggyCleanTT:h11:cANSI
+        let g:guifontsize = 11
+        map <F12> <ESC>:let g:guifontsize=g:guifontsize+1<CR>:call SetFont()<CR>
+        map <F11> <ESC>:let g:guifontsize=g:guifontsize-1<CR>:call SetFont()<CR>
         "TODO try true fullscreen, like a vn
         set lines=71 columns=260 " For a 1080p screen
         nmap <leader>w :w<CR>
@@ -852,7 +890,7 @@ endif
 
 augroup vimrc
     au!
-    autocmd BufEnter * :call SetRoot()
+    autocmd BufEnter *.c,*.cpp,*.h,*.hpp,*.txt,*.vim :call SetRoot()
     autocmd FileType vim setlocal foldmethod=marker
 "    autocmd FileType c,cpp setlocal foldexpr=HeavyCppFolding(v:lnum)
 "    autocmd FileType c,cpp setlocal foldmethod=expr
@@ -874,6 +912,18 @@ augroup vimrc
                 \ endif
 
     "autocmd BufEnter * execute "chdir ".escape(expand("%:p:h"), ' ') " Automatically cd into the directory that the file is in
+augroup END
+
+""//TODO
+augroup Binary
+au!
+autocmd BufReadPre   *.bin let &bin=1
+autocmd BufReadPost  *.bin if &bin | %!xxd
+autocmd BufReadPost  *.bin set ft=xxd | endif
+autocmd BufWritePre  *.bin if &bin | %!xxd -r
+autocmd BufWritePre  *.bin endif
+autocmd BufWritePost *.bin if &bin | %!xxd
+autocmd BufWritePost *.bin set nomod | endif
 augroup END
 
 
