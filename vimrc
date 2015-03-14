@@ -603,7 +603,6 @@ nnoremap <silent> J <C-D>
 nnoremap j gj
 nnoremap k gk
 
-nnoremap / /\v
 nnoremap ZC <ESC>:bd<CR>
 nnoremap ZX <ESC>:BD<CR>
 nnoremap ZW <ESC>:tabclose<CR>
