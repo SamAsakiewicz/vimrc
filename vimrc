@@ -262,6 +262,7 @@ let g:EasyMotion_do_mapping = 0
 " Outliner {{{
 augroup Outliner
     au!
+        autocmd BufWritePre  *.otl silent! :normal! m'
         autocmd BufWritePre  *.otl silent! :%s/\v^(	*|(    )*)    /\1	/|norm!``|:nohlsearch
         autocmd BufWritePre  *.otl silent! :%s/\v^(	*|(    )*)    /\1	/|norm!``|:nohlsearch
         autocmd BufWritePre  *.otl silent! :%s/\v^(	*|(    )*)    /\1	/|norm!``|:nohlsearch
@@ -271,6 +272,7 @@ augroup Outliner
         autocmd BufWritePre  *.otl silent! :%s/\v^(	*|(    )*)    /\1	/|norm!``|:nohlsearch
         autocmd FileType *.otl set expandtab
         autocmd FileType *.otl set virtualedit=all
+        autocmd BufWritePre  *.otl silent! :normal! `'
 
 augroup END
 " Outliner }}}
@@ -286,7 +288,12 @@ let g:brightest_enable=0
 "nmap <leader>s :Scratch<CR>
 
 " Scratch }}}
-"
+
+"Outliner {{{
+let g:vo_modules_load=''
+"Outliner }}}
+
+
 " Plugin Options }}}
 
 " Set Options {{{
@@ -320,11 +327,11 @@ set confirm                          " Bring up a dialog asking if you want to s
 set cursorline                       " Highlight cursor line
 set expandtab                        " Spaces instead of tabs
 set foldlevelstart=99                " Start all the way folded
-set foldmethod=marker                " By default, set the fold method to markers, it will be overwritten by autocmds
 set history=500                      " number of commands to keep in history
 set ignorecase                       " Ignore make lowercase seaches case-insensitive
 set incsearch                        " Automatically jump to any results whil typing in search
-set lazyredraw                  " Don't showmacro actions, just update at the end for speed
+set lazyredraw                       " Don't showmacro actions, just update at the end for speed
+set more                             " Enable scrolling of long command output
 "set showmatch
 "set matchtime=5
 set hlsearch                         " Highlight search matches
@@ -378,51 +385,9 @@ call matchadd('ColorColumn', '\%81v', 100)
 
 " Fold {{{
 
-function! GetLineIndentLevel(lnum)
-    " set it to its indent level (TODO: handle arbitrary 2space & 8space indents)
-    let detectedIndent = &shiftwidth 
-    return indent(a:lnum) / detectedIndent
-endfunction
-
-function! IsFunctionDeclaration(lnum)
-        if getline(currentline) =~? '\v\s*\w+\s*\w+\s*\('
-        endif
-endfunction
-
-function! IsInBlock(lnum)
-        if getline(currentline) =~? '\v\s*\w+\s*\w+\s*\('
-        endif
-endfunction
-
-function! IsFunctionDefinition(lnum)
-endfunction
-
-function! GetNextNonBlankLineNum(lnum)
-    let lastline = line('$')
-    let currentline = a:lnum + 1
-    while currentline <= lastline
-        if getline(currentline) =~? '\v\S'
-            return currentline
-        endif
-        let currentline = currentline + 1
-    endwhile
-    return a:lnum
-endfunction
-" A very zealous custom c/c++ style syntax folding function. When this function
-" is done, all you should see are file scope functions, #defs, and variables
-" -1 foldlevel is the chain foldleve, will tak ehte value of waht is above or below, the smallest
-function! HeavyCppFolding(lnum)
-    if getline(a:lnum) =~? '\v^\s$'
-        return '-1' 
-    endif
-
-    " If none of the above, set it to its indent level
-    return GetLineIndentLevel(a:lnum)
-endfunction
-
 function! FoldModeToggle()
     if !exists('g:fold_mode_state') 
-        let f:fold_mode_state = 0
+        let g:fold_mode_state = 0
     endif
 
     if g:fold_mode_state == 0
@@ -636,7 +601,6 @@ map <A-]> :vsp <CR>:exec("tag ".expand("<cword>"))<CR>
 nnoremap <space><space> a<space><esc>
 nnoremap <s-space><s-space> i<space><esc>
 nnoremap <silent> <leader>/ :nohlsearch<CR>
-nnoremap <silent> <leader>tv :tabnew $MYVIMRC<CR>
 
 "perhaps put all the misc unite ones under <leader>u{logical char}
 
@@ -830,7 +794,7 @@ nnoremap <silent> \          :<C-u>Unite gtags/ref        -immediately -auto-res
 nnoremap <silent> <leader>gs :<C-u>Unite gtags/completion -immediately -auto-resize -buffer-name=Tag\ Completion <CR>
 nnoremap <silent> <leader>gi :<C-u>Unite gtags/grep       -immediately -auto-resize -buffer-name=Tag\ Grep       <CR>
 nnoremap <silent> ,          :<C-u>Unite gtags/def        -immediately -auto-resize -buffer-name=Tag\ Definition <CR>
-nnoremap <silent> <leader>o  :<C-u>Unite -auto-preview outline                      -buffer-name=Outline         <CR>
+nnoremap <silent> <leader>o  :<C-u>Unite -auto-preview outline -no-split            -buffer-name=Outline         <CR>
 "use c-n & c-p for now, alt, ctrl, and shift are all no good for this
 "inoremap <buffer> <A-j> <Plug>(unite_select_next_line)
 "inoremap <buffer> <A-k> <Plug>(unite_select_previous_line)
@@ -901,8 +865,6 @@ augroup vimrc
     au!
     autocmd BufEnter *.c,*.cpp,*.h,*.hpp,*.txt,*.vim :call SetRoot()
     autocmd FileType vim setlocal foldmethod=marker
-"    autocmd FileType c,cpp setlocal foldexpr=HeavyCppFolding(v:lnum)
-"    autocmd FileType c,cpp setlocal foldmethod=expr
     autocmd FileType text setlocal foldmethod=indent
     autocmd FocusLost * stopinsert
     autocmd bufwritepost $MYVIMRC source % " Re-Source vimrc wach time it is edited
@@ -935,14 +897,4 @@ autocmd BufWritePost *.bin if &bin | %!xxd
 autocmd BufWritePost *.bin set nomod | endif
 augroup END
 
-
 "}}}
-
-
-" Misc Unicode Characters {{{
-" ⎈✺ ☔❂
-" }}}
-    autocmd FileType c,cpp setlocal set foldmethod=syntax
-    autocmd FileType c,cpp setlocal set foldminlines=0
-"    autocmd FileType c,cpp setlocal foldmethod=expr
-
