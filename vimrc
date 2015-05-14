@@ -126,7 +126,7 @@ NeoBundleFetch 'junegunn/vim-easy-align'
 NeoBundleFetch 'tpope/vim-endwise'
 "NeoBundleFetch 'AndrewRadev/splitjoin.vim'
 NeoBundleFetch 'tpope/vim-surround'
-"NeoBundle 'msanders/snipmate.vim'
+NeoBundle 'msanders/snipmate.vim'
 " Formatting }}}
 
 " Functional Plugins }}}
@@ -293,10 +293,17 @@ let g:brightest_enable=0
 let g:vo_modules_load=''
 "Outliner }}}
 
+" SnipMate {{{
+
+let g:snippets_dir = "~/.vim/snippets/"
+
+" SnipMate }}}
+
 
 " Plugin Options }}}
 
 " Set Options {{{
+
 "TODO : unncessary? set runtimepath^=~/.vim/bundle/ctrlp.vim
 " TODO slowly remove/replace this
 "TODO
@@ -531,6 +538,7 @@ function! GetRoot()
 endfunction
 
 "}}}
+
 "}}}
 
 " Key Mappings {{{
