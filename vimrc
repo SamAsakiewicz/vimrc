@@ -1,22 +1,9 @@
-" __      __  _____   __  __   _____     _____
+﻿" __      __  _____   __  __   _____     _____
 " \ \    / / |_   _| |  \/  | |  __ \   / ____|
 "  \ \  / /    | |   | \  / | | |__) | | |
 "   \ \/ /     | |   | |\/| | |  _  /  | |
 "    \  /     _| |_  | |  | | | | \ \  | |____
 "     \/     |_____| |_|  |_| |_|  \_\  \_____|
-
-" The Art of VIm {{{
-
-" Have Fun!
-" VIm is not perfect, but it is extensible. So make it perfect.
-" If Vim does not do something you want it to do, add it.
-" If Vim does something you do not want it to do, remove it.
-" If an operation is long and hard, make it short and make it easy.
-" If a manual operation can be done automatically, automate it.
-" If Vim is ugly, make it pretty.
-" Make sure none of the above interrupts your flow
-
-" The Art of VIm }}}
 
 " Global Variables {{{
 
@@ -78,7 +65,7 @@ NeoBundleFetch 'Raimondi/delimitMate'  " automatically end braces
 NeoBundleFetch 'vimoutliner/vimoutliner'
 NeoBundleFetch 'jaxbot/semantic-highlight.vim'
 "NeoBundleFetch 'vim-scripts/SemanticHL' "jaxbot/semantic-highlight.vim
-NeoBundleFetch 'Shougo/vimfiler.vim'
+"NeoBundleFetch 'Shougo/vimfiler.vim'
 "NeoBundleFetch 'TaskList.vim' " puts todos in code, in a viewable list
 "}}}
 
@@ -92,7 +79,7 @@ NeoBundleFetch 'sjl/badwolf'
 NeoBundleFetch 'ciaranm/inkpot'
 NeoBundleFetch 'w0ng/vim-hybrid'
 NeoBundleFetch 'hickop/vim-hickop-colors'
-NeoBundleFetch 'junegunn/seoul256.vim'
+"NeoBundleFetch 'junegunn/seoul256.vim'
 NeoBundleFetch 'whatyouhide/vim-gotham'    " dark color scheme
 "}}}
 
@@ -171,8 +158,6 @@ colorscheme solarized
 "let g:ctrlp_cmd = 'CtrlPMixed'
 "let g:ctrlp_user_command = {
 "\}
-"ADD TEXT SEARCH, LOOK FOR CTAGS SEARCH?
-"TODO:add ctags / search
 "let g:ctrlp_extensions = ['mixed', 'quickfix', 'undo', 'line', 'changes', 'cmdline', 'menu']
 let g:ctrlp_max_height = 20
 let g:ctrlp_mruf_exclude = '/tmp.*\|/usr/share.*\|.*bundle.*\|.*\.git'
@@ -254,9 +239,6 @@ let g:startify_custom_header = [
 " EasyMotion {{{
 " Turn off default mappings
 let g:EasyMotion_do_mapping = 0
-"nmap <leader>f <Plug>(easymotion-f)
-"nmap <leader>F <Plug>(easymotion-F)
-"nmap , <Plug>(easymotion-s)
 " EasyMotion }}}
 
 " Outliner {{{
@@ -418,12 +400,6 @@ endfunction
 " Fold }}}
 
 " Key Functions {{{
-"not functional yet
-function! GtagsRefSearch()
-    :let wordUnderCursor = expand("<cword>")
-    :execute "Gtags -r " . wordUnderCursor
-endfunction
-
 function! BuildCtags(dir)
     execute 'cd' fnameescape(a:dir)
 
@@ -473,7 +449,13 @@ function! RunAg(text, dir)
         echo "RunAg - Searching for: " . a:text
         echo "RunAg - Searching in: " . a:dir
 "TODO change based on filetype for python and etc
-        let g:AgIgnoreString =" --file-search-regex \.[(c$)(cpp$)(h$)(hpp$)(C$)(CPP$)(H$)] "
+	if g:is_win
+        	let g:AgIgnoreString =' --file-search-regex .[(c)(cpp)(h)(hpp)(C)(CPP)(H)]$ '
+	endif
+	if g:is_nix
+        	let g:AgIgnoreString =' --file-search-regex .\[\(c\)\(cpp\)\(h\)\(hpp\)\(C\)\(CPP\)\(H\)\]$ '
+	endif
+
         let searchString =  "Ag! -S --stats " . g:AgIgnoreString . a:text . " " . a:dir
         execute searchString
     else
@@ -503,11 +485,6 @@ function! ParseBuildLog(logfile)
     :normal <c-w>j
 endfunction
 
-
-function! SwitchFile(dir)
-    let wordUnderCursor = expand("<cword>")
-    let splits = split(wordUnderCursor, '\.')
-endfunction
 "}}}
 
 " Utility Functions {{{
@@ -606,6 +583,7 @@ map <A-]> :vsp <CR>:exec("tag ".expand("<cword>"))<CR>
 
 " Leader Key Mappings {{{
 
+
 nnoremap <space><space> a<space><esc>
 nnoremap <s-space><s-space> i<space><esc>
 nnoremap <silent> <leader>/ :nohlsearch<CR>
@@ -642,8 +620,8 @@ nmap <silent> <leader>an <esc>:call RunAgOnInput(g:docs_path)<CR>
 " Text Formatting {{{
 nnoremap <leader>tr :s/\s*$//<CR>
 nnoremap <leader>tR :%s/\s*$//<CR><C-o>
-vnoremap <leader>at :EasyAlign /
-nnoremap <leader>at :EasyAlign /
+vnoremap <leader>at :LiveEasyAlign
+nnoremap <leader>at :LiveEasyAlign
 " }}}
 
 
@@ -652,7 +630,9 @@ nmap <silent> <leader>gC <esc>:call GtagsRefSearch()<CR>
 nmap <silent> <leader>gn <esc>:cn<CR>
 nmap <silent> <leader>gp <esc>:cp<CR>
 nmap <silent> <leader>gl <esc>:cl<CR>
-" }}}
+
+nmap <silent> <leader>gu <esc>:GundoToggle<CR>
+" Leader Key Mappings }}}
 
 " Paste/Replace Mappings {{{
 nnoremap <leader>x viw"ap
@@ -789,8 +769,8 @@ nnoremap <silent> <leader>ua :<C-u>UniteBookmarkAdd                             
 nnoremap <silent> <leader>j  :<C-u>Unite buffer                                                                  <CR>
 nnoremap <silent> <leader>J  :<C-u>Unite buffer_tab                                                              <CR>
 nnoremap <silent> <leader>k  :<C-u>Unite tab                                                                     <CR>
-nnoremap <silent> <leader>l  :<C-u>Unite line             -complete                 -buffer-name=Line\ Search    <CR>
-nnoremap <silent> <leader>h  :<C-u>Unite file_mru         -complete                 -buffer-name=History         <CR>
+nnoremap <silent> <leader>l  :<C-u>Unite line                                       -buffer-name=Line\ Search    <CR>
+nnoremap <silent> <leader>h  :<C-u>Unite file_mru                                   -buffer-name=History         <CR>
 nnoremap <silent> <leader>ub :<C-u>Unite bookmark         -here                     -buffer-name=Bookmarks       <CR>
 nnoremap <silent> <leader>uc :<C-u>UniteClose<CR>
 nnoremap <silent> <leader>us :<C-u>UniteShow<CR>
@@ -871,12 +851,15 @@ endif
 
 augroup vimrc
     au!
+    "TODO: drop out if alread in dir
+    " Automatically cd
     autocmd BufEnter *.c,*.cpp,*.h,*.hpp,*.txt,*.vim :call SetRoot()
     autocmd FileType vim setlocal foldmethod=marker
     autocmd FileType text setlocal foldmethod=indent
     autocmd FocusLost * stopinsert
+    autocmd FocusLost * :wall
     autocmd bufwritepost $MYVIMRC source % " Re-Source vimrc wach time it is edited
-    autocmd VimEnter * :echo '☃ Welcome Back: ' . g:hostname
+    autocmd VimEnter * :echo 'Welcome Back: ' . g:hostname
     autocmd VimEnter * :call BuildHelpTags(g:docpaths)
     " print out a key note on startup?
 
@@ -893,7 +876,6 @@ augroup vimrc
     "autocmd BufEnter * execute "chdir ".escape(expand("%:p:h"), ' ') " Automatically cd into the directory that the file is in
 augroup END
 
-""//TODO
 augroup Binary
 au!
 autocmd BufReadPre   *.bin let &bin=1
