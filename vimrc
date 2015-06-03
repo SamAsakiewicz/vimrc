@@ -847,6 +847,39 @@ endif
 "}}}
 
 " AutoCmds {{{
+"
+augroup vimrc
+    au!
+    autocmd BufEnter *.c,*.cpp,*.h,*.hpp,*.txt,*.vim :call SetRoot()
+    autocmd FileType vim setlocal foldmethod=marker
+    autocmd FileType text setlocal foldmethod=indent
+    autocmd FocusLost * stopinsert
+    autocmd FocusLost *.c,*.cpp,*.h,*.hpp wall
+    autocmd bufwritepost vimrc source % " Re-Source vimrc wach time it is edited
+    autocmd VimEnter * :echo 'Welcome Back: ' . g:hostname
+    autocmd VimEnter * :call BuildHelpTags(g:docpaths)
 
+    " When editing a file, always jump to the last known cursor position.
+    " Don't do it when the position is invalid or when inside an event handler
+    " (happens when dropping a file on gvim).
+    " Also don't do it when the mark is in the first line, that is the default
+    " position when opening a file.
+    autocmd BufReadPost *
+                \ if line("'\"") > 1 && line("'\"") <= line("$") |
+                \   exe "normal! g`\"" |
+                \ endif
+
+augroup END
+
+augroup Binary
+    au!
+    autocmd BufReadPre   *.bin let &bin=1
+    autocmd BufReadPost  *.bin if &bin | %!xxd
+    autocmd BufReadPost  *.bin set ft=xxd | endif
+    autocmd BufWritePre  *.bin if &bin | %!xxd -r
+    autocmd BufWritePre  *.bin endif
+    autocmd BufWritePost *.bin if &bin | %!xxd
+    autocmd BufWritePost *.bin set nomod | endif
+augroup END
 
 "}}}
