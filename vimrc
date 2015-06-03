@@ -77,7 +77,6 @@ NeoBundleFetch 'bufkill.vim'
 NeoBundleFetch 'Raimondi/delimitMate'  " automatically end braces
 NeoBundleFetch 'vimoutliner/vimoutliner'
 NeoBundleFetch 'jaxbot/semantic-highlight.vim'
-"NeoBundleFetch 'vim-scripts/SemanticHL' "jaxbot/semantic-highlight.vim
 NeoBundleFetch 'Shougo/vimfiler.vim'
 "NeoBundleFetch 'TaskList.vim' " puts todos in code, in a viewable list
 "}}}
@@ -92,7 +91,7 @@ NeoBundleFetch 'sjl/badwolf'
 NeoBundleFetch 'ciaranm/inkpot'
 NeoBundleFetch 'w0ng/vim-hybrid'
 NeoBundleFetch 'hickop/vim-hickop-colors'
-NeoBundleFetch 'junegunn/seoul256.vim'
+"NeoBundleFetch 'junegunn/seoul256.vim'
 NeoBundleFetch 'whatyouhide/vim-gotham'    " dark color scheme
 "}}}
 
@@ -126,7 +125,8 @@ NeoBundleFetch 'junegunn/vim-easy-align'
 NeoBundleFetch 'tpope/vim-endwise'
 "NeoBundleFetch 'AndrewRadev/splitjoin.vim'
 NeoBundleFetch 'tpope/vim-surround'
-"NeoBundle 'msanders/snipmate.vim'
+NeoBundleFetch 'msanders/snipmate.vim'
+NeoBundleFetch 'kien/rainbow_parentheses.vim'
 " Formatting }}}
 
 " Functional Plugins }}}
@@ -141,7 +141,7 @@ NeoBundleFetch 'tacroe/unite-mark'
 NeoBundleFetch 'hewes/unite-gtags'
 NeoBundleFetch 'sgur/unite-qf'  " quickfix window source
 NeoBundleFetch 'thinca/vim-unite-history' " Unite display of command and search history
-NeoBundleFetch 'kien/rainbow_parentheses.vim'
+NeoBundleFetch 'tsukkee/unite-tag'
 
 " Unite Plugins }}}
 
@@ -286,7 +286,26 @@ let g:brightest_enable=0
 "nmap <leader>s :Scratch<CR>
 
 " Scratch }}}
-"
+
+" EasyAlign {{{
+
+if !exists('g:easy_align_delimiters')
+  let g:easy_align_delimiters = {}
+endif
+let g:easy_align_delimiters['#'] = { 'pattern': '#', 'ignore_groups': ['String'] }
+let g:easy_align_delimiters['/'] = { 'pattern': '//', 'ignore_groups': ['String'] }
+let g:easy_align_delimiters[']'] = { 'pattern': '[[\]]', 'left_margin': 1, 'right_margin': 0, 'stick_to_left': 0 }
+let g:easy_align_delimiters[')'] = { 'pattern': '[()]', 'left_margin': 0, 'right_margin': 0, 'stick_to_left': 0 }
+let g:easy_align_delimiters['\'] = { 'pattern': '\\' }
+
+" EasyAlign }}}
+
+" SnipMate {{{
+
+let g:snippets_dir="~/.vim/snippets"
+
+" SnipMate }}}
+
 " Plugin Options }}}
 
 " Set Options {{{
@@ -456,7 +475,7 @@ function! BuildCtags(dir)
     execute 'cd' fnameescape(a:dir)
 
     if has("win32")
-        silent !ctags.exe -R --exclude=builds --fields=+Ssaki --extra=+qf .
+        silent !ctags -R --exclude=builds --fields=+Ssaki --extra=+qf .
     elseif has ("unix")
         silent !ctags -R --exclude=debian --exclude=builds --exclude=build --flags=+saki --extra=+qf .
     endif
@@ -500,8 +519,7 @@ function! RunAg(text, dir)
         echo ""
         echo "RunAg - Searching for: " . a:text
         echo "RunAg - Searching in: " . a:dir
-"TODO change based on filetype for python and etc
-        let g:AgIgnoreString =" --file-search-regex \.[(c$)(cpp$)(h$)(hpp$)(C$)(CPP$)(H$)] "
+        let g:AgIgnoreString =" --ignore-dir builds --ignore-dir utility --ignore *.patch --ignore tags --ignore oldtags --ignore *TMP --ignore *.s19 --ignore *.bin --ignore *.exe --ignore *.ewp --ignore *.hex --ignore *.htm --ignore *.html --ignore *.vcproj* --ignore *.make --ignore *.srec --ignore *.pdf --ignore-dir documentation --ignore *.bat --ignore *.gol --ignore *.tex --ignore *.css --ignore README --ignore *.shtml "
         let searchString =  "Ag! -S --stats " . g:AgIgnoreString . a:text . " " . a:dir
         execute searchString
     else
@@ -647,6 +665,7 @@ if has("win32")
     nmap <leader>bt <esc>:call BuildAllTags(g:project_root_bs)<CR>
     nmap <leader>bi <esc>:call ParseBuildLog(g:project_root_bs)<CR>
     nmap <leader>bI <esc>:e build.log<CR>
+    nmap <leader>bp <esc>:silent !"python C:/Users/sasakiewicz/Scripts/ProgrammingDirectoryFinder.py C:/Users/sasakiewicz/"<LEFT>
 
 else
     nmap <leader>bc <esc>:call BuildCtags(g:project_root_fs)<CR>
@@ -670,8 +689,8 @@ nmap <silent> <leader>an <esc>:call RunAgOnInput(g:docs_path)<CR>
 " Text Formatting {{{
 nnoremap <leader>tr :s/\s*$//<CR>
 nnoremap <leader>tR :%s/\s*$//<CR><C-o>
-vnoremap <leader>at :EasyAlign /
-nnoremap <leader>at :EasyAlign /
+vnoremap <leader>at :LiveEasyAlign<CR>
+nnoremap <leader>at :LiveEasyAlign<CR>
 " }}}
 
 
@@ -817,9 +836,9 @@ nnoremap <silent> <leader>ua :<C-u>UniteBookmarkAdd                             
 nnoremap <silent> <leader>j  :<C-u>Unite buffer                                                                  <CR>
 nnoremap <silent> <leader>J  :<C-u>Unite buffer_tab                                                              <CR>
 nnoremap <silent> <leader>k  :<C-u>Unite tab                                                                     <CR>
-nnoremap <silent> <leader>l  :<C-u>Unite line             -complete                 -buffer-name=Line\ Search    <CR>
-nnoremap <silent> <leader>h  :<C-u>Unite file_mru         -complete                 -buffer-name=History         <CR>
-nnoremap <silent> <leader>ub :<C-u>Unite bookmark         -here                     -buffer-name=Bookmarks       <CR>
+nnoremap <silent> <leader>l  :<C-u>Unite line                                       -buffer-name=Line\ Search    <CR>
+nnoremap <silent> <leader>h  :<C-u>Unite file_mru                                   -buffer-name=History         <CR>
+nnoremap <silent> <leader>ub :<C-u>Unite bookmark         -no-split                 -buffer-name=Bookmarks       <CR>
 nnoremap <silent> <leader>uc :<C-u>UniteClose<CR>
 nnoremap <silent> <leader>us :<C-u>UniteShow<CR>
 
@@ -830,7 +849,7 @@ nnoremap <silent> \          :<C-u>Unite gtags/ref        -immediately -auto-res
 nnoremap <silent> <leader>gs :<C-u>Unite gtags/completion -immediately -auto-resize -buffer-name=Tag\ Completion <CR>
 nnoremap <silent> <leader>gi :<C-u>Unite gtags/grep       -immediately -auto-resize -buffer-name=Tag\ Grep       <CR>
 nnoremap <silent> ,          :<C-u>Unite gtags/def        -immediately -auto-resize -buffer-name=Tag\ Definition <CR>
-nnoremap <silent> <leader>o  :<C-u>Unite -auto-preview outline                      -buffer-name=Outline         <CR>
+nnoremap <silent> <leader>o  :<C-u>Unite outline          -no-split                 -buffer-name=Outline         <CR>
 "use c-n & c-p for now, alt, ctrl, and shift are all no good for this
 "inoremap <buffer> <A-j> <Plug>(unite_select_next_line)
 "inoremap <buffer> <A-k> <Plug>(unite_select_previous_line)
@@ -942,7 +961,7 @@ augroup END
 " Misc Unicode Characters {{{
 " ⎈✺ ☔❂
 " }}}
-    autocmd FileType c,cpp setlocal set foldmethod=syntax
-    autocmd FileType c,cpp setlocal set foldminlines=0
+    autocmd FileType c,cpp setlocal foldmethod=syntax
+    autocmd FileType c,cpp setlocal foldminlines=0
 "    autocmd FileType c,cpp setlocal foldmethod=expr
 
