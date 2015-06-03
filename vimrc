@@ -1,22 +1,9 @@
-" __      __  _____   __  __   _____     _____
+﻿" __      __  _____   __  __   _____     _____
 " \ \    / / |_   _| |  \/  | |  __ \   / ____|
 "  \ \  / /    | |   | \  / | | |__) | | |
 "   \ \/ /     | |   | |\/| | |  _  /  | |
 "    \  /     _| |_  | |  | | | | \ \  | |____
 "     \/     |_____| |_|  |_| |_|  \_\  \_____|
-
-" The Art of VIm {{{
-
-" Have Fun!
-" VIm is not perfect, but it is extensible. So make it perfect.
-" If Vim does not do something you want it to do, add it.
-" If Vim does something you do not want it to do, remove it.
-" If an operation is long and hard, make it short and make it easy.
-" If a manual operation can be done automatically, automate it.
-" If Vim is ugly, make it pretty.
-" Make sure none of the above interrupts your flow
-
-" The Art of VIm }}}
 
 " Global Variables {{{
 
@@ -77,7 +64,6 @@ NeoBundleFetch 'bufkill.vim'
 NeoBundleFetch 'Raimondi/delimitMate'  " automatically end braces
 NeoBundleFetch 'vimoutliner/vimoutliner'
 NeoBundleFetch 'jaxbot/semantic-highlight.vim'
-NeoBundleFetch 'Shougo/vimfiler.vim'
 "NeoBundleFetch 'TaskList.vim' " puts todos in code, in a viewable list
 "}}}
 
@@ -171,8 +157,6 @@ colorscheme solarized
 "let g:ctrlp_cmd = 'CtrlPMixed'
 "let g:ctrlp_user_command = {
 "\}
-"ADD TEXT SEARCH, LOOK FOR CTAGS SEARCH?
-"TODO:add ctags / search
 "let g:ctrlp_extensions = ['mixed', 'quickfix', 'undo', 'line', 'changes', 'cmdline', 'menu']
 let g:ctrlp_max_height = 20
 let g:ctrlp_mruf_exclude = '/tmp.*\|/usr/share.*\|.*bundle.*\|.*\.git'
@@ -254,14 +238,12 @@ let g:startify_custom_header = [
 " EasyMotion {{{
 " Turn off default mappings
 let g:EasyMotion_do_mapping = 0
-"nmap <leader>f <Plug>(easymotion-f)
-"nmap <leader>F <Plug>(easymotion-F)
-"nmap , <Plug>(easymotion-s)
 " EasyMotion }}}
 
 " Outliner {{{
 augroup Outliner
     au!
+        autocmd BufWritePre  *.otl silent! :normal! m'
         autocmd BufWritePre  *.otl silent! :%s/\v^(	*|(    )*)    /\1	/|norm!``|:nohlsearch
         autocmd BufWritePre  *.otl silent! :%s/\v^(	*|(    )*)    /\1	/|norm!``|:nohlsearch
         autocmd BufWritePre  *.otl silent! :%s/\v^(	*|(    )*)    /\1	/|norm!``|:nohlsearch
@@ -271,6 +253,7 @@ augroup Outliner
         autocmd BufWritePre  *.otl silent! :%s/\v^(	*|(    )*)    /\1	/|norm!``|:nohlsearch
         autocmd FileType *.otl set expandtab
         autocmd FileType *.otl set virtualedit=all
+        autocmd BufWritePre  *.otl silent! :normal! `'
 
 augroup END
 " Outliner }}}
@@ -300,15 +283,20 @@ let g:easy_align_delimiters['\'] = { 'pattern': '\\' }
 
 " EasyAlign }}}
 
+"Outliner {{{
+let g:vo_modules_load=''
+"Outliner }}}
+
 " SnipMate {{{
 
-let g:snippets_dir="~/.vim/snippets"
+let g:snippets_dir = "$VIM/snippets/"
 
 " SnipMate }}}
 
 " Plugin Options }}}
 
 " Set Options {{{
+
 "TODO : unncessary? set runtimepath^=~/.vim/bundle/ctrlp.vim
 " TODO slowly remove/replace this
 "TODO
@@ -339,11 +327,11 @@ set confirm                          " Bring up a dialog asking if you want to s
 set cursorline                       " Highlight cursor line
 set expandtab                        " Spaces instead of tabs
 set foldlevelstart=99                " Start all the way folded
-set foldmethod=marker                " By default, set the fold method to markers, it will be overwritten by autocmds
 set history=500                      " number of commands to keep in history
 set ignorecase                       " Ignore make lowercase seaches case-insensitive
 set incsearch                        " Automatically jump to any results whil typing in search
-set lazyredraw                  " Don't showmacro actions, just update at the end for speed
+set lazyredraw                       " Don't showmacro actions, just update at the end for speed
+set more                             " Enable scrolling of long command output
 "set showmatch
 "set matchtime=5
 set hlsearch                         " Highlight search matches
@@ -397,51 +385,9 @@ call matchadd('ColorColumn', '\%81v', 100)
 
 " Fold {{{
 
-function! GetLineIndentLevel(lnum)
-    " set it to its indent level (TODO: handle arbitrary 2space & 8space indents)
-    let detectedIndent = &shiftwidth 
-    return indent(a:lnum) / detectedIndent
-endfunction
-
-function! IsFunctionDeclaration(lnum)
-        if getline(currentline) =~? '\v\s*\w+\s*\w+\s*\('
-        endif
-endfunction
-
-function! IsInBlock(lnum)
-        if getline(currentline) =~? '\v\s*\w+\s*\w+\s*\('
-        endif
-endfunction
-
-function! IsFunctionDefinition(lnum)
-endfunction
-
-function! GetNextNonBlankLineNum(lnum)
-    let lastline = line('$')
-    let currentline = a:lnum + 1
-    while currentline <= lastline
-        if getline(currentline) =~? '\v\S'
-            return currentline
-        endif
-        let currentline = currentline + 1
-    endwhile
-    return a:lnum
-endfunction
-" A very zealous custom c/c++ style syntax folding function. When this function
-" is done, all you should see are file scope functions, #defs, and variables
-" -1 foldlevel is the chain foldleve, will tak ehte value of waht is above or below, the smallest
-function! HeavyCppFolding(lnum)
-    if getline(a:lnum) =~? '\v^\s$'
-        return '-1' 
-    endif
-
-    " If none of the above, set it to its indent level
-    return GetLineIndentLevel(a:lnum)
-endfunction
-
 function! FoldModeToggle()
     if !exists('g:fold_mode_state') 
-        let f:fold_mode_state = 0
+        let g:fold_mode_state = 0
     endif
 
     if g:fold_mode_state == 0
@@ -465,12 +411,6 @@ endfunction
 " Fold }}}
 
 " Key Functions {{{
-"not functional yet
-function! GtagsRefSearch()
-    :let wordUnderCursor = expand("<cword>")
-    :execute "Gtags -r " . wordUnderCursor
-endfunction
-
 function! BuildCtags(dir)
     execute 'cd' fnameescape(a:dir)
 
@@ -519,7 +459,14 @@ function! RunAg(text, dir)
         echo ""
         echo "RunAg - Searching for: " . a:text
         echo "RunAg - Searching in: " . a:dir
-        let g:AgIgnoreString =" --ignore-dir builds --ignore-dir utility --ignore *.patch --ignore tags --ignore oldtags --ignore *TMP --ignore *.s19 --ignore *.bin --ignore *.exe --ignore *.ewp --ignore *.hex --ignore *.htm --ignore *.html --ignore *.vcproj* --ignore *.make --ignore *.srec --ignore *.pdf --ignore-dir documentation --ignore *.bat --ignore *.gol --ignore *.tex --ignore *.css --ignore README --ignore *.shtml "
+"TODO change based on filetype for python and etc
+	if g:is_win
+        	let g:AgIgnoreString =' --file-search-regex .[(c)(cpp)(h)(hpp)(C)(CPP)(H)]$ '
+	endif
+	if g:is_nix
+        	let g:AgIgnoreString =' --file-search-regex .\[\(c\)\(cpp\)\(h\)\(hpp\)\(C\)\(CPP\)\(H\)\]$ '
+	endif
+
         let searchString =  "Ag! -S --stats " . g:AgIgnoreString . a:text . " " . a:dir
         execute searchString
     else
@@ -549,11 +496,6 @@ function! ParseBuildLog(logfile)
     :normal <c-w>j
 endfunction
 
-
-function! SwitchFile(dir)
-    let wordUnderCursor = expand("<cword>")
-    let splits = split(wordUnderCursor, '\.')
-endfunction
 "}}}
 
 " Utility Functions {{{
@@ -584,6 +526,7 @@ function! GetRoot()
 endfunction
 
 "}}}
+
 "}}}
 
 " Key Mappings {{{
@@ -651,10 +594,10 @@ map <A-]> :vsp <CR>:exec("tag ".expand("<cword>"))<CR>
 
 " Leader Key Mappings {{{
 
+
 nnoremap <space><space> a<space><esc>
 nnoremap <s-space><s-space> i<space><esc>
 nnoremap <silent> <leader>/ :nohlsearch<CR>
-nnoremap <silent> <leader>tv :tabnew $MYVIMRC<CR>
 
 "perhaps put all the misc unite ones under <leader>u{logical char}
 
@@ -665,7 +608,7 @@ if has("win32")
     nmap <leader>bt <esc>:call BuildAllTags(g:project_root_bs)<CR>
     nmap <leader>bi <esc>:call ParseBuildLog(g:project_root_bs)<CR>
     nmap <leader>bI <esc>:e build.log<CR>
-    nmap <leader>bp <esc>:silent !"python C:/Users/sasakiewicz/Scripts/ProgrammingDirectoryFinder.py C:/Users/sasakiewicz/"<LEFT>
+    " ADD in ptool   nmap <leader>bp <esc>: 
 
 else
     nmap <leader>bc <esc>:call BuildCtags(g:project_root_fs)<CR>
@@ -699,7 +642,9 @@ nmap <silent> <leader>gC <esc>:call GtagsRefSearch()<CR>
 nmap <silent> <leader>gn <esc>:cn<CR>
 nmap <silent> <leader>gp <esc>:cp<CR>
 nmap <silent> <leader>gl <esc>:cl<CR>
-" }}}
+
+nmap <silent> <leader>gu <esc>:GundoToggle<CR>
+" Leader Key Mappings }}}
 
 " Paste/Replace Mappings {{{
 nnoremap <leader>x viw"ap
@@ -916,52 +861,4 @@ endif
 " AutoCmds {{{
 
 
-augroup vimrc
-    au!
-    autocmd BufEnter *.c,*.cpp,*.h,*.hpp,*.txt,*.vim :call SetRoot()
-    autocmd FileType vim setlocal foldmethod=marker
-"    autocmd FileType c,cpp setlocal foldexpr=HeavyCppFolding(v:lnum)
-"    autocmd FileType c,cpp setlocal foldmethod=expr
-    autocmd FileType text setlocal foldmethod=indent
-    autocmd FocusLost * stopinsert
-    autocmd bufwritepost $MYVIMRC source % " Re-Source vimrc wach time it is edited
-    autocmd VimEnter * :echo '☃ Welcome Back: ' . g:hostname
-    autocmd VimEnter * :call BuildHelpTags(g:docpaths)
-    " print out a key note on startup?
-
-    " When editing a file, always jump to the last known cursor position.
-    " Don't do it when the position is invalid or when inside an event handler
-    " (happens when dropping a file on gvim).
-    " Also don't do it when the mark is in the first line, that is the default
-    " position when opening a file.
-    autocmd BufReadPost *
-                \ if line("'\"") > 1 && line("'\"") <= line("$") |
-                \   exe "normal! g`\"" |
-                \ endif
-
-    "autocmd BufEnter * execute "chdir ".escape(expand("%:p:h"), ' ') " Automatically cd into the directory that the file is in
-augroup END
-
-""//TODO
-augroup Binary
-au!
-autocmd BufReadPre   *.bin let &bin=1
-autocmd BufReadPost  *.bin if &bin | %!xxd
-autocmd BufReadPost  *.bin set ft=xxd | endif
-autocmd BufWritePre  *.bin if &bin | %!xxd -r
-autocmd BufWritePre  *.bin endif
-autocmd BufWritePost *.bin if &bin | %!xxd
-autocmd BufWritePost *.bin set nomod | endif
-augroup END
-
-
 "}}}
-
-
-" Misc Unicode Characters {{{
-" ⎈✺ ☔❂
-" }}}
-    autocmd FileType c,cpp setlocal foldmethod=syntax
-    autocmd FileType c,cpp setlocal foldminlines=0
-"    autocmd FileType c,cpp setlocal foldmethod=expr
-
