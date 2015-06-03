@@ -64,8 +64,6 @@ NeoBundleFetch 'bufkill.vim'
 NeoBundleFetch 'Raimondi/delimitMate'  " automatically end braces
 NeoBundleFetch 'vimoutliner/vimoutliner'
 NeoBundleFetch 'jaxbot/semantic-highlight.vim'
-"NeoBundleFetch 'vim-scripts/SemanticHL' "jaxbot/semantic-highlight.vim
-"NeoBundleFetch 'Shougo/vimfiler.vim'
 "NeoBundleFetch 'TaskList.vim' " puts todos in code, in a viewable list
 "}}}
 
@@ -113,7 +111,8 @@ NeoBundleFetch 'junegunn/vim-easy-align'
 NeoBundleFetch 'tpope/vim-endwise'
 "NeoBundleFetch 'AndrewRadev/splitjoin.vim'
 NeoBundleFetch 'tpope/vim-surround'
-NeoBundle 'msanders/snipmate.vim'
+NeoBundleFetch 'msanders/snipmate.vim'
+NeoBundleFetch 'kien/rainbow_parentheses.vim'
 " Formatting }}}
 
 " Functional Plugins }}}
@@ -128,7 +127,7 @@ NeoBundleFetch 'tacroe/unite-mark'
 NeoBundleFetch 'hewes/unite-gtags'
 NeoBundleFetch 'sgur/unite-qf'  " quickfix window source
 NeoBundleFetch 'thinca/vim-unite-history' " Unite display of command and search history
-NeoBundleFetch 'kien/rainbow_parentheses.vim'
+NeoBundleFetch 'tsukkee/unite-tag'
 
 " Unite Plugins }}}
 
@@ -271,6 +270,19 @@ let g:brightest_enable=0
 
 " Scratch }}}
 
+" EasyAlign {{{
+
+if !exists('g:easy_align_delimiters')
+  let g:easy_align_delimiters = {}
+endif
+let g:easy_align_delimiters['#'] = { 'pattern': '#', 'ignore_groups': ['String'] }
+let g:easy_align_delimiters['/'] = { 'pattern': '//', 'ignore_groups': ['String'] }
+let g:easy_align_delimiters[']'] = { 'pattern': '[[\]]', 'left_margin': 1, 'right_margin': 0, 'stick_to_left': 0 }
+let g:easy_align_delimiters[')'] = { 'pattern': '[()]', 'left_margin': 0, 'right_margin': 0, 'stick_to_left': 0 }
+let g:easy_align_delimiters['\'] = { 'pattern': '\\' }
+
+" EasyAlign }}}
+
 "Outliner {{{
 let g:vo_modules_load=''
 "Outliner }}}
@@ -280,7 +292,6 @@ let g:vo_modules_load=''
 let g:snippets_dir = "$VIM/snippets/"
 
 " SnipMate }}}
-
 
 " Plugin Options }}}
 
@@ -404,7 +415,7 @@ function! BuildCtags(dir)
     execute 'cd' fnameescape(a:dir)
 
     if has("win32")
-        silent !ctags.exe -R --exclude=builds --fields=+Ssaki --extra=+qf .
+        silent !ctags -R --exclude=builds --fields=+Ssaki --extra=+qf .
     elseif has ("unix")
         silent !ctags -R --exclude=debian --exclude=builds --exclude=build --flags=+saki --extra=+qf .
     endif
@@ -597,6 +608,7 @@ if has("win32")
     nmap <leader>bt <esc>:call BuildAllTags(g:project_root_bs)<CR>
     nmap <leader>bi <esc>:call ParseBuildLog(g:project_root_bs)<CR>
     nmap <leader>bI <esc>:e build.log<CR>
+    " ADD in ptool   nmap <leader>bp <esc>: 
 
 else
     nmap <leader>bc <esc>:call BuildCtags(g:project_root_fs)<CR>
@@ -620,8 +632,8 @@ nmap <silent> <leader>an <esc>:call RunAgOnInput(g:docs_path)<CR>
 " Text Formatting {{{
 nnoremap <leader>tr :s/\s*$//<CR>
 nnoremap <leader>tR :%s/\s*$//<CR><C-o>
-vnoremap <leader>at :LiveEasyAlign
-nnoremap <leader>at :LiveEasyAlign
+vnoremap <leader>at :LiveEasyAlign<CR>
+nnoremap <leader>at :LiveEasyAlign<CR>
 " }}}
 
 
@@ -771,7 +783,7 @@ nnoremap <silent> <leader>J  :<C-u>Unite buffer_tab                             
 nnoremap <silent> <leader>k  :<C-u>Unite tab                                                                     <CR>
 nnoremap <silent> <leader>l  :<C-u>Unite line                                       -buffer-name=Line\ Search    <CR>
 nnoremap <silent> <leader>h  :<C-u>Unite file_mru                                   -buffer-name=History         <CR>
-nnoremap <silent> <leader>ub :<C-u>Unite bookmark         -here                     -buffer-name=Bookmarks       <CR>
+nnoremap <silent> <leader>ub :<C-u>Unite bookmark         -no-split                 -buffer-name=Bookmarks       <CR>
 nnoremap <silent> <leader>uc :<C-u>UniteClose<CR>
 nnoremap <silent> <leader>us :<C-u>UniteShow<CR>
 
@@ -782,7 +794,7 @@ nnoremap <silent> \          :<C-u>Unite gtags/ref        -immediately -auto-res
 nnoremap <silent> <leader>gs :<C-u>Unite gtags/completion -immediately -auto-resize -buffer-name=Tag\ Completion <CR>
 nnoremap <silent> <leader>gi :<C-u>Unite gtags/grep       -immediately -auto-resize -buffer-name=Tag\ Grep       <CR>
 nnoremap <silent> ,          :<C-u>Unite gtags/def        -immediately -auto-resize -buffer-name=Tag\ Definition <CR>
-nnoremap <silent> <leader>o  :<C-u>Unite -auto-preview outline -no-split            -buffer-name=Outline         <CR>
+nnoremap <silent> <leader>o  :<C-u>Unite outline          -no-split                 -buffer-name=Outline         <CR>
 "use c-n & c-p for now, alt, ctrl, and shift are all no good for this
 "inoremap <buffer> <A-j> <Plug>(unite_select_next_line)
 "inoremap <buffer> <A-k> <Plug>(unite_select_previous_line)
