@@ -79,6 +79,7 @@ NeoBundleFetch 'w0ng/vim-hybrid'
 NeoBundleFetch 'hickop/vim-hickop-colors'
 "NeoBundleFetch 'junegunn/seoul256.vim'
 NeoBundleFetch 'whatyouhide/vim-gotham'    " dark color scheme
+NeoBundleFetch 'NLKNguyen/papercolor-theme'
 "}}}
 
 " Functional Plugins {{{
