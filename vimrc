@@ -98,6 +98,7 @@ NeoBundleFetch 'osyo-manga/vim-brightest'
 "NeoBundleFetch 'majutsushi/tagbar'    " TagBar - a pleasant code outline for the current buffer
 "Plugin 'linediff
 "Plugin 'bling/vim-airline'
+NeoBundleFetch 'tpope/vim-commentary'
 " Visual Plugins }}}
 "
 " Movement Plugins {{{
@@ -148,7 +149,8 @@ let g:netrw_liststyle=0
 " Solarized Options {{{
 
 let g:solarized_italic=0
-colorscheme solarized
+"colorscheme solarized
+colorscheme mirodark
 
 " Solarized Options }}}
 
@@ -172,7 +174,6 @@ let g:ctrlp_custom_ignore = {
   \ 'dir':  '\v[\/]\.(git|hg|svn)$',
   \ 'file': '\v\.(exe|so|dll|s|i|o|lst|hex|s19|pbi|cout|icf|srec|bin|html|htm|out|)$',
   \ }
-
 
 " CtrlP Options }}}
 
@@ -281,6 +282,7 @@ let g:easy_align_delimiters['/'] = { 'pattern': '//', 'ignore_groups': ['String'
 let g:easy_align_delimiters[']'] = { 'pattern': '[[\]]', 'left_margin': 1, 'right_margin': 0, 'stick_to_left': 0 }
 let g:easy_align_delimiters[')'] = { 'pattern': '[()]', 'left_margin': 0, 'right_margin': 0, 'stick_to_left': 0 }
 let g:easy_align_delimiters['\'] = { 'pattern': '\\' }
+let g:easy_align_delimiters['%'] = { 'pattern': '%' }
 
 " EasyAlign }}}
 
@@ -290,9 +292,15 @@ let g:vo_modules_load=''
 
 " SnipMate {{{
 
-let g:snippets_dir = "$VIM/snippets/"
+let g:snippets_dir = 'C:/Program Files (x86)/Vim/snippets/'
+let g:snippets_dir = '$VIM\snippets\'
 
 " SnipMate }}}
+
+" DirDiff {{{
+let g:DirDiffExcludes = "*.o,*.a,*.i,.svn,*.dep"
+let g:DirDiffAddArgs = "-w" " Don't flag whitespace only as a file difference
+" DirDiff }}}
 
 " Plugin Options }}}
 
@@ -365,7 +373,8 @@ set splitright                       " make vsplits happen to the right instead 
 set splitbelow                       " make split happen below instead of above
 set wildmode=list:longest            " shell style completion
 set tw=0                             " don't chop lines at 78 characters
-set nomore                          "don't pause and display 'More'
+set nomore                           "don't pause and display 'More'
+set clipboard^=unnamed               "use system clipboard
 "set virtualedit=block                     " tab
 
 "set background=dark " will modify backgrounds, which may have different color for dark and light
@@ -462,7 +471,7 @@ function! RunAg(text, dir)
         echo "RunAg - Searching in: " . a:dir
 "TODO change based on filetype for python and etc
 	if g:is_win
-        	let g:AgIgnoreString =' --file-search-regex .[(c)(cpp)(h)(hpp)(C)(CPP)(H)]$ '
+        	let g:AgIgnoreString =' --file-search-regex .^(^(c^)^|^(cpp^)^|^(h^)^|^(hpp^)^|^(C^)^|^(CPP^)^|^(H^)^)$ '
 	endif
 	if g:is_nix
         	let g:AgIgnoreString =' --file-search-regex .\[\(c\)\(cpp\)\(h\)\(hpp\)\(C\)\(CPP\)\(H\)\]$ '
@@ -536,15 +545,18 @@ endfunction
 
 let mapleader = " "
 
-" Insert Mode Mappings {{{
+" Insert Mode Movement Mappings {{{
 inoremap <silent> <C-L> <Right>
 inoremap <silent> <C-H> <Left>
 inoremap <silent> <C-K> <Up>
 inoremap <silent> <C-J> <Down>
-"inoremap <silent> kj <esc> " Don't map this since words ending with k, you can't jk
+nnoremap <silent> <C-L> <Right>
+nnoremap <silent> <C-H> <Left>
+nnoremap <silent> <C-K> <Up>
+nnoremap <silent> <C-J> <Down>
+
+" jk is easier and faster than hitting <ESC>
 inoremap <silent> jk <esc>
-"inoremap <esc> <nop>
-" }}}
 
 " Normal Mode Mappings {{{
 
@@ -777,7 +789,7 @@ let g:unite_source_history_yank_enable = 1 " Keep track of yanks for 'Unite yank
         \ ['converter_file_directory'])
 
 "TODO map to a unite key (maybe alt or keep the key as <leader>g)?
-nnoremap <silent> <leader>e  :<C-u>UniteWithBufferDir  file                         -buffer-name=Explore\ Folder <CR>
+nnoremap <silent> <leader>e  :<C-u>UniteWithBufferDir  file  -no-split -no-resize   -buffer-name=Explore\ Folder <CR> 
 nnoremap <silent> <leader>ua :<C-u>UniteBookmarkAdd                                 -buffer-name=Add\ Bookmark   <CR>
 nnoremap <silent> <leader>j  :<C-u>Unite buffer                                                                  <CR>
 nnoremap <silent> <leader>J  :<C-u>Unite buffer_tab                                                              <CR>
