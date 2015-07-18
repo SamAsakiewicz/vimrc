@@ -879,7 +879,7 @@ augroup vimrc
     autocmd FileType vim setlocal foldmethod=marker
     autocmd FileType text setlocal foldmethod=indent
     autocmd FocusLost * stopinsert
-    autocmd FocusLost *.c,*.cpp,*.h,*.hpp wall
+    autocmd FocusLost *.c,*.cpp,*.h,*.hpp silent! wa
     autocmd bufwritepost vimrc source % " Re-Source vimrc wach time it is edited
     autocmd VimEnter * :echo 'Welcome Back: ' . g:hostname
     autocmd VimEnter * :call BuildHelpTags(g:docpaths)
