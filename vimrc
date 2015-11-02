@@ -36,6 +36,7 @@ endif
 
 " bye bye, Vi, and nice knowing ya, vanilla VIm
 set nocompatible
+set runtimepath+=$VIM/ " for snipmate auto lookup
 
 " NeoBundle Start {{{
 set runtimepath+=~/.vim/bundle/neobundle.vim/
@@ -113,7 +114,10 @@ NeoBundleFetch 'junegunn/vim-easy-align'
 NeoBundleFetch 'tpope/vim-endwise'
 "NeoBundleFetch 'AndrewRadev/splitjoin.vim'
 NeoBundleFetch 'tpope/vim-surround'
-NeoBundleFetch 'msanders/snipmate.vim'
+"NeoBundleSource 'msanders/snipmate.vim'
+NeoBundleFetch 'marcweber/vim-addon-mw-utils' "vim-snipmate Dependency
+NeoBundleFetch 'tomtom/tlib_vim' "vim-snipmate Dependency
+NeoBundleFetch 'garbas/vim-snipmate'
 NeoBundleFetch 'kien/rainbow_parentheses.vim'
 " Formatting }}}
 
@@ -292,8 +296,16 @@ let g:vo_modules_load=''
 
 " SnipMate {{{
 
-let g:snippets_dir = 'C:/Program Files (x86)/Vim/snippets/'
-let g:snippets_dir = '$VIM\snippets\'
+" ino <tab> <c-r>=TriggerSnippet()<cr>
+" snor <tab> <esc>i<right><c-r>=TriggerSnippet()<cr>
+:imap <tab> <Plug>snipMateNextOrTrigger
+:smap <tab> <Plug>snipMateNextOrTrigger
+" let g:snippets_dir = 'C:/Program Files (x86)/Vim/snippets/'
+" let g:snippets_dir = 'X:/Vim/snippets/'
+" let g:snippets_dir = '$VIM/snippets/'
+"call ExtractSnipsFile('X:\Vim\snippets\c.snippets', 'cpp')
+" call ExtractSnipsFile('X:\Vim\snippets\c.snippets', 'c')
+" call GetSnippets(g:snippets_dir, 'c')
 
 " SnipMate }}}
 
