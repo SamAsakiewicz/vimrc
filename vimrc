@@ -34,113 +34,99 @@ endif
 
 " Plugin Installs {{{
 
-" bye bye, Vi, and nice knowing ya, vanilla VIm
 set nocompatible
 set runtimepath+=$VIM/ " for snipmate auto lookup
 
-" NeoBundle Start {{{
-set runtimepath+=~/.vim/bundle/neobundle.vim/
-set runtimepath+=~/.vim/bundle/*
-let g:docpaths = split(expand("~/.vim/bundle/*/doc/"),'\n')
-for docstr in g:docpaths
-execute "set runtimepath+=".docstr
-endfor
-set runtimepath+=$VIM/bundle/neobundle.vim/
-"let path='~/vimfiles/bundle'
-
-call neobundle#begin(expand('~/.vim/bundle/'))
-" NeoBundle Start }}}
+call plug#begin('~/.vim/plugged')
 
 " Core Plugins {{{
-NeoBundleFetch 'Shougo/neobundle.vim' " Let NeoBundle update NeoBundle
-NeoBundleFetch 'dbakker/vim-projectroot'
-NeoBundleFetch 'rking/ag.vim'    " AG.vim - interface to ag.exe,  grep/ack replacement
-NeoBundleFetch 'kien/ctrlp.vim'    " CtrlP - Fuzzy File Search
-NeoBundleFetch 'gtags.vim'    " Vim Support for GNU Global
-NeoBundleFetch 'Shougo/unite.vim'
-"NeoBundleFetch 'Shougo/neocomplcache.vim'    " neocomplcache - Autocompletion system for vim
-"NeoBundleFetch 'jceb/vim-orgmode'
-NeoBundleFetch 'bufkill.vim'
-"NeoBundleFetch 'mtth/scratch.vim'  " gs to toggle a scratch buffer
-NeoBundleFetch 'Raimondi/delimitMate'  " automatically end braces
-NeoBundleFetch 'vimoutliner/vimoutliner'
-NeoBundleFetch 'jaxbot/semantic-highlight.vim'
-"NeoBundleFetch 'TaskList.vim' " puts todos in code, in a viewable list
+Plug 'Shougo/neobundle.vim' " Let NeoBundle update NeoBundle
+Plug 'dbakker/vim-projectroot'
+Plug 'rking/ag.vim'    " AG.vim - interface to ag.exe,  grep/ack replacement
+Plug 'kien/ctrlp.vim'    " CtrlP - Fuzzy File Search
+Plug 'gtags.vim'    " Vim Support for GNU Global
+Plug 'Shougo/unite.vim'
+Plug 'bufkill.vim'
+Plug 'Raimondi/delimitMate'  " automatically end braces
+Plug 'vimoutliner/vimoutliner'
+Plug 'jaxbot/semantic-highlight.vim'
+"Plug 'TaskList.vim' " puts todos in code, in a viewable list
+Plug 'junegunn/vim-journal'
+Plug 'tpope/vim-projectionist'
 "}}}
 
 " Color Scheme Plugins {{{
-NeoBundleFetch 'altercation/vim-colors-solarized'    " Solarized - a Solid Color Scheme
-NeoBundleFetch '29decibel/codeschool-vim-theme'
-NeoBundleFetch 'jonathanfilip/vim-lucius'
-NeoBundleFetch 'vim-scripts/darktango.vim'
-NeoBundleFetch 'djjcast/mirodark'
-NeoBundleFetch 'sjl/badwolf'
-NeoBundleFetch 'ciaranm/inkpot'
-NeoBundleFetch 'w0ng/vim-hybrid'
-NeoBundleFetch 'hickop/vim-hickop-colors'
-"NeoBundleFetch 'junegunn/seoul256.vim'
-NeoBundleFetch 'whatyouhide/vim-gotham'    " dark color scheme
-NeoBundleFetch 'NLKNguyen/papercolor-theme'
+Plug 'altercation/vim-colors-solarized'    " Solarized - a Solid Color Scheme
+Plug '29decibel/codeschool-vim-theme'
+Plug 'jonathanfilip/vim-lucius'
+Plug 'vim-scripts/darktango.vim'
+Plug 'djjcast/mirodark'
+Plug 'sjl/badwolf'
+Plug 'ciaranm/inkpot'
+Plug 'w0ng/vim-hybrid'
+Plug 'hickop/vim-hickop-colors'
+"Plug 'junegunn/seoul256.vim'
+Plug 'whatyouhide/vim-gotham'    " dark color scheme
+Plug 'NLKNguyen/papercolor-theme'
 "}}}
 
 " Functional Plugins {{{
 
 " Visual Plugins {{{
-NeoBundleFetch 'jeffkreeftmeijer/vim-numbertoggle'
-NeoBundleFetch 'mhinz/vim-startify'
-NeoBundleFetch 'sjl/gundo.vim'
-NeoBundleFetch 'vim-scripts/DirDiff.vim'
-NeoBundleFetch 'Shougo/vinarise.vim'
-NeoBundleFetch 'osyo-manga/vim-brightest'
-"NeoBundleFetch 'nathanaelkane/vim-indent-guides'
+Plug 'jeffkreeftmeijer/vim-numbertoggle'
+Plug 'mhinz/vim-startify'
+Plug 'sjl/gundo.vim'
+Plug 'vim-scripts/DirDiff.vim'
+Plug 'Shougo/vinarise.vim'
+Plug 'osyo-manga/vim-brightest'
+"Plug 'nathanaelkane/vim-indent-guides'
  
-"NeoBundleFetch 'scrooloose/syntastic' " show build errors visual in the file
-"NeoBundleFetch 'Lokaltog/powerline' "pretty status bars
-"NeoBundleFetch 'majutsushi/tagbar'    " TagBar - a pleasant code outline for the current buffer
+"Plug 'scrooloose/syntastic' " show build errors visual in the file
+"Plug 'Lokaltog/powerline' "pretty status bars
+"Plug 'majutsushi/tagbar'    " TagBar - a pleasant code outline for the current buffer
 "Plugin 'linediff
 "Plugin 'bling/vim-airline'
-NeoBundleFetch 'tpope/vim-commentary'
+Plug 'tpope/vim-commentary'
 " Visual Plugins }}}
 "
 " Movement Plugins {{{
-"NeoBundleFetch 'Lokaltog/vim-easymotion'
-NeoBundleFetch 'tpope/vim-unimpaired'    " each [x & ]x mappings
-"NeoBundleFetch 'justinmk/vim-sneak'
+"Plug 'Lokaltog/vim-easymotion'
+Plug 'tpope/vim-unimpaired'    " each [x & ]x mappings
+"Plug 'justinmk/vim-sneak'
 ""'wellle/targets.vim'
 " Movement Plugins }}}
 "
 " Formatting {{{
-NeoBundleFetch 'junegunn/vim-easy-align'
-NeoBundleFetch 'tpope/vim-endwise'
-"NeoBundleFetch 'AndrewRadev/splitjoin.vim'
-NeoBundleFetch 'tpope/vim-surround'
+Plug 'junegunn/vim-easy-align'
+Plug 'tpope/vim-endwise'
+"Plug 'AndrewRadev/splitjoin.vim'
+Plug 'tpope/vim-surround'
 "NeoBundleSource 'msanders/snipmate.vim'
-NeoBundleFetch 'marcweber/vim-addon-mw-utils' "vim-snipmate Dependency
-NeoBundleFetch 'tomtom/tlib_vim' "vim-snipmate Dependency
-NeoBundleFetch 'garbas/vim-snipmate'
-NeoBundleFetch 'kien/rainbow_parentheses.vim'
+Plug 'marcweber/vim-addon-mw-utils' "vim-snipmate Dependency
+Plug 'tomtom/tlib_vim' "vim-snipmate Dependency
+Plug 'garbas/vim-snipmate' "snipmate
+Plug 'kien/rainbow_parentheses.vim'
 " Formatting }}}
 
 " Functional Plugins }}}
 
 " Unite Plugins {{{
 
-"NeoBundleFetch 'Shougo/vimproc.vim'
-NeoBundleFetch 'Shougo/neomru.vim'
-NeoBundleFetch 'Shougo/unite-outline'
-NeoBundleFetch 'ujihisa/unite-colorscheme'
-NeoBundleFetch 'tacroe/unite-mark'
-NeoBundleFetch 'hewes/unite-gtags'
-NeoBundleFetch 'sgur/unite-qf'  " quickfix window source
-NeoBundleFetch 'thinca/vim-unite-history' " Unite display of command and search history
-NeoBundleFetch 'tsukkee/unite-tag'
+"Plug 'Shougo/vimproc.vim'
+Plug 'Shougo/neomru.vim'
+Plug 'Shougo/unite-outline'
+Plug 'ujihisa/unite-colorscheme'
+Plug 'tacroe/unite-mark'
+Plug 'hewes/unite-gtags'
+Plug 'sgur/unite-qf'  " quickfix window source
+Plug 'thinca/vim-unite-history' " Unite display of command and search history
+Plug 'tsukkee/unite-tag'
+Plug 'SamAsakiewicz/vimrc', {'dir':'$VIM'}
 
 " Unite Plugins }}}
-
-" NeoBundle End {{{
-call neobundle#end()
-filetype plugin indent on
-" NeoBundle End }}}
+"
+" Add plugins to &runtimepath
+call plug#end()
 
 " Plugin Installs }}}
 
@@ -150,13 +136,12 @@ filetype plugin indent on
 let g:netrw_liststyle=0
 " Netrw Options }}}
 
-" Solarized Options {{{
+" Colorscheme Options {{{
 
 let g:solarized_italic=0
-"colorscheme solarized
 colorscheme mirodark
 
-" Solarized Options }}}
+" Colorscheme Options }}}
 
 " CtrlP Options {{{
 
@@ -404,33 +389,6 @@ call matchadd('ColorColumn', '\%81v', 100)
 "}}}
 
 " Functions {{{
-
-" Fold {{{
-
-function! FoldModeToggle()
-    if !exists('g:fold_mode_state') 
-        let g:fold_mode_state = 0
-    endif
-
-    if g:fold_mode_state == 0
-        let g:fold_mode_state = 1
-        set foldcolumn=1
-        set foldlevel=1
-        set foldminlines=1
-        "set foldopen=all
-        set foldclose=all
-    else
-        let g:fold_mode_state = 0
-        set foldcolumn=0
-        normal! zR
-        set foldminlines=0
-        "set foldopen=all
-        set foldclose=
-    endif
-
-endfunction
-
-" Fold }}}
 
 " Key Functions {{{
 function! BuildCtags(dir)
@@ -893,8 +851,6 @@ augroup vimrc
     autocmd FocusLost * stopinsert
     autocmd FocusLost *.c,*.cpp,*.h,*.hpp silent! wa
     autocmd bufwritepost vimrc source % " Re-Source vimrc wach time it is edited
-    autocmd VimEnter * :echo 'Welcome Back: ' . g:hostname
-    autocmd VimEnter * :call BuildHelpTags(g:docpaths)
 
     " When editing a file, always jump to the last known cursor position.
     " Don't do it when the position is invalid or when inside an event handler
